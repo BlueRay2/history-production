@@ -106,6 +106,23 @@ A grand wide shot of Istanbul's historic peninsula skyline slowly orbiting right
 
 ---
 
+### Scene 02 — Clip 05b: City walls — conquered, renamed, rebuilt
+
+**Narration segment:** "This city was conquered, renamed, and rebuilt -- three times."
+**Model:** Kling Professional
+**Duration:** 10s
+**Resolution:** 1080p
+**Shot type:** Wide
+**Camera:** Slow push in
+
+**Prompt:**
+Wide shot pushing slowly toward the massive Theodosian land walls of Istanbul at late golden hour. The camera drifts forward as dramatic light sweeps across the ancient stone. The walls bear the visible scars of three civilizations layered on top of each other — Roman masonry at the base, patched with Byzantine brickwork in the middle, Ottoman plaster and arched repairs near the top. Cracks, siege damage, and rebuilt sections tell the story of repeated conquest. Faded traces of different inscriptions — Latin, Greek, Ottoman script — are barely visible on weathered stone surfaces. Dust motes drift through shafts of golden light. The walls fill the frame, monumental and scarred. Shot on 35mm film, shallow depth of field, visible film grain. Warm taupe, sandy brown, warm umber, cream white. Warm golden tones, aged parchment feel, candlelight warmth. Desaturated warmth with golden undertones.
+
+**Continuity notes:** Visual punctuation between "three empires" montage (Clip 05) and the "why?" pivot (Clip 06). The walls as physical record of conquest — same walls appear in Scene 10 (sieges) and Scene 11 (1453 breach).
+**Fallback model:** Flow Veo 3.1 Quality
+
+---
+
 ### Scene 02 — Clip 06: Bosphorus underwater current visualization
 
 **Narration segment:** "The Bosphorus current pushes northward along the bottom and southward along the top — a river running inside the sea. That current carries fish into a deep natural inlet called the Golden Horn, trapping them against the western shore."
