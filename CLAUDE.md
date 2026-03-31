@@ -50,6 +50,7 @@ Thirteen project-level skills are configured in `.claude/skills/`:
 ## Video Generation Services
 
 This project works exclusively with three AI video generation services:
+
 - **Sora 2 Pro** (OpenAI) — cinematic quality, human subjects, complex motion
 - **Kling AI** — stylized content, camera movements, abstract visuals, budget-friendly
 - **Google Flow / Veo 3.1** — atmospheric shots, establishing footage, free iteration on Ultra
