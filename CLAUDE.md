@@ -84,3 +84,5 @@ A `SessionStart` hook (`.claude/hooks/session-start.sh`) runs automatically at s
 ## Language
 
 User communicates in Russian. Documentation and prompts are a mix of Russian and English.
+
+<!-- Codex CLI (GPT-5.4) verified access: 2026-04-01 -->
