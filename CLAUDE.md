@@ -47,6 +47,11 @@ Thirteen project-level skills are configured in `.claude/skills/`:
 - `ai-service-selector` includes "Premium Start" temporal quality strategy: premium models for first ~3 minutes, economy models (Flow Veo 3.1 Fast = free) after.
 - `production-cost-estimator` covers Sora 2, Kling, Flow, and ElevenLabs pricing; outputs `COST_ESTIMATE.md`.
 
+## Contributors
+
+- **BlueRay2** (Дима) — repository owner
+- **EvanderLatine** (Ярослав) — project creator, ideator
+
 ## Video Generation Services
 
 This project works exclusively with three AI video generation services:
