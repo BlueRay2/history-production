@@ -29,27 +29,23 @@ It all started with a fisherman.
 
 [storytelling tone] The year is 657 BC. A Greek colonist from Megara has followed the current into the Golden Horn.
 
-His name is lost to history. But his morning has survived -- in the bones of fishermen who came after him, in the rhythm of a city that has never stopped waking before dawn.
+His name is lost to history. But his morning has survived -- in the rhythm of a city that has never stopped waking before dawn.
 
-He wears a simple woolen cape bound at one shoulder. A felt cap against the wind. His hands are rough from salt and rope, cracked from cold water and mending line. Every morning he walks to the shore while the sky is still grey, stepping over kelp and broken shells, lowers himself into a wooden boat worn smooth by the sea, and rows out to where the bonito are running.
+He wears a woolen cape and a felt cap against the wind. His hands are cracked from salt and rope. Every morning he rows out before the sky lightens, to where the bonito are running.
 
-The water is dark at this hour. The only sound is the creak of the oarlocks and the slap of the current against the hull. Then the dawn breaks over the Asian shore, and the Golden Horn fills with light -- pale gold, then copper, then the full white glare of a Mediterranean morning.
+The Bosphorus pushes the fish right to him. That is the miracle of this harbor -- the current does half the work. Cold north winds stir the Black Sea in autumn, and the bonito pour south through the strait into the Golden Horn like grain into a funnel.
 
-The Bosphorus pushes the fish right to him. That is the miracle of this harbor -- the current does half the work. Cold north winds stir the Black Sea in autumn, and the bonito pour south through the strait and into the Golden Horn like grain into a funnel. On the hillside above, a lookout perches in a tall tree, scanning the water for the dark shimmer of a school. When he shouts, the boats scramble.
-
-On the eastern shore, across the narrow water, another colony had settled seventeen years earlier. A Persian general would later call those settlers blind -- blind because they had the perfect harbor right in front of them and chose the wrong side. The Golden Horn was here. The fish were here. The future was here. And they missed it.
+On the eastern shore, another colony had settled seventeen years earlier. A Persian general would later call those settlers blind -- they had the perfect harbor in front of them and chose the wrong side. The Golden Horn was here. The fish were here. The future was here. And they missed it.
 
 ## Scene 04 — Byzantion Takes Root
 
-The fishing village grows. Stone walls rise where driftwood shelters stood. Freshwater springs feed a growing settlement on a defensible triangle of land -- water on three sides, a single landward approach.
+The fishing village grows. Stone walls rise where driftwood shelters stood. Water on three sides, a single landward approach -- a defensible triangle.
 
-The fisherman does not think in centuries. He thinks in tides and seasons. Bonito in September. Bluefish after them. The larger torik by November -- fat enough to salt and store through winter. His world is the rhythm of the strait.
+The fisherman thinks in tides and seasons. Bonito in September. Bluefish after them. But the strait is changing his world. Grain ships from the Black Sea begin passing through -- wheat bound for Athens and the islands. The colony charges tolls. A fishing village discovers it is sitting on a chokepoint.
 
-But the strait is changing his world. Other colonists arrive. Grain ships from the Black Sea begin passing through the narrows -- wheat and barley from the vast plains north of the sea, bound for Athens and the islands. The colony charges tolls. A fishing village discovers it is sitting on a chokepoint.
+The fisherman's grandson watches warships anchor where his grandfather cast nets. Persians. Athenians. Spartans. They come because whoever controls this passage controls who eats and who starves.
 
-The fisherman's grandson climbs the new stone walls and watches warships anchor where his grandfather cast nets. Persians. Athenians. Spartans. They come for the grain. They come for the strait. They come because whoever controls this passage controls who eats and who starves.
-
-Byzantion -- a word that once meant a fisherman's landing -- now appears on military maps. The harbor that fed one man's family now feeds an argument between empires.
+Byzantion -- a word that once meant a fisherman's landing -- now appears on military maps.
 
 --- SEGMENT BREAK ---
 
@@ -57,17 +53,17 @@ Byzantion -- a word that once meant a fisherman's landing -- now appears on mili
 
 [documentary style] Persians take the city. Athenians take it back. Alexander's successors fight over it. Rome absorbs it almost as an afterthought -- another provincial town in the empire's eastern reaches.
 
-But Rome notices what the fisherman knew. The strait is not just a waterway. It is a lock. And this peninsula -- surrounded by water on three sides, defended by a single wall on the fourth -- is the key.
+But Rome notices what the fisherman knew. The strait is not just a waterway. It is a lock. And this peninsula is the key.
 
-New walls go up. Stronger. Thicker. The small stone fortifications the fisherman watched being built are replaced by something far more ambitious -- a defensive system that will grow, layer by layer, century by century, into the most formidable urban fortification the ancient world has ever seen.
+New walls go up. Stronger. Thicker. Layer by layer, century by century, they grow into the most formidable urban fortification the ancient world has ever seen.
 
 [pause] The walls they built would stand for a thousand years. But not forever.
 
 ## Scene 06 — Transition: From Nets to Silk
 
-In the year 330, an emperor named Constantine stands on the same shore where the fisherman once mended his nets. He sees what the fisherman saw -- a perfect harbor, a defensible peninsula, a current that brings the world to your doorstep. But Constantine sees it at imperial scale. Rome is too far from the frontiers. The empire's wealth has shifted east -- to the Balkans, to Asia Minor, to Egypt. He needs a capital closer to the money and the threats.
+In the year 330, an emperor named Constantine stands on the same shore where the fisherman once mended his nets. He sees what the fisherman saw -- but at imperial scale. Rome is too far from the frontiers. The empire's wealth has shifted east. He needs a capital closer to the money and the threats.
 
-He renames the city after himself. Constantinople. Nova Roma. The New Rome. Within a hundred and fifty years, the fishing village of thirty thousand will become a metropolis of half a million.
+He renames the city after himself. Constantinople. Nova Roma. Within a hundred and fifty years, the fishing village will become a metropolis of half a million.
 
 The fisherman's harbor would become the richest marketplace on Earth.
 
@@ -75,23 +71,23 @@ The fisherman's harbor would become the richest marketplace on Earth.
 
 ## Scene 07 — The Merchant Arrives
 
-[documentary style] Six centuries later, a silk merchant walks the Mese -- Constantinople's great commercial boulevard, twenty-five meters wide, lined with double colonnades stretching five kilometers from Hagia Sophia to the Golden Gate.
+[documentary style] Six centuries later, a silk merchant walks the Mese -- Constantinople's great boulevard, twenty-five meters wide, colonnades stretching five kilometers from Hagia Sophia to the Golden Gate.
 
-His world is a sensory onslaught. Chinese silk piled on marble counters -- bolts of samite and damask in colors the western world has never seen. Indian pepper weighed against Byzantine gold. Egyptian grain stacked in warehouses along the waterfront. Venetian glass. African ivory. The air carries incense, sweat, the sharp tang of fresh-dyed fabric, and beneath it all, the old familiar salt smell of the strait.
+Chinese silk on marble counters. Indian pepper weighed against Byzantine gold. Egyptian grain along the waterfront. Venetian glass. African ivory. Beneath it all, the old salt smell of the strait.
 
-He is a member of the metaxopratai -- the silk merchants' guild. Five existing members vouched for his character before the city prefect. His profit margins are set by the state. He cannot sell to foreign exporters. Even the hours he works are regulated. His world is controlled, structured, and extraordinarily lucrative.
+He is a member of the metaxopratai -- the silk merchants' guild. His profit margins are set by the state. He cannot sell to foreign exporters. His world is controlled, structured, and extraordinarily lucrative.
 
-He eats modestly -- bread, olives, cheese, a single cooked meal before sunset. But the goods passing through his hands could ransom a king. This is not a free market. It is a machine -- and the machine runs on geography. Every overland route from China terminates here. Every sea route from the Mediterranean passes through here. There is no other crossroads like it on the planet.
+He eats modestly. But the goods passing through his hands could ransom a king. This is not a free market. It is a machine -- and the machine runs on geography. Every overland route from China terminates here. Every sea route from the Mediterranean passes through here. No other crossroads like it on the planet.
 
 ## Scene 08 — City of the World's Desire
 
 The merchant steps inside Hagia Sophia and tilts his head upward.
 
-[cinematic tone] The dome floats. There is no other way to describe it. Thirty-one meters across, rising forty-eight meters above the floor, the dome of Hagia Sophia does not appear to rest on walls at all. The historian Procopius, who saw it shortly after its completion in 537, wrote that it seemed suspended from heaven by a golden chain. Sunlight pours through forty windows at the dome's base, dissolving the stone into light. The merchants who pray here every morning do not need to be told that God is present. The architecture tells them.
+[cinematic tone] The dome floats. Thirty-one meters across, forty-eight meters above the floor, it does not appear to rest on walls at all. Procopius wrote that it seemed suspended from heaven by a golden chain. Sunlight pours through forty windows at the base, dissolving stone into light.
 
-Outside these walls, Constantinople holds half a million souls. London, at this same moment, holds eighteen thousand. The difference is not culture or ambition -- it is the strait. The Bosphorus funnels the wealth of two continents through a single city. The Theodosian Walls -- a triple barrier of moat, outer wall, and inner wall stretching six and a half kilometers across the peninsula, guarded by ninety-six towers -- keep that wealth inside.
+Outside, Constantinople holds half a million souls. London holds eighteen thousand. The difference is the strait. The Bosphorus funnels two continents' wealth through a single city. The Theodosian Walls -- moat, outer wall, inner wall, ninety-six towers -- keep that wealth inside.
 
-No city in the medieval world is richer. No city is better defended. And for a thousand years, no army will breach those walls.
+No city in the medieval world is richer. No city is better defended. For a thousand years, no army will breach those walls.
 
 --- SEGMENT BREAK ---
 
@@ -99,11 +95,11 @@ No city in the medieval world is richer. No city is better defended. And for a t
 
 [storytelling tone] Where the fisherman's nets once dried, silk from China now changes hands for Byzantine gold.
 
-The merchant weighs a bolt of silk against a stack of gold solidi -- coins so pure, so consistent, that they have served as the world's reserve currency for seven hundred years. Ninety-eight percent gold. Four and a half grams each. From Ireland to Sri Lanka, the solidus is the coin that merchants trust. No modern currency has matched its stability.
+The merchant weighs silk against gold solidi -- coins so pure they have served as the world's reserve currency for seven hundred years. Ninety-eight percent gold. Four and a half grams each. From Ireland to Sri Lanka, the solidus is the coin merchants trust.
 
-And the silk he trades for them? It was once China's most closely guarded secret. Until Byzantine monks smuggled silkworm eggs out of China inside hollow bamboo canes -- the most valuable theft in history. Not gold. Not jewels. A handful of eggs hidden inside walking sticks. After that, Constantinople made its own silk. The empire's monopoly was complete.
+And the silk? It was China's most guarded secret. Until Byzantine monks smuggled silkworm eggs out inside hollow bamboo canes -- the most valuable theft in history. Not gold. Not jewels. Eggs hidden inside walking sticks. After that, Constantinople made its own silk.
 
-The merchant glances toward the strait. His wealth -- his life -- depends on those ships passing through the narrows. He can see them from the harbor wall: single-masted traders riding low under the weight of grain, sleek galleys carrying dispatches from the emperor's agents in Alexandria, and beyond them, more sails waiting at the mouth of the Bosphorus. Every bolt of silk, every sack of pepper, every ingot of gold flows through the same channel of water that once pushed bonito into the fisherman's nets.
+The merchant glances toward the strait. Every bolt of silk, every sack of pepper, every ingot of gold flows through the same channel of water that once pushed bonito into the fisherman's nets.
 
 ## Scene 10 — Transition: The Walls Hold... Until They Don't
 
@@ -121,11 +117,11 @@ Twenty-three sieges in eleven centuries. Twenty-three failures.
 
 It was twenty-seven feet long. A man could crawl inside the barrel. It fired a stone ball weighing twelve hundred pounds -- and it could fire only seven times a day, because after each shot the barrel had to be soaked in warm oil to keep it from cracking. Seven shots a day. For fifty-three days.
 
-But the cannon alone was not enough. A massive chain stretched across the Golden Horn, blocking Ottoman ships from entering the harbor. So Mehmed did something no one had imagined. On a single night, his men dragged approximately seventy ships overland -- on greased wooden planks, up one hill and down another -- and dropped them into the Golden Horn behind the chain. The defenders on the walls watched in disbelief.
+But the cannon alone was not enough. A massive chain blocked the Golden Horn. So Mehmed did something no one had imagined. On a single night, his men dragged seventy ships overland -- on greased planks, up one hill and down another -- into the Golden Horn behind the chain.
 
-The city that had been Constantinople for eleven centuries woke on the morning of May twenty-ninth to silence. No church bells. The defenders -- seven thousand men against fifty-five thousand -- had fought for fifty-three days. After a thousand years, the walls that had turned back twenty-three armies finally gave way.
+The city woke on the morning of May twenty-ninth to silence. No church bells. Seven thousand defenders against fifty-five thousand -- fifty-three days. After a thousand years, the walls finally gave way.
 
-[pause] And then something unexpected happened. Mehmed rode straight to Hagia Sophia. His first order was not to tear down, but to preserve. He endowed fourteen thousand gold pieces a year for the building's restoration and maintenance. The city changed its name again -- to Istanbul. The skyline changed. The language changed. The call to prayer replaced the church bells. But the strait remained. And the city's purpose -- to control it -- remained.
+[pause] And then something unexpected. Mehmed rode straight to Hagia Sophia. His first order was not to tear down, but to preserve. The city changed its name -- to Istanbul. The skyline changed. The call to prayer replaced the church bells. But the strait remained. And the city's purpose -- to control it -- remained.
 
 --- SEGMENT BREAK ---
 
@@ -133,23 +129,23 @@ The city that had been Constantinople for eleven centuries woke on the morning o
 
 [storytelling tone] In the decades that follow, a new figure appears in the city's workshops.
 
-He is a tile-maker. His fingers are stained cobalt blue from the glazes he mixes -- turquoise, piney green, a purple so pale it almost vanishes into white. The stain does not wash off. It has settled into the creases of his knuckles, under his nails, into the skin itself. It is the mark of his trade, as unmistakable as the salt cracks on the fisherman's hands were twenty-two centuries earlier.
+He is a tile-maker. His fingers are stained cobalt blue from the glazes he mixes -- turquoise, green, a purple so pale it almost vanishes into white. The stain has settled into his knuckles, under his nails. It is the mark of his trade, as unmistakable as the salt cracks on the fisherman's hands twenty-two centuries earlier.
 
-He works with a stonepaste formula passed down through generations of Greek and Armenian artisans, men whose families served Byzantine emperors and now serve Ottoman sultans. The recipe -- the precise mix of quartz, glass frit, and white clay -- is a guarded secret. If these artisans die without apprentices, the knowledge dies with them.
+He works with a stonepaste formula passed down through generations of Greek and Armenian artisans who served Byzantine emperors and now serve Ottoman sultans. The recipe is a guarded secret. If these artisans die without apprentices, the knowledge dies with them.
 
-The kiln fires behind him. Stone dust drifts down from above, where construction crews are reshaping the skyline. Mosques rise where churches stood. Roman columns are repurposed in new foundations. The city is being rebuilt -- not from nothing, but from everything that came before.
+The kiln fires behind him. Mosques rise where churches stood. Roman columns are repurposed in new foundations. The city is being rebuilt -- not from nothing, but from everything that came before.
 
-The tile-maker does not experience this as destruction. He experiences it as work. The same hands. The same techniques. A new patron. The walls of his workshop have not moved. Only the name on the contract has changed.
+The tile-maker does not experience this as destruction. He experiences it as work. Same hands. Same techniques. A new patron. Only the name on the contract has changed.
 
 ## Scene 13 — Suleymaniye
 
 [cinematic tone] By the mid-sixteenth century, Istanbul has reached half a million people again -- the largest city in Europe, larger even than Constantinople at its peak. And its greatest building project is underway.
 
-The architect's name is Sinan. He was born Joseph -- a Christian stonemason's son from central Anatolia, conscripted as a boy under the devshirme system, trained as a military engineer, converted to Islam, and appointed chief imperial architect. Over a fifty-year career, he will design four hundred and seventy-six buildings. He is the Michelangelo of the Islamic world -- and like Michelangelo, his ambition is to surpass everything that came before.
+The architect is Sinan. Born Joseph -- a Christian stonemason's son, conscripted under the devshirme system, trained as a military engineer, appointed chief imperial architect. Over fifty years, he will design four hundred and seventy-six buildings.
 
-The Suleymaniye Mosque rises on the Third Hill of Istanbul. Seven years of construction. Seven hundred and fifty workers on site each day. The tile-maker carries his finished panels up the scaffolding -- cobalt arabesques destined for the interior walls of the greatest mosque of the age.
+The Suleymaniye Mosque rises on the Third Hill. Seven years. Seven hundred and fifty workers a day. The tile-maker carries his cobalt arabesques up the scaffolding.
 
-Around the mosque, a complex takes shape: four colleges, a hospital, a medical school, public baths, a guesthouse. And a kitchen that serves twenty-five hundred free meals EVERY day -- to anyone who comes, regardless of faith or origin.
+Around the mosque: four colleges, a hospital, a medical school, public baths. And a kitchen serving twenty-five hundred free meals EVERY day -- to anyone, regardless of faith or origin.
 
 The craftsman's workshop would outlive empires. It is still there.
 
@@ -165,23 +161,21 @@ And that crossroads has always been the strait.
 
 ## Scene 15 — The Bosphorus Remembers
 
-[narrative flourish] Stand at the water's edge and look out across the Bosphorus. The same water. The same current. The same narrow passage between two continents that has shaped every chapter of this story.
+[narrative flourish] Stand at the water's edge. The same current. The same narrow passage between two continents.
 
-In 657 BC, a fisherman followed the current into the Golden Horn because it pushed bonito toward his nets. He did not know he was founding a city. He knew the fish were here.
+In 657 BC, a fisherman followed the current into the Golden Horn. He did not know he was founding a city. He knew the fish were here.
 
-Six centuries later, a silk merchant stood in the same harbor -- now crowded with ships from every corner of the known world -- and traded Chinese silk for Byzantine gold. He did not think of the fisherman who came before him. He thought of the ships passing through the narrows, the same narrows, carrying the same essential cargo: wealth, in whatever form the age demanded.
+Six centuries later, a silk merchant traded Chinese silk for Byzantine gold in the same harbor. He did not think of the fisherman. He thought of the ships in the narrows, carrying wealth in whatever form the age demanded.
 
-And six centuries after that, a tile-maker carried cobalt-blue panels up the scaffolding of a mosque built on the same hill where the fisherman once dried his nets. He did not think of the merchant. He thought of the glaze under his fingernails, the next panel, the kiln that needed stoking before nightfall.
+Six centuries after that, a tile-maker carried cobalt panels up the scaffolding of a mosque on the same hill where the fisherman once dried his nets. He thought of the glaze under his fingernails, the next panel, the kiln.
 
-[pause] Three men. Three lives. Twenty-two centuries apart. None of them knew the others existed. But each one was shaped by the same body of water -- the same current, the same narrows, the same accident of geology that placed a navigable strait at the only crossing point between two continents.
+[pause] Three men. Twenty-two centuries apart. None knew the others existed. Each was shaped by the same accident of geology -- a navigable strait at the only crossing between two continents.
 
-The fisherman felt it in the pull of his nets. The merchant felt it in the weight of the coins in his hand. The tile-maker felt it in the commissions that never stopped coming -- because a city at the crossroads of the world always needs building.
+The Bosphorus does not remember their names. It simply flows -- thirty-one kilometers, seven hundred meters at its narrowest, carrying forty-two thousand ships a year, twenty percent of the world's wheat, and the same bonito that ran in September when the city had no name.
 
-The Bosphorus does not remember their names. It does not remember the empires that rose and collapsed on its shores. It simply flows -- thirty-one kilometers from the Black Sea to the Sea of Marmara, seven hundred meters at its narrowest, carrying forty-two thousand ships a year, twenty percent of the world's wheat, and the same bonito that ran in September when the city had no name.
+Three empires. Three names. Each time, the strait made it inevitable. Whoever controls this passage -- this thin blue line between two continents -- controls the flow of everything. Grain. Silk. Oil. Information. Power.
 
-Three empires. Three names. And each time, it was the strait that made it inevitable. Because whoever controls this passage -- this thin blue line between two seas, two continents, two worlds -- controls the flow of everything. Grain. Silk. Oil. Information. Power.
-
-Istanbul is the ONLY city in history that became the capital of three empires. Not because its walls were strong -- they fell. Not because its emperors were wise -- they were replaced. But because the geography beneath their feet was irreplaceable. The strait was here before any of them. It will be here after all of us.
+Istanbul is the ONLY city in history that became the capital of three empires. Not because its walls were strong -- they fell. Not because its emperors were wise -- they were replaced. But because the geography was irreplaceable. The strait was here before any of them. It will be here after all of us.
 
 No other city on Earth can say this.
 
@@ -199,15 +193,3 @@ He does not think about empires. He does not think about the silk merchant or th
 
 That story is next.
 
----
-
-## Character Count
-
-- Segment 1 (Scenes 01-04): ~4,550 chars
-- Segment 2 (Scenes 05-08): ~4,250 chars
-- Segment 3 (Scenes 09-11): ~3,200 chars
-- Segment 4 (Scenes 12-14): ~3,100 chars
-- Segment 5 (Scenes 15-16): ~3,400 chars
-- **Total: ~18,500 chars (excluding tags)**
-
-All segments under 5,000 character limit.
