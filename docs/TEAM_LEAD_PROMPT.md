@@ -701,8 +701,27 @@ CINEMATOGRAPHIC RULES:
 - Visual prompts must include negative prompts ("no text", "no watermark",
   "no AI artifacts", "no distorted faces") where relevant
 - All prompts MUST include consistent style anchors from the niche style guide
+  (color palette descriptors like "warm taupe" are allowed, but NOT film-related
+  artifacts — see BANNED PROMPT ELEMENTS below)
 - Footage duration: 4-10 seconds per clip (match clip duration to narration
   segment length; shorter clips for single sentences, longer for establishing shots)
+
+BANNED PROMPT ELEMENTS (enforced across ALL video generation prompts):
+- "Shot on 35mm film" / "35mm film" / any film stock references
+- "visible film grain" / "film grain" / any grain references
+- "16:9" or any aspect ratio specifications (the editor handles this)
+- Any camera interface or technical metadata text that causes AI hallucinations
+  (e.g., viewfinder overlays, ISO readouts, lens specs as visible UI)
+- The Cross-Service Style Line (visual continuity anchor) must NOT contain
+  film grain or 35mm references. Keep color palette descriptors only.
+
+ONE PROMPT PER NARRATION SENTENCE:
+- In ALL_CLIPS.md and in SCRIPT.md clip entries, each meaningful narration
+  sentence maps to exactly ONE video clip/prompt. Do not combine multiple
+  sentences into a single clip.
+- The "Narration segment" field in each clip entry must be a VERBATIM copy
+  of the corresponding sentence from SCRIPT.md / TELEPROMPTER.md.
+  Cross-reference and verify exact match during validation.
 
 COORDINATION:
 - You depend on: editor's finalized scene breakdown (to know scene count
@@ -1244,6 +1263,10 @@ modifications.
 - [ ] T5.3: editor integrates music/SFX cues into SCRIPT.md
 - [ ] T5.4: editor integrates retention tags into SCRIPT.md
 - [ ] T5.5: editor generates TELEPROMPTER.md (clean narration with audio tags only)
+- [ ] T5.5a: lead validates TELEPROMPTER.md character count < 15,000 (`wc -c`); if over, editor trims
+- [ ] T5.5b: lead validates clip count against duration formula: `(total_clips × 8s) / 60 ≈ target_minutes`
+- [ ] T5.5c: proofreader verifies zero banned prompt elements (35mm, film grain, 16:9, camera UI metadata)
+- [ ] T5.5d: proofreader verifies narration-prompt sync (each clip's narration segment = verbatim script sentence)
 - [ ] T5.6: editor performs final integration pass (structural coherence)
 
 ### Phase 5.5: Cost Estimation
@@ -1443,6 +1466,57 @@ for administrative commits only: plan documents (Phase 0.5), `KNOWLEDGE_SUMMARY.
 
 ---
 
+## 4.6 EDITOR CONSTRAINTS (MANDATORY)
+
+The following production rules come from the video editor and are **non-negotiable**.
+The Team Lead must enforce these at every relevant phase.
+
+### 4.6.1 TELEPROMPTER Character Limit
+
+`TELEPROMPTER.md` must be **under 15,000 characters** total. After generating
+TELEPROMPTER.md (T5.5), run validation:
+
+```bash
+CHAR_COUNT=$(wc -c < TELEPROMPTER.md)
+if [ "$CHAR_COUNT" -gt 15000 ]; then
+  echo "FAIL: TELEPROMPTER.md is $CHAR_COUNT chars (limit: 15000). Trim required."
+fi
+```
+
+If over the limit, the editor must trim narration while preserving all
+retention devices and key narrative beats. Re-validate after trimming.
+
+### 4.6.2 Clip Count / Duration Validation
+
+After generating all clip entries (Phase 4 / Phase 5), validate clip count
+against target video duration using the formula:
+
+```
+(total_clips × 8s) / 60 = target_duration_minutes
+```
+
+For a **15-17 minute** video, this means **~112-127 clips**.
+If clip count falls outside the expected range, review and adjust:
+- Too few clips → narration sentences may be incorrectly combined
+- Too many clips → some clips may be too granular for 8s footage
+
+This check is **blocking** before Phase 5 integration.
+
+### 4.6.3 Banned Prompt Elements
+
+See BANNED PROMPT ELEMENTS in Section 2.4 (prompt-engineer instructions).
+These bans apply to ALL visual prompts across ALL services (Sora 2, Kling, Flow).
+The proofreader must verify zero occurrences during validation.
+
+### 4.6.4 Narration-Prompt Sync
+
+The "Narration segment" field in each clip entry must be a **verbatim copy**
+of the corresponding sentence from SCRIPT.md / TELEPROMPTER.md. The proofreader
+must cross-reference every clip's narration field against the source script
+and flag any mismatches as FAIL.
+
+---
+
 ## 5. QUALITY GATES (BLOCKING)
 
 | Gate | What Must Pass | Who Validates |
@@ -1457,6 +1531,10 @@ for administrative commits only: plan documents (Phase 0.5), `KNOWLEDGE_SUMMARY.
 | G7 | Visual prompts are complete, diverse, and cinematically coherent | proofreader |
 | G8 | Integrated SCRIPT.md has all layers, no missing sections, no broken references | proofreader (consolidated) |
 | G9 | Retention curve compliance verified against target shape | marketer |
+| G9.5 | TELEPROMPTER.md under 15,000 characters | Lead |
+| G9.6 | Clip count within expected range for target duration (`clips × 8s / 60`) | Lead |
+| G9.7 | Zero banned prompt elements (35mm, film grain, 16:9, camera UI) in all prompts | proofreader |
+| G9.8 | Every clip narration segment is verbatim match to SCRIPT.md sentence | proofreader |
 | G10 | TELEPROMPTER.md matches SCRIPT.md narration exactly | proofreader |
 | G10.5 | Production cost estimate within acceptable budget | Lead + Human (HC5) |
 | G11 | Final acceptance: all reports pass, human reads TELEPROMPTER.md aloud, aesthetic check | Human (HC5) |
