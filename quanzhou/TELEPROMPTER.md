@@ -7,7 +7,9 @@
 
 ## Scene 01 — Cold Hook
 
-[cinematic tone] You are probably wearing something named after this city right now. Satin -- the word comes from Zayton, the Arabic name for a Chinese port that was the busiest in the medieval world... for three hundred years. Then it vanished.
+[cinematic tone] You are probably wearing something named after this city right now. You know the fabric -- the way it catches light, the way it slides between your fingers. You have said its name a hundred times without knowing you were naming a place. Satin -- the word comes from Zayton, the Arabic name for a Chinese port that was the busiest in the medieval world... for three hundred years. Then it vanished.
+
+[pause] To understand how, you have to stand where two rivers meet the sea.
 
 ## Scene 02 — Context & Curiosity Gap
 
@@ -45,6 +47,8 @@ The fisherman's grandson works the same bay. But now he navigates between ocean-
 
 The fishing village has just been given a license to become the busiest port on Earth.
 
+[pause] And on Tumen Street, a young man is about to build an empire out of white clay.
+
 --- SEGMENT BREAK ---
 
 ## Scene 05 — The Porcelain Merchant
@@ -58,6 +62,8 @@ His trade is Dehua white porcelain -- the blanc de Chine that the world will cov
 The merchant watches his porcelain disappear into the hold of a junk bound for the Malabar Coast. In three months, it will sit on a table in Kerala. In six, a piece might reach Baghdad. In a year, fragments of his work will be found in the soil of East Africa.
 
 He does not think of himself as part of a global network. He thinks about the next shipment.
+
+[pause] But step outside his shop, and you will hear prayers in seven languages -- all rising from the same streets.
 
 ## Scene 06 — Museum of World Religions
 
@@ -75,6 +81,8 @@ This is not tolerance in the modern sense. It is pragmatism. Every faith brings 
 
 He lives in the most religiously diverse city on Earth. He barely notices.
 
+[pause] And the world is about to notice Quanzhou. A Venetian and a Moroccan will both try to describe it. Neither will quite find the words.
+
 --- SEGMENT BREAK ---
 
 ## Scene 07 — The World Arrives
@@ -88,6 +96,8 @@ A Venetian named Marco Polo passes through around twelve ninety-two. He calls it
 [pause] This is the peak. The busiest port on Earth. The most cosmopolitan city in Asia.
 
 And into this extraordinary machine walks a man who will sell it all to the Mongols.
+
+[pause] But first -- a woman in the Muslim quarter is making tea. She has no idea she is living in the last golden hour.
 
 ## Scene 08 — The Arab Merchant's Wife
 
@@ -129,6 +139,8 @@ The Qingjing Mosque loses its roof. It will never be fully restored. Today, its 
 
 The Arab merchant's wife... [pause] we do not know what happened to her. Her world -- the world of seven faiths and a hundred ships and spices from three continents in her morning tea -- that world is gone.
 
+[pause] And the new emperor will make sure it never comes back.
+
 --- SEGMENT BREAK ---
 
 ## Scene 11 — The Sea Ban
@@ -143,6 +155,8 @@ There is one last echo. In fourteen seventeen, the admiral Zheng He brings his t
 
 After Zheng He, the sea goes quiet. And Quanzhou... goes quiet with it.
 
+[pause] But listen carefully. The silence is not empty. Somewhere in the harbor, families are packing.
+
 ## Scene 12 — The Diaspora
 
 [storytelling tone] But the people do not vanish. They leave.
@@ -154,6 +168,8 @@ Today, millions of overseas Chinese in Southeast Asia trace their roots to this 
 The port that once drew the world to its harbor... sent its own people across the seas. Quanzhou's last export was its people.
 
 And they carried the city with them.
+
+[pause] But there is one more thing Quanzhou left behind -- something you carry too, without knowing it.
 
 ## Scene 13 — The Port That Named Satin
 

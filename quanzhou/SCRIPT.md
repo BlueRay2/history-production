@@ -11,7 +11,9 @@
 **Duration:** 15s | **Retention:** Double Hook + Synergy + In Medias Res + Curiosity Gap
 
 ### Narration
-[cinematic tone] You are probably wearing something named after this city right now. Satin -- the word comes from Zayton, the Arabic name for a Chinese port that was the busiest in the medieval world... for three hundred years. Then it vanished.
+[cinematic tone] You are probably wearing something named after this city right now. You know the fabric -- the way it catches light, the way it slides between your fingers. You have said its name a hundred times without knowing you were naming a place. Satin -- the word comes from Zayton, the Arabic name for a Chinese port that was the busiest in the medieval world... for three hundred years. Then it vanished.
+
+[pause] To understand how, you have to stand where two rivers meet the sea.
 
 ### Visual Layer
 
@@ -41,6 +43,11 @@
 Double Hook: visual spectacle (packed harbor) + etymology revelation ("satin" = Zayton). Thumbnail synergy: harbor panorama matches thumbnail. In Medias Res: peak city, not chronological start. Match cut pattern interrupt: bustling → empty (same bay). Curiosity Gap: "Then it vanished." L1 planted: why did it vanish? L2 planted: the word "satin." PREMIUM visual tier. Emotional target: wonder + curiosity (8/10).
 
 ---
+
+### Title Card — THE HARBOR
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> A cartographer in Song Dynasty scholar's robes stands center frame, looking directly at camera. He holds a rolled silk map at his side. Behind him, a hazy silhouette of Quanzhou Bay stretches to the horizon. Warm taupe background, golden undertones, soft atmospheric haze. Camera slowly dollies in. Period: Song Dynasty — cross-collar robe, scholar's cap, silk scroll. Lighting: warm golden key light from the left, soft fill, shallow DOF blurring the bay behind. Atmosphere: contemplative, authoritative. Color palette: warm taupe, sandy brown, aged ivory, golden undertones. Text overlay: "THE HARBOR" centered, clean serif, warm white. Mood: geographic revelation incoming. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
 ## Scene 02 — Context & Curiosity Gap (0:15-2:00)
 **Duration:** 105s | **Retention:** Curiosity Gap + Hyper-Specificity + Open Loop L1, L2 reinforcement
@@ -119,6 +126,11 @@ Hyper-specific anchors: Ibn Battuta quote, "seven faiths, a hundred ships." Thes
 
 ---
 
+### Title Card — THE FISHERMAN
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> A Tang Dynasty fisherman stands center frame, looking directly at camera. He wears a simple undyed hemp tunic belted with rope, a conical straw hat tilted back to reveal his sun-darkened face. A coiled hemp net hangs from one shoulder. Behind him, pre-dawn bay water and thin morning mist. Camera slowly dollies in. Lighting: soft pre-dawn light from the east, warm golden-pink rim on his right side, cool blue-grey fill. Atmosphere: still, quiet, the mist softening the background. Color palette: warm taupe, hemp tan, golden dawn, cool mist grey. Text overlay: "THE FISHERMAN" centered, clean serif, warm white. Mood: primal dignity — the man who came before the merchants. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
+
 ## Scene 03 — The Fisherman's Bay (2:00-3:30)
 **Duration:** 90s | **Retention:** Narrative Transportation + Emotional Contagion + Pattern Interrupt
 
@@ -188,6 +200,11 @@ Character introduction: the fisherman. PREMIUM visual tier (first 3 minutes). Se
 
 ---
 
+### Title Card — THE PORT
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> A Tang Dynasty harbor master stands center frame, looking directly at camera. He wears an official dark robe with a cloth headwrap, a wooden tallying board tucked under one arm. Behind him, a busy waterfront with masts and construction scaffolding, slightly out of focus. Camera slowly dollies in. Lighting: warm afternoon golden light from the left, shallow DOF. Atmosphere: harbor bustle softened by distance. Color palette: warm taupe, dark robe tones, golden undertones, teal-green water bokeh. Text overlay: "THE PORT" centered, clean serif, warm white. Mood: transition — the village becoming something greater. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
+
 ## Scene 04 — The Port Awakens (3:30-5:00)
 **Duration:** 90s | **Retention:** Narrative Transportation + Pattern Interrupt + Open Loop L3 Plant
 
@@ -201,6 +218,8 @@ The fisherman's grandson works the same bay. But now he navigates between ocean-
 [pause] And in 1087, the Song government makes a decision that will change everything. They establish Quanzhou's own Maritime Trade Office -- the Shibosi. A customs bureau, a dispute court, a quality inspector, and a tax collector... all in one.
 
 The fishing village has just been given a license to become the busiest port on Earth.
+
+[pause] And on Tumen Street, a young man is about to build an empire out of white clay.
 
 ### Visual Layer
 
@@ -257,6 +276,11 @@ The fishing village has just been given a license to become the busiest port on 
 
 ---
 
+### Title Card — THE PORCELAIN MERCHANT
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> A Song Dynasty porcelain merchant stands center frame, looking directly at camera. He wears a deep blue silk robe with wide sleeves and a scholar's cap. He holds a luminous white Dehua porcelain bowl in both hands at chest level. Behind him, the warm bokeh of Tumen Street market stalls. Camera slowly dollies in. Lighting: warm afternoon sidelight from the left, the porcelain glowing with reflected light. Atmosphere: commercial bustle softened to warm bokeh. Color palette: deep blue silk, luminous white porcelain, warm taupe, golden undertones. Text overlay: "THE PORCELAIN MERCHANT" centered, clean serif, warm white. Mood: quiet pride — a man whose craft will reach Baghdad. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
+
 ## Scene 05 — The Porcelain Merchant (5:00-6:30)
 **Duration:** 90s | **Retention:** Narrative Transportation + Emotional Contagion + Pattern Interrupt
 
@@ -270,6 +294,8 @@ His trade is Dehua white porcelain -- the blanc de Chine that the world will cov
 The merchant watches his porcelain disappear into the hold of a junk bound for the Malabar Coast. In three months, it will sit on a table in Kerala. In six, a piece might reach Baghdad. In a year, fragments of his work will be found in the soil of East Africa.
 
 He does not think of himself as part of a global network. He thinks about the next shipment.
+
+[pause] But step outside his shop, and you will hear prayers in seven languages -- all rising from the same streets.
 
 ### Visual Layer
 
@@ -323,6 +349,11 @@ New character: the porcelain merchant. Fresh sensory world: porcelain texture, m
 
 ---
 
+### Title Card — THE FAITHFUL
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> An Arab imam stands center frame, looking directly at camera. He wears a white cotton robe and a neatly wound white turban. His weathered hands are clasped before him. Behind him, the blurred stone arch of the Qingjing Mosque catches golden light. Camera slowly dollies in. Lighting: warm golden hour from the left, raking across the stone arch in the background. Atmosphere: sacred stillness. Color palette: warm taupe, white cotton, grey stone, golden undertones. Text overlay: "THE FAITHFUL" centered, clean serif, warm white. Mood: coexistence — seven faiths, one city. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
+
 ## Scene 06 — Museum of World Religions (6:30-8:30)
 **Duration:** 120s | **Retention:** Pattern Interrupt + Hyper-Specificity + Emotional Contagion + Curiosity Gap
 
@@ -340,6 +371,8 @@ This is not tolerance in the modern sense. It is pragmatism. Every faith brings 
 [pause] The porcelain merchant walks past all of them on his way to the harbor. The mosque is where his Persian buyers settle disputes. The Hindu temple is where his Tamil suppliers make offerings before a voyage. The Buddhist monastery is where his mother prays for fair winds.
 
 He lives in the most religiously diverse city on Earth. He barely notices.
+
+[pause] And the world is about to notice Quanzhou. A Venetian and a Moroccan will both try to describe it. Neither will quite find the words.
 
 ### Visual Layer
 
@@ -406,6 +439,11 @@ DISCOVERY FACTOR PEAK — seven religions in one city. Each visual is a pattern 
 
 --- SEGMENT BREAK ---
 
+### Title Card — THE TRAVELER
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> Ibn Battuta stands center frame, looking directly at camera. He wears a white cotton djellaba and a neatly wound white turban — the dress of a 14th-century Moroccan traveler. A leather-bound journal is tucked under his left arm. Behind him, the hazy crowded harbor of Yuan Dynasty Quanzhou, masts receding into warm golden haze. Camera slowly dollies in. Lighting: warm golden afternoon from the left, casting gentle shadows. Atmosphere: harbor haze, golden warmth. Color palette: warm taupe, white garment, leather brown, golden undertones. Text overlay: "THE TRAVELER" centered, clean serif, warm white. Mood: awe — a man who has seen the world, still impressed. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
+
 ## Scene 07 — The World Arrives (8:30-9:30)
 **Duration:** 60s | **Retention:** Open Loop L4 Plant + Pattern Interrupt + Hyper-Specificity
 
@@ -419,6 +457,8 @@ A Venetian named Marco Polo passes through around 1292. He calls it "the Haven o
 [pause] This is the peak. The busiest port on Earth. The most cosmopolitan city in Asia.
 
 And into this extraordinary machine walks a man who will sell it all to the Mongols.
+
+[pause] But first -- a woman in the Muslim quarter is making tea. She has no idea she is living in the last golden hour.
 
 ### Visual Layer
 
@@ -466,6 +506,11 @@ And into this extraordinary machine walks a man who will sell it all to the Mong
 SCALE PEAK — the biggest, busiest version of the city. Marco Polo and Ibn Battuta quotes as authority anchors. Security portraits — unexpected detail (pattern interrupt). **L4 planted:** "a man who will sell it all to the Mongols" — immediate forward pull. L1, L2, L3 active. Emotional target: awe → tension (8/10 → 7/10).
 
 ---
+
+### Title Card — THE WIFE
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> The Arab merchant's wife stands center frame in her courtyard, looking directly at camera. She wears a Chinese-cut silk jacket in deep green over a long cotton skirt, with a lightweight silk headscarf. Her hands rest at her sides. Behind her, the warm blurred shapes of a stone-and-timber courtyard with potted plants. Camera slowly dollies in. Lighting: warm diffused afternoon light from the left, soft and domestic. Atmosphere: intimate, domestic warmth. Color palette: deep green silk, warm taupe stone, golden undertones, sandy brown. Text overlay: "THE WIFE" centered, clean serif, warm white. Mood: intimacy — the city's story made human. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
 ## Scene 08 — The Arab Merchant's Wife (9:30-10:30)
 **Duration:** 60s | **Retention:** Narrative Transportation + Emotional Contagion + Open Loop L5 implicit
@@ -524,6 +569,11 @@ She is the living proof that Quanzhou's diversity is not an abstraction. It is a
 Third character: the Arab merchant's wife. Most intimate character yet — domestic scale against global context. Sensory world: spices, tea, stone-and-timber house, Arabic and Hokkien. Forward pull at 10:20: "everything she knows is about to end" — L4 now urgent. L1, L2, L3, L5 (implied) active. Emotional target: warmth → dread (6/10 → 8/10).
 
 ---
+
+### Title Card — THE TRAITOR
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> Pu Shougeng stands center frame, looking directly at camera. He wears richly embroidered silk robes in dark red-and-gold brocade, a scholar's cap, jade rings on both hands. His expression is calculating, watchful. Behind him, candlelight flickers against a dark wall — the shadows of his counting house. Camera slowly dollies in. Lighting: warm candlelight from the lower left, half-lighting his face, the other half in shadow. Atmosphere: oppressive, clandestine warmth. Color palette: dark red-gold brocade, jade green, amber candlelight, deep shadow. Text overlay: "THE TRAITOR" centered, clean serif, warm white. Mood: dangerous intelligence — moral ambiguity in one frame. Avoid: modern clothing, bright colors, AI face distortion, even lighting. Duration: 4 seconds. Service: Seedance 2 Quality.
 
 ## Scene 09 — The Merchant Who Sold a Dynasty (10:30-12:00)
 **Duration:** 90s | **Retention:** Open Loop L3 Resolution + Shepard Tone + Narrative Transportation
@@ -593,6 +643,11 @@ The Ming dynasty, when it comes to power a century later, will blacklist his ent
 
 ---
 
+### Title Card — THE REBELS
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> A Persian rebel commander stands center frame, looking directly at camera. He wears a quilted military tunic over chain mail, a turbaned helmet, a curved sword at his belt. His face is hard, determined. Behind him, the warm hazy glow of fires against a night sky. Camera slowly dollies in. Lighting: warm fire-glow from the right, harsh and orange, casting deep shadows on the left side of his face. Atmosphere: chaos barely contained, smoke haze. Color palette: warm taupe darkened, fire orange, military earth tones, deep shadow. Text overlay: "THE REBELS" centered, clean serif, warm white. Mood: violence incoming — the coexistence about to shatter. Avoid: modern military gear, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
+
 ## Scene 10 — The Ispah Rebellion (12:00-13:30)
 **Duration:** 90s | **Retention:** L4 Resolution + Emotional Contagion + Pattern Interrupt
 
@@ -608,6 +663,8 @@ The rebel army seizes Quanzhou. Fighting spreads to Putian and the provincial ca
 The Qingjing Mosque loses its roof. It will never be fully restored. Today, its stone walls stand open to the sky -- a monument to what was destroyed.
 
 The Arab merchant's wife... we do not know what happened to her. Her world -- the world of seven faiths and a hundred ships and spices from three continents in her morning tea -- that world is gone.
+
+[pause] And the new emperor will make sure it never comes back.
 
 ### Visual Layer
 
@@ -653,6 +710,11 @@ The Arab merchant's wife... we do not know what happened to her. Her world -- th
 
 --- SEGMENT BREAK ---
 
+### Title Card — THE EMPEROR
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> The Hongwu Emperor stands center frame, looking directly at camera. He wears the imperial dragon robe in yellow silk with five-clawed dragon embroidery, and the winged crown of the Ming founder. His expression is stern, unforgiving. Behind him, a blurred imperial throne room — dark lacquered columns, imperial banners. Camera slowly dollies in. Lighting: warm interior light from above-left, imperial and formal, casting authoritative shadows. Atmosphere: institutional power, cold grandeur. Color palette: imperial yellow, dragon-gold embroidery, dark lacquer, warm taupe shadows. Text overlay: "THE EMPEROR" centered, clean serif, warm white. Mood: imperial decree — the man who will close the sea. Avoid: modern clothing, bright colors, AI face distortion, casual posture. Duration: 4 seconds. Service: Seedance 2 Quality.
+
 ## Scene 11 — The Sea Ban (13:30-14:30)
 **Duration:** 60s | **Retention:** Narrative Transportation + Pattern Interrupt + Open Loop L5 escalation
 
@@ -666,6 +728,8 @@ The harbor silts. Decade by decade, sand fills the deep channels where ocean-goi
 There is one last echo. In 1417, the admiral Zheng He brings his treasure fleet to Quanzhou. He loads his holds with Dehua porcelain. A stele commemorates his visit -- he burned incense and prayed for divine protection before sailing. It is the last time this port will serve a great maritime expedition.
 
 After Zheng He, the sea goes quiet. And Quanzhou... goes quiet with it.
+
+[pause] But listen carefully. The silence is not empty. Somewhere in the harbor, families are packing.
 
 ### Visual Layer
 
@@ -714,6 +778,11 @@ Visual motif payoff: same bay, fewer ships (match cut to Scene 01 framing). Zhen
 
 ---
 
+### Title Card — THE GRANDMOTHER
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> An elderly Hokkien woman stands center frame on a wooden ship deck, looking directly at camera. She wears simple dark cotton clothing, her grey hair pulled back. She clutches a small white Dehua porcelain Guanyin figurine against her chest with both hands. Behind her, the blurred receding shoreline of Quanzhou and the faint twin pagodas. Camera slowly dollies in. Lighting: soft late afternoon light, warm but muted, elegiac. Atmosphere: departure, salt air, quiet grief. Color palette: dark cotton, luminous white porcelain, warm taupe, muted shoreline bokeh. Text overlay: "THE GRANDMOTHER" centered, clean serif, warm white. Mood: exile — carrying home in her hands. Avoid: modern clothing, bright colors, AI face distortion, smiling expression. Duration: 4 seconds. Service: Seedance 2 Quality.
+
 ## Scene 12 — The Diaspora (14:30-15:30)
 **Duration:** 60s | **Retention:** L5 Resolution + Pattern Interrupt + Emotional Contagion
 
@@ -727,6 +796,8 @@ Today, millions of overseas Chinese in Southeast Asia trace their roots to this 
 The port that once drew the world to its harbor... sent its own people across the seas. Quanzhou's last export was its people.
 
 And they carried the city with them.
+
+[pause] But there is one more thing Quanzhou left behind -- something you carry too, without knowing it.
 
 ### Visual Layer
 
@@ -769,6 +840,11 @@ And they carried the city with them.
 **L5 resolved:** The diaspora — where the people went. Pattern interrupt: historical → modern footage. Emotional payoff: the port's people carry the city across the seas. The Song Dynasty ensemble playing as a "memory" — musical callback. L1 approaching final resolution. L2 approaching payoff. Emotional target: bittersweet pride (6/10).
 
 ---
+
+### Title Card — THE WORD
+
+**Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
+> A modern woman stands center frame in a fabric store, looking directly at camera. She holds a draped length of cream-colored satin fabric in both hands, the material catching warm light with its characteristic sheen. Behind her, bolts of fabric on shelves dissolve into warm bokeh. Camera slowly dollies in. Lighting: warm studio-style light from the left, the satin surface reflecting a liquid highlight. Atmosphere: contemporary, clean, the etymological bridge between past and present. Color palette: cream satin, warm taupe, golden undertones, soft bokeh. Text overlay: "THE WORD" centered, clean serif, warm white. Mood: revelation — the name you have been saying all along. Avoid: bright neon colors, cluttered background, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
 ## Scene 13 — The Port That Named Satin (15:30-17:00)
 **Duration:** 90s | **Retention:** L1 + L2 Final Resolution + Narrative Flourish + Emotional Contagion
