@@ -1,6 +1,6 @@
 # MUSIC_CUES.md — Quanzhou: The Port That Named Satin
 
-**Video:** Quanzhou — The Port That Named Satin (~17 min)
+**Video:** Quanzhou — The Port That Named Satin (~16 min)
 **Channel:** Cities Evolution
 **Date:** 2026-04-09
 
@@ -8,7 +8,7 @@
 
 ---
 
-## Scene 01 — Cold Hook (0:00-0:15)
+## Scene 01 — Cold Hook (0:00-0:43)
 
 **Music:** No music. Ambient-only opening. Maximum narration authority for the "satin" revelation.
 **Instruments:** None
@@ -18,7 +18,7 @@
 
 ---
 
-## Scene 02 — Context & Curiosity Gap (0:15-2:00)
+## Scene 02 — Context & Curiosity Gap (0:43-2:03)
 
 **Music:** Slow, contemplative guzheng drone building gradually. Sparse plucked notes — texture, not melody. 55-65 BPM. Soft dizi (transverse bamboo flute) enters at 1:00 ("the greatest port in the world"). At "It starts with a fisherman" (1:50), everything except solo guzheng drops away.
 **Instruments:** Solo guzheng (sparse plucked notes), soft dizi (entering at 1:00), very soft frame drum (heartbeat pattern at 60 BPM, entering at 1:10)
@@ -28,7 +28,7 @@
 
 ---
 
-## Scene 03 — The Fisherman's Bay (2:00-3:30)
+## Scene 03 — The Fisherman's Bay (2:03-3:26)
 
 **Music:** Solo guzheng melody — simple, pentatonic, folk-like. 60-65 BPM. The **"Fisherman's Theme"**: a four-note descending motif. Gentle, unhurried, intimate. Soft dizi joins at 2:45 (Kaiyuan Temple founded) with a warm sustained note — the first hint of something sacred entering the fisherman's world.
 **Instruments:** Solo guzheng (melodic lead — the fisherman's theme), soft dizi (entering at 2:45), very faint xiao (vertical bamboo flute) drone on tonic
@@ -38,7 +38,7 @@
 
 ---
 
-## Scene 04 — The Port Awakens (3:30-5:00)
+## Scene 04 — The Port Awakens (3:26-4:48)
 
 **Music:** Guzheng continues but gains a second voice — pipa (Chinese lute) joins in countermelody. Texture thickening as the city grows. 65-70 BPM — slightly faster than Scene 03. At 4:30 ("Shibosi"), soft Chinese frame drum enters — the pulse of bureaucratic order.
 **Instruments:** Guzheng (continuing fisherman's theme), pipa (countermelody — more ornate, reflecting growing complexity), soft frame drum (entering at 4:30), very faint erhu (sustained harmony note)
@@ -48,7 +48,7 @@
 
 ---
 
-## Scene 05 — The Porcelain Merchant (5:00-6:30)
+## Scene 05 — The Porcelain Merchant (4:48-6:11)
 
 **Music:** Full orchestral texture — warm, processional. Chinese classical ensemble at its richest. The **"Merchant's Theme"**: an ornate pipa melody, more complex than the fisherman's guzheng motif — reflecting wealth and sophistication. 75-80 BPM.
 **Instruments:** Pipa (melodic lead — the merchant's theme), guzheng (harmonic bed), erhu (warm sustained notes entering at 5:30), soft frame drum (steady pulse), occasional dizi ornaments
@@ -58,7 +58,7 @@
 
 ---
 
-## Scene 06 — Museum of World Religions (6:30-8:30)
+## Scene 06 — Museum of World Religions (6:11-7:56)
 
 **Music:** The most texturally complex passage in the video. A musical thesis of coexistence — each faith adds an instrument, all playing together by 7:30. Base: guzheng continues beneath. 70-80 BPM.
 **Instruments (entering sequentially):**
@@ -76,7 +76,7 @@
 
 ---
 
-## Scene 07 — The World Arrives (8:30-9:30)
+## Scene 07 — The World Arrives (7:56-9:27)
 
 **Music:** Grandest texture yet — the city at its peak. Full Chinese classical ensemble plus Central Asian/Persian elements reflecting Pax Mongolica cosmopolitanism. 80-85 BPM.
 **Instruments:** Full guzheng + pipa + erhu + dizi, oud (Persian/Arab presence), soft timpani-like drum, distant morin khuur (Mongol horsehead fiddle — subtle, establishing Yuan Dynasty context)
@@ -86,7 +86,7 @@
 
 ---
 
-## Scene 08 — The Arab Merchant's Wife (9:30-10:30)
+## Scene 08 — The Arab Merchant's Wife (9:27-10:22)
 
 **Music:** Intimate texture — solo oud melody with soft guzheng. The **"Coexistence Theme"**: warm, domestic, blending Arab and Chinese musical DNA. 65-70 BPM. The most tender music in the video.
 **Instruments:** Solo oud (melodic lead — warm, personal), soft guzheng (harmonic bed), occasional frame drum (very soft, heartbeat-like)
@@ -96,7 +96,7 @@
 
 ---
 
-## Scene 09 — The Merchant Who Sold a Dynasty (10:30-12:00)
+## Scene 09 — The Merchant Who Sold a Dynasty (10:22-11:36)
 
 **Music:** Ascending tension — **Shepard Tone technique**. Layered rising string/erhu tones that never resolve. Continuous subconscious dread. 85-95 BPM, accelerating.
 **Instruments:** Erhu (dark, winding melody — lead), layered rising strings (Shepard Tone effect), war drums (low, distant, entering at 10:50), pipa (sharp, percussive — punctuating treachery), guzheng (reduced to sparse, anxious notes)
@@ -106,7 +106,7 @@
 
 ---
 
-## Scene 10 — The Ispah Rebellion (12:00-13:30)
+## Scene 10 — The Ispah Rebellion (11:36-12:36)
 
 **Music:** The video's sonic climax — and its most devastating silence.
 **Instruments:** War drums (multiple, accelerating), erhu (keening solo after the silence), nothing else
@@ -124,7 +124,7 @@
 
 ---
 
-## Scene 11 — The Sea Ban (13:30-14:30)
+## Scene 11 — The Sea Ban (12:36-13:36)
 
 **Music:** Solo xiao (vertical bamboo flute) — the loneliest instrument in the Chinese ensemble. A simple descending melody that echoes the fisherman's guzheng theme from Scene 03, but transformed: slower, sadder, in a lower register. 50-55 BPM.
 **Instruments:** Solo xiao (primary — breathy, intimate, solitary), brief guzheng + pipa + dizi at 14:00 (Zheng He's fleet — a memory of grandeur)
@@ -134,7 +134,7 @@
 
 ---
 
-## Scene 12 — The Diaspora (14:30-15:30)
+## Scene 12 — The Diaspora (13:36-14:22)
 
 **Music:** Guzheng returns — the fisherman's theme from Scene 03. But it has aged: slower, more ornate, with more vibrato. Soft erhu harmony beneath. 60-65 BPM. At 15:00, pipa and dizi join briefly — the full Song Dynasty ensemble playing as a memory, quieter than before.
 **Instruments:** Guzheng (fisherman's theme — aged reprise), soft erhu (harmony), brief pipa + dizi at 15:00 (memory swell)
@@ -144,7 +144,7 @@
 
 ---
 
-## Scene 13 — The Port That Named Satin (15:30-17:00)
+## Scene 13 — The Port That Named Satin (14:22-16:22)
 
 **Music:** The climax of the musical architecture. The fisherman's guzheng theme, fully orchestrated for the first and only time. All character themes converge. Begins intimate, builds to the fullest sound in the video (at "satin"), then resolves to peace.
 **Instruments:** Full synthesis — guzheng (fisherman's theme), pipa (merchant's theme), oud (coexistence theme), erhu (the Chinese heart), dizi, xiao. All character themes present, layered, interacting.
@@ -184,10 +184,10 @@
 | Location | Duration | Purpose |
 |---|---|---|
 | 0:00-0:03 | 3 seconds | Cold open — ambient only, no music |
-| 1:50-2:00 | 2 seconds | Before fisherman — era transition |
-| 12:25-12:30 | 3 seconds | After "the foreign quarters fall silent" — the massacre expressed as absence. **The most important silence in the video.** |
-| 13:25-13:30 | 3 seconds | After erhu fades — letting grief breathe |
-| 16:50-17:00 | 5 seconds | Fade to silence — video end |
+| 1:55-2:03 | ~2 seconds | Before fisherman — era transition |
+| 11:55-12:00 | 3 seconds | After "the foreign quarters fall silent" — the massacre expressed as absence. **The most important silence in the video.** |
+| 12:30-12:36 | ~3 seconds | After erhu fades — letting grief breathe |
+| 16:15-16:22 | 5 seconds | Fade to silence — video end |
 
 ## Leitmotif Reference
 

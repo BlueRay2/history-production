@@ -1,14 +1,14 @@
 # SCRIPT — Quanzhou: The Port That Named Satin
 
 **Channel:** Cities Evolution
-**Duration:** ~17 min
+**Duration:** ~16 min
 **Voice:** Patrick International (ElevenLabs v3)
 **Visual Style:** Warm taupe, sandy brown, 35mm film, shallow DOF, golden undertones
 
 ---
 
-## Scene 01 — Cold Hook (0:00-0:15)
-**Duration:** 15s | **Retention:** Double Hook + Synergy + In Medias Res + Curiosity Gap
+## Scene 01 — Cold Hook (0:00-0:43)
+**Duration:** 43s | **Retention:** Double Hook + Synergy + In Medias Res + Curiosity Gap
 
 ### Narration
 [cinematic tone] You are probably wearing something named after this city right now. You know the fabric -- the way it catches light, the way it slides between your fingers. You have said its name a hundred times without knowing you were naming a place. Satin -- the word comes from Zayton, the Arabic name for a Chinese port that was the busiest in the medieval world... for three hundred years. Then it vanished.
@@ -49,19 +49,17 @@ Double Hook: visual spectacle (packed harbor) + etymology revelation ("satin" = 
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > A cartographer in Song Dynasty scholar's robes stands center frame, looking directly at camera. He holds a rolled silk map at his side. Behind him, a hazy silhouette of Quanzhou Bay stretches to the horizon. Warm taupe background, golden undertones, soft atmospheric haze. Camera slowly dollies in. Period: Song Dynasty — cross-collar robe, scholar's cap, silk scroll. Lighting: warm golden key light from the left, soft fill, shallow DOF blurring the bay behind. Atmosphere: contemplative, authoritative. Color palette: warm taupe, sandy brown, aged ivory, golden undertones. Text overlay: "THE HARBOR" centered, clean serif, warm white. Mood: geographic revelation incoming. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 02 — Context & Curiosity Gap (0:15-2:00)
-**Duration:** 105s | **Retention:** Curiosity Gap + Hyper-Specificity + Open Loop L1, L2 reinforcement
+## Scene 02 — Context & Curiosity Gap (0:43-2:03)
+**Duration:** 80s | **Retention:** Curiosity Gap + Hyper-Specificity + Open Loop L1, L2 reinforcement
 
 ### Narration
-[documentary style] Quanzhou sits on a spit of land between two rivers on China's southeastern coast -- the Jin River and the Luoyang River, emptying into a deep natural bay on the Taiwan Strait. Mountains behind it, ocean before it. For a thousand years, everything the hinterland produced -- silk, porcelain, tea, iron -- flowed downriver to this bay. And everything the world wanted to sell -- pepper, frankincense, ivory, coral -- arrived by ship.
+[documentary style] Quanzhou sits between two rivers on China's southeastern coast, emptying into a deep natural bay on the Taiwan Strait. For a thousand years, everything the hinterland produced -- silk, porcelain, tea, iron -- flowed downriver to this bay. And everything the world wanted to sell -- pepper, frankincense, ivory, coral -- arrived by ship.
 
-At its peak, a Moroccan traveler named Ibn Battuta stood on its waterfront and called it "one of the greatest ports in the world, if not THE greatest." A hundred junks rode at anchor. Arab merchants prayed in a mosque modeled after Damascus. Tamil traders brought Hindu gods from South India. A religion born in Persia survived here by disguising itself as Buddhism. Seven faiths. A hundred ships. One harbor.
+At its peak, Ibn Battuta stood on its waterfront and called it "one of the greatest ports in the world, if not THE greatest." Arab merchants prayed in a mosque modeled after Damascus. Tamil traders brought Hindu gods from South India. A religion born in Persia survived here disguised as Buddhism. Seven faiths. A hundred ships. One harbor.
 
-And today... most people have never heard of it.
+And today... most people have never heard of it. How did a fishing village become the busiest port on Earth? And how did it disappear so completely that the only trace it left in Western languages... is the word for a fabric?
 
-How did a fishing village become the busiest port on Earth? And how did it disappear so completely that the only trace it left in Western languages... is the word for a fabric?
-
-It starts with a fisherman.
+[pause] It starts with a fisherman.
 
 ### Visual Layer
 
@@ -131,19 +129,19 @@ Hyper-specific anchors: Ibn Battuta quote, "seven faiths, a hundred ships." Thes
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > A Tang Dynasty fisherman stands center frame, looking directly at camera. He wears a simple undyed hemp tunic belted with rope, a conical straw hat tilted back to reveal his sun-darkened face. A coiled hemp net hangs from one shoulder. Behind him, pre-dawn bay water and thin morning mist. Camera slowly dollies in. Lighting: soft pre-dawn light from the east, warm golden-pink rim on his right side, cool blue-grey fill. Atmosphere: still, quiet, the mist softening the background. Color palette: warm taupe, hemp tan, golden dawn, cool mist grey. Text overlay: "THE FISHERMAN" centered, clean serif, warm white. Mood: primal dignity — the man who came before the merchants. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 03 — The Fisherman's Bay (2:00-3:30)
-**Duration:** 90s | **Retention:** Narrative Transportation + Emotional Contagion + Pattern Interrupt
+## Scene 03 — The Fisherman's Bay (2:03-3:26)
+**Duration:** 83s | **Retention:** Narrative Transportation + Emotional Contagion + Pattern Interrupt
 
 ### Narration
-[storytelling tone] Long before the merchants and the mosques and the ships from Arabia, people fished these waters. The Minyue -- the indigenous people of Fujian's coast -- had been casting nets in this bay for thousands of years.
+[storytelling tone] Long before the merchants and the mosques, the Minyue -- the indigenous people of Fujian's coast -- had been casting nets in this bay for thousands of years. Our fisherman is one of their descendants.
 
-Our fisherman is one of their descendants. By the early Tang Dynasty -- the seventh century -- Quanzhou is growing from a river settlement into a real port. A prefecture is established in 618. The city gets its name in 711.
+By the early Tang Dynasty -- the seventh century -- Quanzhou is growing from a river settlement into a real port. The city gets its name in 711.
 
-He wears a hemp tunic. His hands are dark from sun and salt. Every morning before the light breaks, he rows into the bay where the Jin River meets the sea. The current pushes baitfish into the shallows -- the same geography that will one day draw a hundred ships draws him first.
+He wears a hemp tunic. His hands are dark from sun and salt. Every morning before the light breaks, he rows into the bay where the Jin River meets the sea -- the same geography that will one day draw a hundred ships.
 
-On shore, something is changing. A Buddhist monastery called Kaiyuan Temple is founded in 686 -- its wooden halls rising above the clay-tile rooftops. And the first Arab merchants are arriving. Their dhows -- lateen-rigged, with sewn hulls that have crossed the Indian Ocean -- anchor in the bay alongside his small wooden boat.
+On shore, the Buddhist monastery of Kaiyuan Temple is founded in 686. And the first Arab merchants are arriving. Their dhows -- lateen-rigged, sewn hulls that have crossed the Indian Ocean -- anchor alongside his small wooden boat.
 
-The fisherman does not know it yet. But the harbor he has known all his life is about to become the center of the world.
+The fisherman does not know it yet. But his harbor is about to become the center of the world.
 
 ### Visual Layer
 
@@ -205,19 +203,17 @@ Character introduction: the fisherman. PREMIUM visual tier (first 3 minutes). Se
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > A Tang Dynasty harbor master stands center frame, looking directly at camera. He wears an official dark robe with a cloth headwrap, a wooden tallying board tucked under one arm. Behind him, a busy waterfront with masts and construction scaffolding, slightly out of focus. Camera slowly dollies in. Lighting: warm afternoon golden light from the left, shallow DOF. Atmosphere: harbor bustle softened by distance. Color palette: warm taupe, dark robe tones, golden undertones, teal-green water bokeh. Text overlay: "THE PORT" centered, clean serif, warm white. Mood: transition — the village becoming something greater. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 04 — The Port Awakens (3:30-5:00)
-**Duration:** 90s | **Retention:** Narrative Transportation + Pattern Interrupt + Open Loop L3 Plant
+## Scene 04 — The Port Awakens (3:26-4:48)
+**Duration:** 82s | **Retention:** Narrative Transportation + Pattern Interrupt + Open Loop L3 Plant
 
 ### Narration
-The harbor fills. Decade by decade, the fishing village becomes a port. Under the Tang Dynasty, Quanzhou joins the ranks of China's great coastal cities -- Guangzhou in the south, Hangzhou to the north. Industries flourish: silk, porcelain, ironwork, tea. The hinterland feeds the port, and the port feeds the world.
+The harbor fills. Decade by decade, the fishing village becomes a port. Silk, porcelain, ironwork, tea -- the hinterland feeds the port, and the port feeds the world.
 
-A regional ruler named Liu Congxiao orders avenues of Erythrina trees planted around the city -- the red-flowering tung oil trees that give Quanzhou its Chinese nickname: Citong City. Arab traders hear this name and transliterate it into Arabic as "Zayton" -- a word that sounds like their own word for olive. The name sticks. For centuries, the entire Western world will know this city not as Quanzhou... but as Zayton.
+A regional ruler named Liu Congxiao orders avenues of Erythrina trees planted around the city -- red-flowering trees that give Quanzhou its Chinese nickname: Citong City. Arab traders transliterate this into Arabic as "Zayton." For centuries, the entire Western world will know this city not as Quanzhou... but as Zayton.
 
-The fisherman's grandson works the same bay. But now he navigates between ocean-going junks to reach his nets. Ships from Persia. Ships from India. Ships from Java and Borneo. The bay that held a dozen fishing boats now holds a hundred foreign sails.
+The fisherman's grandson now navigates between ocean-going junks. Ships from Persia, India, Java, Borneo. The bay that held a dozen fishing boats holds a hundred foreign sails.
 
-[pause] And in 1087, the Song government makes a decision that will change everything. They establish Quanzhou's own Maritime Trade Office -- the Shibosi. A customs bureau, a dispute court, a quality inspector, and a tax collector... all in one.
-
-The fishing village has just been given a license to become the busiest port on Earth.
+[pause] And in 1087, the Song government establishes Quanzhou's Maritime Trade Office -- the Shibosi. Customs, court, inspector, tax collector -- all in one. The fishing village has just been given a license to become the busiest port on Earth.
 
 [pause] And on Tumen Street, a young man is about to build an empire out of white clay.
 
@@ -281,21 +277,17 @@ The fishing village has just been given a license to become the busiest port on 
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > A Song Dynasty porcelain merchant stands center frame, looking directly at camera. He wears a deep blue silk robe with wide sleeves and a scholar's cap. He holds a luminous white Dehua porcelain bowl in both hands at chest level. Behind him, the warm bokeh of Tumen Street market stalls. Camera slowly dollies in. Lighting: warm afternoon sidelight from the left, the porcelain glowing with reflected light. Atmosphere: commercial bustle softened to warm bokeh. Color palette: deep blue silk, luminous white porcelain, warm taupe, golden undertones. Text overlay: "THE PORCELAIN MERCHANT" centered, clean serif, warm white. Mood: quiet pride — a man whose craft will reach Baghdad. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 05 — The Porcelain Merchant (5:00-6:30)
-**Duration:** 90s | **Retention:** Narrative Transportation + Emotional Contagion + Pattern Interrupt
+## Scene 05 — The Porcelain Merchant (4:48-6:11)
+**Duration:** 83s | **Retention:** Narrative Transportation + Emotional Contagion + Pattern Interrupt
 
 ### Narration
-[storytelling tone] In the decades after the Shibosi opens, Quanzhou explodes.
+[storytelling tone] Our second character is a porcelain merchant, raised on Tumen Street. He has never left Quanzhou. But he speaks enough Arabic to haggle with Persian buyers, and enough Tamil to greet the South Indian traders who bring cotton and precious stones.
 
-Our second character is a porcelain merchant -- born in the city, raised on Tumen Street, the commercial spine of Song Dynasty Quanzhou. He has never left this city. But he speaks enough Arabic to haggle with Persian buyers, and enough Tamil to greet the South Indian merchants who bring cotton cloth and precious stones.
+His trade is Dehua white porcelain -- the blanc de Chine the world will covet for centuries. It is loaded onto ocean-going vessels thirty-four meters long, with thirteen watertight compartments. European ships will not match this engineering for another five hundred years.
 
-His trade is Dehua white porcelain -- the blanc de Chine that the world will covet for centuries. The kilns are in the mountains, sixty kilometers inland. Iron, tea, and silk flow down the Jin River alongside his porcelain, arriving at the harbor in flat-bottomed river junks. From there, it is loaded onto ocean-going vessels -- thirty-four meters long, three masts, twelve bulkheads creating thirteen watertight compartments. European ships will not match this engineering for another five hundred years.
+He watches his porcelain disappear into the hold of a junk bound for the Malabar Coast. In three months, it will sit on a table in Kerala. In six, a piece might reach Baghdad. In a year, fragments of his work will be found in the soil of East Africa.
 
-The merchant watches his porcelain disappear into the hold of a junk bound for the Malabar Coast. In three months, it will sit on a table in Kerala. In six, a piece might reach Baghdad. In a year, fragments of his work will be found in the soil of East Africa.
-
-He does not think of himself as part of a global network. He thinks about the next shipment.
-
-[pause] But step outside his shop, and you will hear prayers in seven languages -- all rising from the same streets.
+[pause] He does not think of himself as part of a global network. He thinks about the next shipment. But step outside his shop, and you will hear prayers in seven languages.
 
 ### Visual Layer
 
@@ -354,25 +346,19 @@ New character: the porcelain merchant. Fresh sensory world: porcelain texture, m
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > An Arab imam stands center frame, looking directly at camera. He wears a white cotton robe and a neatly wound white turban. His weathered hands are clasped before him. Behind him, the blurred stone arch of the Qingjing Mosque catches golden light. Camera slowly dollies in. Lighting: warm golden hour from the left, raking across the stone arch in the background. Atmosphere: sacred stillness. Color palette: warm taupe, white cotton, grey stone, golden undertones. Text overlay: "THE FAITHFUL" centered, clean serif, warm white. Mood: coexistence — seven faiths, one city. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 06 — Museum of World Religions (6:30-8:30)
-**Duration:** 120s | **Retention:** Pattern Interrupt + Hyper-Specificity + Emotional Contagion + Curiosity Gap
+## Scene 06 — Museum of World Religions (6:11-7:56)
+**Duration:** 105s | **Retention:** Pattern Interrupt + Hyper-Specificity + Emotional Contagion + Curiosity Gap
 
 ### Narration
-[documentary style] Walk through Song Dynasty Quanzhou and you will hear the call to prayer from a mosque modeled after Damascus. You will pass a Hindu temple where Tamil merchants carved Vishnu and Shiva into Fujian stone. You will find a hall where followers of Mani -- a prophet born in third-century Persia -- worship in secret, their faith disguised as Buddhism to survive.
+[documentary style] Walk through Song Dynasty Quanzhou and you will hear the call to prayer from a mosque modeled after Damascus. You will pass a Hindu temple where Tamil merchants carved Vishnu and Shiva into Fujian stone. You will find a hall where followers of Mani -- a prophet born in third-century Persia -- worship in secret, disguised as Buddhists to survive.
 
-The Qingjing Mosque was built in 1009 by an Arab merchant. Its stone gatehouse stands twelve meters high. Its pointed arches could be in Syria. It is the oldest surviving Islamic mosque in China -- older than most cathedrals standing in Europe today.
+The Qingjing Mosque, built in 1009, is the oldest surviving Islamic mosque in China. At Kaiyuan Temple, twin stone pagodas rise forty-eight meters -- the largest in the world. Nestorian Christians have left tombstones in Syriac. Jewish merchants have left Hebrew names in stone.
 
-At Kaiyuan Temple, the twin stone pagodas rise forty-eight and forty-four meters above the city -- the largest stone pagodas in the world. Five stories of octagonal granite, covered in carvings of Buddhist saints, mythological creatures, and floral patterns so intricate that each panel takes an hour to study.
+Seven faiths -- Buddhism, Islam, Hinduism, Taoism, Manichaeism, Nestorian Christianity, Judaism -- coexisting in a single city. This is not tolerance in the modern sense. It is pragmatism. Every faith brings a trade network. Every temple is a guild hall. Every prayer is a business connection.
 
-Nestorian Christians have left tombstones inscribed in Syriac. Jewish merchants have left Hebrew names carved in stone. Seven faiths -- Buddhism, Islam, Hinduism, Taoism, Manichaeism, Nestorian Christianity, Judaism -- coexisting in a single city.
+[pause] The porcelain merchant walks past all of them on his way to the harbor. The mosque is where his Persian buyers settle disputes. The Hindu temple is where his Tamil suppliers make offerings before a voyage. He lives in the most religiously diverse city on Earth. He barely notices.
 
-This is not tolerance in the modern sense. It is pragmatism. Every faith brings a trade network. Every temple is a guild hall. Every prayer is a business connection.
-
-[pause] The porcelain merchant walks past all of them on his way to the harbor. The mosque is where his Persian buyers settle disputes. The Hindu temple is where his Tamil suppliers make offerings before a voyage. The Buddhist monastery is where his mother prays for fair winds.
-
-He lives in the most religiously diverse city on Earth. He barely notices.
-
-[pause] And the world is about to notice Quanzhou. A Venetian and a Moroccan will both try to describe it. Neither will quite find the words.
+[pause] And the world is about to notice Quanzhou.
 
 ### Visual Layer
 
@@ -444,19 +430,17 @@ DISCOVERY FACTOR PEAK — seven religions in one city. Each visual is a pattern 
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > Ibn Battuta stands center frame, looking directly at camera. He wears a white cotton djellaba and a neatly wound white turban — the dress of a 14th-century Moroccan traveler. A leather-bound journal is tucked under his left arm. Behind him, the hazy crowded harbor of Yuan Dynasty Quanzhou, masts receding into warm golden haze. Camera slowly dollies in. Lighting: warm golden afternoon from the left, casting gentle shadows. Atmosphere: harbor haze, golden warmth. Color palette: warm taupe, white garment, leather brown, golden undertones. Text overlay: "THE TRAVELER" centered, clean serif, warm white. Mood: awe — a man who has seen the world, still impressed. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 07 — The World Arrives (8:30-9:30)
-**Duration:** 60s | **Retention:** Open Loop L4 Plant + Pattern Interrupt + Hyper-Specificity
+## Scene 07 — The World Arrives (7:56-9:27)
+**Duration:** 91s | **Retention:** Open Loop L4 Plant + Pattern Interrupt + Hyper-Specificity
 
 ### Narration
-[cinematic tone] By the Yuan Dynasty -- the Mongol century -- Quanzhou reaches its zenith. The Pax Mongolica has connected the Maritime Silk Road to the overland Silk Road for the first time under a single political system. A merchant can now send goods from Quanzhou to Venice without crossing a single hostile border.
+[cinematic tone] By the Yuan Dynasty -- the Mongol century -- Quanzhou reaches its zenith. The Pax Mongolica has connected the Maritime Silk Road to the overland Silk Road under a single political system. A merchant can now send goods from Quanzhou to Venice without crossing a hostile border.
 
-A census in 1283 counts four hundred and fifty-five thousand people inside the city walls. Walls that stretch thirty miles. The harbor holds ships from Arabia, Persia, India, Java, Korea, Japan, and East Africa.
+A census in 1283 counts four hundred and fifty-five thousand people inside city walls that stretch thirty miles. The harbor holds ships from Arabia, Persia, India, Java, Korea, Japan, and East Africa.
 
-A Venetian named Marco Polo passes through around 1292. He calls it "the Haven of Zayton, frequented by all the ships of India, which bring thither spicery and all other kinds of costly wares." Half a century later, Ibn Battuta arrives. He counts about a hundred junks in the harbor -- and says he could not count them all. He notes something remarkable: local artists are commissioned to paint portraits of every foreigner who enters the city. A fourteenth-century facial recognition system.
+Marco Polo passes through around 1292 and calls it "the Haven of Zayton, frequented by all the ships of India." Half a century later, Ibn Battuta arrives and says he could not count the junks. He notes something remarkable: local artists paint portraits of every foreigner who enters the city -- a fourteenth-century facial recognition system.
 
-[pause] This is the peak. The busiest port on Earth. The most cosmopolitan city in Asia.
-
-And into this extraordinary machine walks a man who will sell it all to the Mongols.
+[pause] This is the peak. And into this extraordinary machine walks a man who will sell it all to the Mongols.
 
 [pause] But first -- a woman in the Muslim quarter is making tea. She has no idea she is living in the last golden hour.
 
@@ -512,17 +496,15 @@ SCALE PEAK — the biggest, busiest version of the city. Marco Polo and Ibn Batt
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > The Arab merchant's wife stands center frame in her courtyard, looking directly at camera. She wears a Chinese-cut silk jacket in deep green over a long cotton skirt, with a lightweight silk headscarf. Her hands rest at her sides. Behind her, the warm blurred shapes of a stone-and-timber courtyard with potted plants. Camera slowly dollies in. Lighting: warm diffused afternoon light from the left, soft and domestic. Atmosphere: intimate, domestic warmth. Color palette: deep green silk, warm taupe stone, golden undertones, sandy brown. Text overlay: "THE WIFE" centered, clean serif, warm white. Mood: intimacy — the city's story made human. Avoid: modern clothing, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 08 — The Arab Merchant's Wife (9:30-10:30)
-**Duration:** 60s | **Retention:** Narrative Transportation + Emotional Contagion + Open Loop L5 implicit
+## Scene 08 — The Arab Merchant's Wife (9:27-10:22)
+**Duration:** 55s | **Retention:** Narrative Transportation + Emotional Contagion + Open Loop L5 implicit
 
 ### Narration
 [storytelling tone] Our third character never appears in any chronicle. But she is the city's story made human.
 
-She is the wife of an Arab merchant -- born in Quanzhou's Muslim quarter, of mixed Arab and Chinese blood. She has never seen her family's ancestral homeland in the Persian Gulf. She prays at the Qingjing Mosque, where the stone arches echo Damascus. She shops at the bazaar where Tamil spices mix with Chinese silk. She speaks Hokkien at home and Arabic at prayer.
+She is the wife of an Arab merchant -- born in Quanzhou's Muslim quarter, of mixed Arab and Chinese blood. She prays at the Qingjing Mosque, where the stone arches echo Damascus. She speaks Hokkien at home and Arabic at prayer. Her children hear seven languages before breakfast.
 
-Her children play in streets where they hear seven languages before breakfast. Her neighbors are Buddhist, Taoist, Hindu, and Christian. Her husband trades incense and ambergris from Southeast Asia for Dehua porcelain and silk.
-
-She is the living proof that Quanzhou's diversity is not an abstraction. It is a woman making tea with spices from three continents in a house built by Chinese craftsmen for an Arab family in a city that belongs to everyone.
+She is the living proof that Quanzhou's diversity is not an abstraction. It is a woman making tea with spices from three continents in a house built by Chinese craftsmen for an Arab family.
 
 [pause] She does not know that everything she knows is about to end.
 
@@ -575,21 +557,19 @@ Third character: the Arab merchant's wife. Most intimate character yet — domes
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > Pu Shougeng stands center frame, looking directly at camera. He wears richly embroidered silk robes in dark red-and-gold brocade, a scholar's cap, jade rings on both hands. His expression is calculating, watchful. Behind him, candlelight flickers against a dark wall — the shadows of his counting house. Camera slowly dollies in. Lighting: warm candlelight from the lower left, half-lighting his face, the other half in shadow. Atmosphere: oppressive, clandestine warmth. Color palette: dark red-gold brocade, jade green, amber candlelight, deep shadow. Text overlay: "THE TRAITOR" centered, clean serif, warm white. Mood: dangerous intelligence — moral ambiguity in one frame. Avoid: modern clothing, bright colors, AI face distortion, even lighting. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 09 — The Merchant Who Sold a Dynasty (10:30-12:00)
-**Duration:** 90s | **Retention:** Open Loop L3 Resolution + Shepard Tone + Narrative Transportation
+## Scene 09 — The Merchant Who Sold a Dynasty (10:22-11:36)
+**Duration:** 74s | **Retention:** Open Loop L3 Resolution + Shepard Tone + Narrative Transportation
 
 ### Narration
-[cinematic tone] His name is Pu Shougeng. Of Arab or Persian descent -- his family had settled first in Guangzhou before moving to Quanzhou. He is the Superintendent of Maritime Trade -- the most powerful commercial position in the city. He has held it for nearly thirty years.
+[cinematic tone] His name is Pu Shougeng. Of Arab or Persian descent, he is the Superintendent of Maritime Trade -- the most powerful commercial position in the city, held for nearly thirty years.
 
-By 1277, the Southern Song dynasty is collapsing. Mongol armies are sweeping south. The last Song emperor is a child, carried by his court from city to city, one step ahead of the invaders.
+By 1277, the Southern Song is collapsing. Mongol armies sweep south. Pu opens secret negotiations with the Mongol general Bayan. The Song admiral Zhang Shijie discovers the treachery and confiscates Pu's fortune to finance the Song's last defense.
 
-Pu Shougeng sees which way the wind is blowing. He opens secret negotiations with the Mongol general Bayan. The Song admiral Zhang Shijie discovers the treachery through intelligence reports -- and confiscates Pu's entire fortune to finance the Song's last defense.
+It does not matter. The Song falls. The Mongols take Quanzhou. Pu Shougeng is rewarded: Grand Commander and Military Commissioner of Fujian and Guangdong. The richest man in the richest port in the world.
 
-It does not matter. The Song falls. The Mongols take Quanzhou. And Pu Shougeng is rewarded generously: Grand Commander and Military Commissioner of Fujian and Guangdong. Customs Master. The richest man in the richest port in the world.
+A century later, the Ming will blacklist his entire family -- descendants banned from the imperial examinations for generations. The name becomes a byword for treachery.
 
-The Ming dynasty, when it comes to power a century later, will blacklist his entire family. His descendants will be banned from the imperial examinations for generations. The name Pu Shougeng becomes a byword for treachery.
-
-[pause] But Pu's betrayal is not the catastrophe. The catastrophe is coming. It will arrive in 1357, and it will destroy everything the Arab merchant's wife has ever known.
+[long pause] But Pu's betrayal is not the catastrophe. The catastrophe is coming. It will arrive in 1357.
 
 ### Visual Layer
 
@@ -648,23 +628,21 @@ The Ming dynasty, when it comes to power a century later, will blacklist his ent
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > A Persian rebel commander stands center frame, looking directly at camera. He wears a quilted military tunic over chain mail, a turbaned helmet, a curved sword at his belt. His face is hard, determined. Behind him, the warm hazy glow of fires against a night sky. Camera slowly dollies in. Lighting: warm fire-glow from the right, harsh and orange, casting deep shadows on the left side of his face. Atmosphere: chaos barely contained, smoke haze. Color palette: warm taupe darkened, fire orange, military earth tones, deep shadow. Text overlay: "THE REBELS" centered, clean serif, warm white. Mood: violence incoming — the coexistence about to shatter. Avoid: modern military gear, bright colors, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 10 — The Ispah Rebellion (12:00-13:30)
-**Duration:** 90s | **Retention:** L4 Resolution + Emotional Contagion + Pattern Interrupt
+## Scene 10 — The Ispah Rebellion (11:36-12:36)
+**Duration:** 60s | **Retention:** L4 Resolution + Emotional Contagion + Pattern Interrupt
 
 ### Narration
-[cinematic tone] In 1357, eighty years after Pu Shougeng's betrayal, the Yuan Dynasty is itself crumbling. Two Quanzhou Persians -- Sayf ad-Din and Amir ad-Din -- lead a predominantly Muslim army in revolt against the Mongol government.
+[cinematic tone] In 1357, two Quanzhou Persians -- Sayf ad-Din and Amir ad-Din -- lead a predominantly Muslim army in revolt against the crumbling Mongol government.
 
-The rebel army seizes Quanzhou. Fighting spreads to Putian and the provincial capital. For nearly a decade, the region tears itself apart.
+The rebel army seizes Quanzhou. For nearly a decade, the region tears itself apart.
 
-[dramatic pause] When imperial soldiers retake the city, they do not distinguish between rebels and civilians. The foreign merchant communities -- Persians, Arabs, Tamils, all the peoples who made Quanzhou the most cosmopolitan port on Earth -- are attacked indiscriminately. The foreign quarters fall silent. The mosques empty. The Hindu temples crumble. The Tamil merchant guilds vanish. Some survivors flee to other Fujian ports. Most do not survive.
+[dramatic pause] When imperial soldiers retake the city, they do not distinguish between rebels and civilians. The foreign merchant communities -- Persians, Arabs, Tamils -- are attacked indiscriminately. The mosques empty. The Hindu temples crumble. The Tamil merchant guilds vanish.
 
 [long pause] Three centuries of coexistence... end.
 
-The Qingjing Mosque loses its roof. It will never be fully restored. Today, its stone walls stand open to the sky -- a monument to what was destroyed.
+The Qingjing Mosque loses its roof. It will never be fully restored. The Arab merchant's wife... [pause] we do not know what happened to her.
 
-The Arab merchant's wife... we do not know what happened to her. Her world -- the world of seven faiths and a hundred ships and spices from three continents in her morning tea -- that world is gone.
-
-[pause] And the new emperor will make sure it never comes back.
+[pause] And the new emperor will make sure that world never comes back.
 
 ### Visual Layer
 
@@ -715,21 +693,19 @@ The Arab merchant's wife... we do not know what happened to her. Her world -- th
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > The Hongwu Emperor stands center frame, looking directly at camera. He wears the imperial dragon robe in yellow silk with five-clawed dragon embroidery, and the winged crown of the Ming founder. His expression is stern, unforgiving. Behind him, a blurred imperial throne room — dark lacquered columns, imperial banners. Camera slowly dollies in. Lighting: warm interior light from above-left, imperial and formal, casting authoritative shadows. Atmosphere: institutional power, cold grandeur. Color palette: imperial yellow, dragon-gold embroidery, dark lacquer, warm taupe shadows. Text overlay: "THE EMPEROR" centered, clean serif, warm white. Mood: imperial decree — the man who will close the sea. Avoid: modern clothing, bright colors, AI face distortion, casual posture. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 11 — The Sea Ban (13:30-14:30)
+## Scene 11 — The Sea Ban (12:36-13:36)
 **Duration:** 60s | **Retention:** Narrative Transportation + Pattern Interrupt + Open Loop L5 escalation
 
 ### Narration
-[contemplative tone] The Ming Dynasty rises from the ashes of the Yuan. Its founder, the Hongwu Emperor, looks at the destruction the foreign communities brought -- the rebellion, the violence, the chaos -- and reaches a conclusion. In 1371, he imposes the haijin: a ban on private maritime trade.
+[contemplative tone] The Ming Dynasty rises from the ashes of the Yuan. Its founder, the Hongwu Emperor, reaches a conclusion. In 1371, he imposes the haijin: a ban on private maritime trade.
 
-Quanzhou's lifeblood is cut off by imperial decree.
+Quanzhou's lifeblood is cut off by imperial decree. The harbor silts. Sand fills the deep channels where ocean-going junks once anchored.
 
-The harbor silts. Decade by decade, sand fills the deep channels where ocean-going junks once anchored. Large ships can no longer reach the port. The Shibosi -- the maritime trade office that had made Quanzhou the center of global commerce -- is periodically shut down.
+There is one last echo. In 1417, the admiral Zheng He brings his treasure fleet to Quanzhou, loads his holds with Dehua porcelain, and prays for safe passage before sailing. It is the last time this port will serve a great maritime expedition.
 
-There is one last echo. In 1417, the admiral Zheng He brings his treasure fleet to Quanzhou. He loads his holds with Dehua porcelain. A stele commemorates his visit -- he burned incense and prayed for divine protection before sailing. It is the last time this port will serve a great maritime expedition.
+After Zheng He, the sea goes quiet. And Quanzhou goes quiet with it.
 
-After Zheng He, the sea goes quiet. And Quanzhou... goes quiet with it.
-
-[pause] But listen carefully. The silence is not empty. Somewhere in the harbor, families are packing.
+[pause] But listen carefully. Somewhere in the harbor, families are packing.
 
 ### Visual Layer
 
@@ -783,19 +759,15 @@ Visual motif payoff: same bay, fewer ships (match cut to Scene 01 framing). Zhen
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > An elderly Hokkien woman stands center frame on a wooden ship deck, looking directly at camera. She wears simple dark cotton clothing, her grey hair pulled back. She clutches a small white Dehua porcelain Guanyin figurine against her chest with both hands. Behind her, the blurred receding shoreline of Quanzhou and the faint twin pagodas. Camera slowly dollies in. Lighting: soft late afternoon light, warm but muted, elegiac. Atmosphere: departure, salt air, quiet grief. Color palette: dark cotton, luminous white porcelain, warm taupe, muted shoreline bokeh. Text overlay: "THE GRANDMOTHER" centered, clean serif, warm white. Mood: exile — carrying home in her hands. Avoid: modern clothing, bright colors, AI face distortion, smiling expression. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 12 — The Diaspora (14:30-15:30)
-**Duration:** 60s | **Retention:** L5 Resolution + Pattern Interrupt + Emotional Contagion
+## Scene 12 — The Diaspora (13:36-14:22)
+**Duration:** 46s | **Retention:** L5 Resolution + Pattern Interrupt + Emotional Contagion
 
 ### Narration
-[storytelling tone] But the people do not vanish. They leave.
+[storytelling tone] The people do not vanish. They leave.
 
-Over the centuries that follow, waves of Hokkien-speaking people from the Quanzhou region board ships bound for everywhere the port once traded. The Philippines. Malaysia. Singapore. Indonesia. Thailand. They carry with them the language, the customs, the temple traditions, and the food of southern Fujian.
+Over the centuries that follow, waves of Hokkien-speaking people from Quanzhou board ships bound for everywhere the port once traded. The Philippines. Malaysia. Singapore. Indonesia. Thailand. They carry with them the language, the customs, and the food of southern Fujian.
 
-Today, millions of overseas Chinese in Southeast Asia trace their roots to this region. The Hokkien language -- the language of Quanzhou's merchants and fishermen -- is spoken in Chinatowns from Manila to Medan.
-
-The port that once drew the world to its harbor... sent its own people across the seas. Quanzhou's last export was its people.
-
-And they carried the city with them.
+Today, millions of overseas Chinese in Southeast Asia trace their roots to this region. Quanzhou's last export was its people. And they carried the city with them.
 
 [pause] But there is one more thing Quanzhou left behind -- something you carry too, without knowing it.
 
@@ -846,21 +818,19 @@ And they carried the city with them.
 **Title Clip** | Seedance 2 Quality | 4s | Medium, slow dolly in
 > A modern woman stands center frame in a fabric store, looking directly at camera. She holds a draped length of cream-colored satin fabric in both hands, the material catching warm light with its characteristic sheen. Behind her, bolts of fabric on shelves dissolve into warm bokeh. Camera slowly dollies in. Lighting: warm studio-style light from the left, the satin surface reflecting a liquid highlight. Atmosphere: contemporary, clean, the etymological bridge between past and present. Color palette: cream satin, warm taupe, golden undertones, soft bokeh. Text overlay: "THE WORD" centered, clean serif, warm white. Mood: revelation — the name you have been saying all along. Avoid: bright neon colors, cluttered background, AI face distortion. Duration: 4 seconds. Service: Seedance 2 Quality.
 
-## Scene 13 — The Port That Named Satin (15:30-17:00)
-**Duration:** 90s | **Retention:** L1 + L2 Final Resolution + Narrative Flourish + Emotional Contagion
+## Scene 13 — The Port That Named Satin (14:22-16:22)
+**Duration:** 120s | **Retention:** L1 + L2 Final Resolution + Narrative Flourish + Emotional Contagion
 
 ### Narration
-[narrative flourish] In 2021, UNESCO inscribed "Quanzhou: Emporium of the World in Song-Yuan China" on the World Heritage List. Twenty-two sites. The twin pagodas. The mosque. The bridge. The kiln sites. The wind-prayer inscriptions carved into rock by sailors who asked the heavens for safe passage... eight centuries ago.
+[narrative flourish] In 2021, UNESCO inscribed "Quanzhou: Emporium of the World in Song-Yuan China" on the World Heritage List. The Qingjing Mosque still stands -- roofless, its stone arches open to the sky. The Maritime Museum houses a Song Dynasty ship pulled from the mud in 1974 -- still holding two thousand four hundred kilograms of incense.
 
-The Qingjing Mosque still stands -- roofless, its stone arches open to the sky. Kaiyuan Temple still rings its bells. The Maritime Museum houses the skeleton of a Song Dynasty ship -- thirty-four meters long, thirteen watertight compartments, two thousand four hundred kilograms of incense still in its hold when it was pulled from the mud in 1974.
+Stand at the waterfront today. The bay is quiet. The foreign quarter is gone. The Manichaean temple is visited by tourists who think it is Buddhist -- which is exactly how it survived.
 
-Stand at the waterfront today. The bay is quiet. The deep harbor that held a hundred junks silted up centuries ago. The foreign quarter is gone. The Hindu temples are fragments in a museum. The Manichaean temple in the hills is visited by tourists who think it is Buddhist -- which is exactly how it survived.
-
-[pause] But the city left something behind that most people carry without knowing.
+[long pause] But the city left something behind that most people carry without knowing.
 
 Zayton. The Arabic name for Quanzhou. Medieval traders carried the word west. It became "aceytuni" in Latin. "Setinus" in Italian. And then... "satin" in French and English.
 
-[long pause] Every time someone says the word "satin" -- in a fabric store in London, in a bridal shop in New York, in a market in Lagos -- they are saying the name of a Chinese port city they have never heard of. A city where seven religions prayed in the same streets. Where a fisherman's bay became the busiest harbor on Earth. Where a merchant sold a dynasty, and a rebellion destroyed three centuries of coexistence. Where the world came to trade... and left behind a word.
+[dramatic pause] Every time someone says the word "satin" -- in a fabric store in London, a bridal shop in New York, a market in Lagos -- they are saying the name of a Chinese port city they have never heard of. Where seven religions prayed in the same streets. Where a fisherman's bay became the busiest harbor on Earth. Where a merchant sold a dynasty.
 
 Quanzhou is gone as a great port. But its name is in your closet.
 
@@ -935,8 +905,8 @@ Quanzhou is gone as a great port. But its name is in your closet.
 |---|---|
 | Total scenes | 13 |
 | Total clips | 128 |
-| Total duration | ~17:00 |
-| Narration word count | ~2,500 |
+| Total duration | ~16:00 |
+| Narration word count | ~1,950 |
 | Open loops planted | 5 (L1-L5) |
 | Open loops resolved | 5/5 |
 | Anchor characters | 3 (Fisherman, Porcelain Merchant, Arab Wife) |
