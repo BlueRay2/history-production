@@ -49,7 +49,7 @@ Two shock reveals — 250-year survival and 43-second erasure — braided across
 
 - Fat Man detonation: 11:02 JST, 9 August 1945, ~503 m altitude, 21 kt yield
 - Hypocenter: Matsuyama-chō, Urakami valley
-- Urakami Cathedral (浦上天主堂): completed 1914, largest Catholic church in East Asia at the time, ~500 m from hypocenter, destroyed
+- Urakami Cathedral (浦上天主堂): main structure 1914, bell towers 1925 (largest Catholic church in East Asia at that point), ~500 m from hypocenter, destroyed in blast; rebuilt 1959 **on the same site**
 - Ōura Cathedral (大浦天主堂): built 1864, still standing — where 1865 coming-out happened
 - Bernard Petitjean: priest who received the first confession
 - Fourth Urakami Persecution (浦上四番崩れ): 1867–1873, exile to 20 fiefs
