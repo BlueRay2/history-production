@@ -470,18 +470,21 @@ The plan must include:
    into a long tail), OR match a proven competitor pattern.
 5. CTA STRATEGY: Where and how calls-to-action will be embedded
    without disrupting narrative flow.
-   **MANDATORY CADENCE (long-form ≥8 min):** embed a CTA every 3-4 minutes
-   throughout the video. Alternate two types:
-   - **Engagement-question CTA** — a direct question tied to the current
-     segment's theme that invites a comment (e.g., «Какой эволюционный
-     момент удивил тебя сильнее всего? Напиши в комментариях 👇»).
-   - **Like/Subscribe CTA** — short, native-to-narrative prompt tied to
-     a payoff moment or rhetorical peak, not a cold insert.
-   First CTA lands between 3:00-4:00 (after the opening retention bloc).
-   Final CTA lives in the conclusion (Part 2 tease). Avoid clustering
-   two CTAs within a 90-second window. Rationale: Yaroslav 2026-04-18 —
-   channel has ~0 comments per video; engagement questions are the
-   highest-ROI retention + reach lever available right now.
+   **MANDATORY CADENCE:** embed CTAs on this rhythm:
+   - **First CTA — within the first minute** (native Like/Subscribe,
+     welded into the payoff of the opening hook, not a cold insert).
+   - **Every 3-4 minutes thereafter**, alternating two types:
+     * **Engagement-question CTA** — a direct question tied to the current
+       segment's theme that invites a comment (e.g., «Какой эволюционный
+       момент удивил тебя сильнее всего? Напиши в комментариях 👇»).
+     * **Like/Subscribe CTA** — short, native-to-narrative prompt tied to
+       a payoff moment or rhetorical peak.
+   - **Final CTA — MANDATORY direct question** at the end of the video
+     (the closing question IS the CTA; do not replace with generic outro).
+   - Never cluster two CTAs within a 90-second window.
+   Rationale: Yaroslav 2026-04-18, Dima 2026-04-18 — channel has ~0
+   comments per video; engagement questions are the highest-ROI retention
+   + reach lever available right now.
 6. RISKS / OPEN QUESTIONS: Assumptions about audience that need human
    validation, potential ethical concerns with persuasion techniques, etc.
 
