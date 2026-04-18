@@ -195,7 +195,7 @@
 
 ### Генерация видеоряда
 - **Основная модель:** {{PRIMARY_VIDEO_MODEL — например: Kling 2.0}}
-- **Дополнительные:** {{SECONDARY_VIDEO_MODELS — например: Sora 2 для сложных сцен, Flux для статичных изображений}}
+- **Дополнительные:** {{SECONDARY_VIDEO_MODELS — например: Seedance 2.0 via Jimeng для hero-клипов с character identity, Kling 2.6 Pro для stylized look, Flow Veo 3.1 Lite для bulk B-roll}}
 - **Стоковые ресурсы:** {{STOCK_SOURCES — например: Pexels, Pixabay}}
 
 ### Монтаж

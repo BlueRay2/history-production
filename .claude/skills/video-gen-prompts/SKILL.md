@@ -1,7 +1,7 @@
 ---
 name: video-gen-prompts
 description: |
-  Сводный справочник по трём сервисам генерации видео (Sora 2, Kling, Google Flow).
+  Сводный справочник по трём сервисам генерации видео (Seedance 2.0, Kling, Google Flow).
   Сравнительная таблица, гайд по адаптации generic промптов под каждый сервис, ссылки
   на детальные скиллы. Background knowledge для prompt-engineer.
 user-invocable: false
@@ -17,7 +17,7 @@ user-invocable: false
 
 ## 1. Сводная таблица сервисов
 
-| Parameter | Sora 2 Pro | Kling AI (Ultra) | Google Flow (Ultra) |
+| Parameter | Seedance 2.0 | Kling AI (Ultra) | Google Flow (Ultra) |
 |---|---|---|---|
 | **Max Duration** | 25s (storyboard) | ~3 min (extension chains) | 8s (single gen), ~29s (with extensions) |
 | **Max Resolution** | 1080p (UI) / 1024p (API) | 1080p Professional | 1080p + 4K upscaling (Ultra) |
@@ -31,11 +31,11 @@ user-invocable: false
 
 ---
 
-## 2. Sora 2 Pro — краткие принципы
+## 2. Seedance 2.0 — краткие принципы
 
-**Детальный скилл:** `.claude/skills/sora-2-pro-prompting/SKILL.md`
-**Архитектура промптов:** `.claude/skills/sora-2-pro-prompting/references/PROMPT_ARCHITECTURE.md`
-**Стоимость:** `.claude/skills/sora-2-pro-prompting/references/COSTS_AND_LIMITS.md`
+**Детальный скилл:** `.claude/skills/seedance-2-prompting/SKILL.md`
+**Архитектура промптов:** `.claude/skills/seedance-2-prompting/references/PROMPT_ARCHITECTURE.md`
+**Стоимость:** `.claude/skills/seedance-2-prompting/references/COSTS_AND_LIMITS.md`
 
 Ключевые правила:
 1. **Style declaration first** — первая фраза задаёт визуальный стиль всего клипа
@@ -107,7 +107,7 @@ user-invocable: false
 [Lighting]. [Style/mood]. [Texture/details].
 ```
 
-**→ Sora 2 адаптация:**
+**→ Seedance 2.0 адаптация:**
 ```
 [Style declaration first]. [Subject description]. [Single action].
 [Environment with concrete light sources]. [Single camera movement].
@@ -143,9 +143,9 @@ user-invocable: false
 | Ловушка | Сервис | Последствие | Решение |
 |---------|--------|-------------|---------|
 | Reversed pan/tilt | Kling | Камера двигается в неправильном направлении | Всегда проверяй: Kling pan=vertical, tilt=horizontal |
-| Длинный промпт (>200 слов) | Sora 2 | Деградация качества, игнорирование поздних элементов | Сократи, приоритизируй ключевые элементы |
+| Длинный промпт (>200 слов) | Seedance 2.0 | Деградация качества, игнорирование поздних элементов | Сократи, приоритизируй ключевые элементы |
 | Слишком короткий промпт (<80 слов) | Flow | Generic/скучный результат | Расширь до 100–150 слов с деталями |
-| Несколько движений камеры | Sora 2 | Визуальная инкогерентность | Одно движение камеры на один шот |
+| Несколько движений камеры | Seedance 2.0 | Визуальная инкогерентность | Одно движение камеры на один шот |
 | Keyword list вместо описания | Kling, Flow | Низкое качество, нет motion narrative | Пиши непрерывное описание сцены |
 | Описание изображения в I2V | Kling | Конфликт с source image, артефакты | Описывай только движение в I2V mode |
 | Важный элемент в конце промпта | Flow | Элемент игнорируется или недоработан | Перемести ключевые элементы в начало |

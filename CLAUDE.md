@@ -26,7 +26,7 @@ Thirteen project-level skills are configured in `.claude/skills/`:
 | `editor` | `/editor` | (default) | Professional editing and proofreading |
 | `video-analyzer` | `/video-analyzer <video_path>` | Bash (ffmpeg) | Analyze video by extracting frames |
 | `youtube-transcript` | `/youtube-transcript <url>` | Bash, Read, Write | Download YouTube transcripts |
-| `sora-2-pro-prompting` | `/sora-2-pro-prompting` | Read | Sora 2 Pro video generation prompts |
+| `seedance-2-prompting` | `/seedance-2-prompting` | Read | Seedance 2.0 video generation prompts |
 | `kling-video-prompting` | `/kling-video-prompting` | Read | Kling AI video generation prompts |
 | `google-flow-prompting` | `/google-flow-prompting` | Read | Google Flow (Veo 3.1) video generation prompts |
 | `setup-channel` | `/setup-channel` | AskUserQuestion, Write | Interactive fork setup — channel profile (sections 1-8, 10) |
@@ -36,16 +36,16 @@ Thirteen project-level skills are configured in `.claude/skills/`:
 
 | Skill | Purpose |
 |---|---|
-| `video-gen-prompts` | Cross-service comparison and prompt adaptation guide (Sora 2, Kling, Flow) |
+| `video-gen-prompts` | Cross-service comparison and prompt adaptation guide (Seedance 2.0, Kling, Flow) |
 | `ai-service-selector` | Decision matrix for choosing video generation service per clip (with scene-level temporal rules) |
 | `production-cost-estimator` | Production cost calculation methodology and pricing tables |
 
 ### Skill details
 
 - `video-analyzer` bundles a helper script at `scripts/extract_frames.sh` — reference it via `${CLAUDE_SKILL_DIR}/scripts/extract_frames.sh`.
-- Video generation prompting skills (`sora-2-pro-prompting`, `kling-video-prompting`, `google-flow-prompting`) each contain `references/` subdirectories with detailed pricing, prompt architecture, and camera reference documents.
+- Video generation prompting skills (`seedance-2-prompting`, `kling-video-prompting`, `google-flow-prompting`) each contain `references/` subdirectories with detailed pricing, prompt architecture, and camera reference documents.
 - `ai-service-selector` includes "Premium Start" temporal quality strategy: premium models for first ~3 minutes, economy models (Flow Veo 3.1 Fast = free) after.
-- `production-cost-estimator` covers Sora 2, Kling, Flow, and ElevenLabs pricing; outputs `COST_ESTIMATE.md`.
+- `production-cost-estimator` covers Seedance 2.0, Kling, Flow, and ElevenLabs pricing; outputs `COST_ESTIMATE.md`.
 
 ## Contributors
 
@@ -56,7 +56,7 @@ Thirteen project-level skills are configured in `.claude/skills/`:
 
 This project works exclusively with three AI video generation services:
 
-- **Sora 2 Pro** (OpenAI) — cinematic quality, human subjects, complex motion
+- **Seedance 2.0** (ByteDance, via Jimeng webapp) — 2K output, native audio up to 15s, multi-modal @ref (image+video+audio), Identity Locking + Motion Transfer
 - **Kling AI** — stylized content, camera movements, abstract visuals, budget-friendly
 - **Google Flow / Veo 3.1** — atmospheric shots, establishing footage, free iteration on Ultra
 

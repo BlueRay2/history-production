@@ -23,11 +23,11 @@ allowed-tools: Bash,Read
 
 > Цены взяты из reference-файлов установленных скиллов. При расхождении —
 > сверяй с актуальными файлами:
-> - `.claude/skills/sora-2-pro-prompting/references/COSTS_AND_LIMITS.md`
+> - `.claude/skills/seedance-2-prompting/references/COSTS_AND_LIMITS.md`
 > - `.claude/skills/kling-video-prompting/SKILL.md` (секция Credit costs)
 > - `.claude/skills/google-flow-prompting/references/ULTRA_PRICING.md`
 
-### Sora 2 Pro (Pro subscription: $200/mo, 10,000 credits)
+### Seedance 2.0 (Pro subscription: $200/mo, 10,000 credits)
 
 **Credit cost per clip (16:9 widescreen):**
 
@@ -104,7 +104,7 @@ Extension chain (3 extensions): 100 + 60 = 160 credits.
 
 Для каждого клипа (несколько клипов на сцену) извлечь:
 - **Scene / Clip:** (номер сцены и клипа)
-- **Model:** (Sora 2 / Kling / Flow / Stock footage / Static image)
+- **Model:** (Seedance 2.0 / Kling / Flow / Stock footage / Static image)
 - **Duration:** (в секундах)
 - **Resolution:** (480p / 720p / 1080p / 4K)
 - **Type:** (Video / Image)
@@ -115,7 +115,7 @@ Extension chain (3 extensions): 100 + 60 = 160 credits.
 
 По таблицам из Step 1 определить credit cost каждого клипа:
 
-**Sora 2:**
+**Seedance 2.0:**
 - Найти ячейку в credit table по Resolution × Duration
 - Разделить на 10,000 × $200 = стоимость в долларах (priority credits)
 - ИЛИ пометить как Relaxed mode ($0 marginal) если есть запас
@@ -170,8 +170,8 @@ Grand Total = Adjusted Video Cost + ElevenLabs Cost + Subscription Costs (pro-ra
 
 | Scene | Clip | Model | Duration | Resolution | Credits | Cost |
 |---|---|---|---|---|---|---|
-| 01 | 1 | Sora 2 Quality | 8s | 1080p | 480 | $9.60 |
-| 01 | 2 | Sora 2 Quality | 5s | 1080p | 300 | $6.00 |
+| 01 | 1 | Seedance 2.0 (2K) | 8s | 1080p | 480 | $9.60 |
+| 01 | 2 | Seedance 2.0 (2K) | 5s | 1080p | 300 | $6.00 |
 | 02 | 1 | Flow Veo 3.1 Fast | 6s | 1080p | 0 | $0.00 |
 | 02 | 2 | Flow Veo 3.1 Fast | 5s | 1080p | 0 | $0.00 |
 | 03 | 1 | Kling Professional | 8s | 1080p | 56 | $0.39 |
@@ -181,7 +181,7 @@ Grand Total = Adjusted Video Cost + ElevenLabs Cost + Subscription Costs (pro-ra
 
 | Service | Clips | Total Credits | Cost (subscription) |
 |---|---|---|---|
-| Sora 2 Pro | {N} | {credits} | ${cost} |
+| Seedance 2.0 | {N} | {credits} | ${cost} |
 | Kling Ultra | {N} | {credits} | ${cost} |
 | Flow Ultra (Quality) | {N} | {credits} | ${cost} |
 | Flow Ultra (Fast) | {N} | 0 | $0.00 |
@@ -203,7 +203,7 @@ Grand Total = Adjusted Video Cost + ElevenLabs Cost + Subscription Costs (pro-ra
 
 | Service | Plan | Monthly Cost | Used by this video |
 |---|---|---|---|
-| Sora 2 | Pro | $200.00 | Yes/No |
+| Seedance 2.0 | Pro | $200.00 | Yes/No |
 | Kling | Ultra | $180.00 | Yes/No |
 | Google Flow | Ultra | $249.99 | Yes/No |
 | ElevenLabs | {plan} | ${cost} | Yes |
@@ -221,7 +221,7 @@ Grand Total = Adjusted Video Cost + ElevenLabs Cost + Subscription Costs (pro-ra
 ## Budget Optimization Suggestions
 
 {List of specific suggestions to reduce cost, e.g.:
-- Scene 07: Replace Sora 2 Quality ($12.00) → Flow Veo 3.1 Fast ($0.00) — no humans, after 3min mark
+- Scene 07: Replace Seedance 2.0 (2K) ($12.00) → Flow Veo 3.1 Fast ($0.00) — no humans, after 3min mark
 - Scene 12: Reduce duration 15s → 10s — saves 700 Sora credits
 - Switch {N} non-hero scenes to Kling Standard: save ${amount}
 - Use Sora Relaxed mode for scenes 04, 06, 09: save ${amount} in priority credits}
@@ -233,7 +233,7 @@ Grand Total = Adjusted Video Cost + ElevenLabs Cost + Subscription Costs (pro-ra
 
 При формировании COST_ESTIMATE.md, проверь каждую из этих оптимизаций:
 
-1. **Non-human scenes на Sora 2** → Переключить на Flow Fast (бесплатно) или Kling Standard
+1. **Non-human scenes на Seedance 2.0** → Переключить на Flow Fast (бесплатно) или Kling Standard
 2. **Scenes после 3 мин на Premium** → Переключить на Economy tier (per ai-service-selector)
 3. **Sora 1080p B-roll** → Draft at 480p (25 cr/5s vs 200 cr/5s = 8× экономия)
 4. **Sora excess scenes** → Использовать Relaxed mode ($0 marginal)
@@ -258,8 +258,8 @@ Grand Total = Adjusted Video Cost + ElevenLabs Cost + Subscription Costs (pro-ra
 
 | Scene | Clip | Model | Duration | Resolution | Credits | Cost |
 |---|---|---|---|---|---|---|
-| 01 (Hook) | 1 | Sora 2 Quality | 6s | 1080p | 360 | $7.20 |
-| 01 (Hook) | 2 | Sora 2 Quality | 5s | 1080p | 300 | $6.00 |
+| 01 (Hook) | 1 | Seedance 2.0 (2K) | 6s | 1080p | 360 | $7.20 |
+| 01 (Hook) | 2 | Seedance 2.0 (2K) | 5s | 1080p | 300 | $6.00 |
 | 02 (Intro) | 1 | Kling Professional | 7s | 1080p | 49 | $0.34 |
 | 02 (Intro) | 2 | Kling Professional | 5s | 1080p | 35 | $0.25 |
 | 03 (Context) | 1 | Flow Veo 3.1 Quality | 5s | 1080p | 100 | $1.00 |
@@ -272,8 +272,8 @@ Grand Total = Adjusted Video Cost + ElevenLabs Cost + Subscription Costs (pro-ra
 | 06 | 2 | Kling Standard | 5s | 720p | 10 | $0.07 |
 | 07 | 1 | Flow Veo 3.1 Fast | 5s | 1080p | 0 | $0.00 |
 | 07 | 2 | Flow Veo 3.1 Fast | 4s | 1080p | 0 | $0.00 |
-| 08 (Hero) | 1 | Sora 2 Quality | 6s | 1080p | 360 | $7.20 |
-| 08 (Hero) | 2 | Sora 2 Quality | 5s | 1080p | 300 | $6.00 |
+| 08 (Hero) | 1 | Seedance 2.0 (2K) | 6s | 1080p | 360 | $7.20 |
+| 08 (Hero) | 2 | Seedance 2.0 (2K) | 5s | 1080p | 300 | $6.00 |
 | ... | ... | ... | ... | ... | ... | ... |
 | 14 | 1 | Stock footage | — | — | — | $0.00 |
 | 15 (CTA) | 1 | Flow Veo 3.1 Quality | 5s | 1080p | 100 | $1.00 |
@@ -283,7 +283,7 @@ Grand Total = Adjusted Video Cost + ElevenLabs Cost + Subscription Costs (pro-ra
 
 | Service | Scenes | Total Credits | Cost |
 |---|---|---|---|
-| Sora 2 Pro | 2 | 1,200 | $24.00 |
+| Seedance 2.0 | 2 | 1,200 | $24.00 |
 | Kling Ultra | 3 | 110 | $0.77 |
 | Flow Ultra (Quality) | 2 | 200 | $2.00 |
 | Flow Ultra (Fast) | 7 | 0 | $0.00 |

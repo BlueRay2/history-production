@@ -31,11 +31,11 @@ all downstream decisions.
 | 4 | **Content Research Writer Skill** (`.claude/skills/content-research-writer/SKILL.md`) | Best practices for iterative research → outline → draft → feedback loops, citation management, hook improvement methodology | Read and extract workflow patterns for researcher and editor roles |
 | 5 | **Editor Skill** (`.claude/skills/editor/SKILL.md`) | Four editing levels (proofreading → copy → line → developmental), editing checklists, common issues taxonomy | Read and extract validation criteria for proofreader and editor roles |
 | 6 | **YouTube Transcript Skill** (`.claude/skills/youtube-transcript/SKILL.md`) | Technical workflow for downloading and cleaning competitor transcripts via yt-dlp | Read and extract operational procedures for competitor-analyst |
-| 7 | **Sora 2 Pro Prompting Skill** (`.claude/skills/sora-2-pro-prompting/SKILL.md`) | Prompt architecture, cost tables, style keywords for Sora 2 Pro | Read in full + references; primary guide for Sora prompts |
+| 7 | **Seedance 2.0 Prompting Skill** (`.claude/skills/seedance-2-prompting/SKILL.md`) | Prompt architecture, cost tables, style keywords for Seedance 2.0 | Read in full + references; primary guide for Seedance 2.0 prompts |
 | 8 | **Kling Video Prompting Skill** (`.claude/skills/kling-video-prompting/SKILL.md`) | Prompt formula, camera reference, credit costs for Kling AI | Read in full + references; primary guide for Kling prompts |
 | 9 | **Google Flow Prompting Skill** (`.claude/skills/google-flow-prompting/SKILL.md`) | Prompt formula, Ultra pricing, community insights for Google Flow/Veo | Read in full + references; primary guide for Flow prompts |
-| 10 | **Video Gen Prompts** (`.claude/skills/video-gen-prompts/SKILL.md`) | Cross-service comparison, prompt adaptation guide Sora/Kling/Flow | Read in full; use as meta-reference when adapting prompts across services |
-| 11 | **AI Service Selector** (`.claude/skills/ai-service-selector/SKILL.md`) | Decision matrix for choosing Sora 2 / Kling / Flow per scene | Read in full; use for model selection in VISUAL_PROMPTS_PLAN |
+| 10 | **Video Gen Prompts** (`.claude/skills/video-gen-prompts/SKILL.md`) | Cross-service comparison, prompt adaptation guide Flow/Kling/Seedance 2.0 | Read in full; use as meta-reference when adapting prompts across services |
+| 11 | **AI Service Selector** (`.claude/skills/ai-service-selector/SKILL.md`) | Decision matrix for choosing Seedance 2.0 / Kling / Flow per scene | Read in full; use for model selection in VISUAL_PROMPTS_PLAN |
 | 12 | **Production Cost Estimator** (`.claude/skills/production-cost-estimator/SKILL.md`) | Pricing tables and cost calculation methodology | Read after Phase 5; use for COST_ESTIMATE.md |
 
 ### 0.2 External Best Practices Search
@@ -44,7 +44,7 @@ Using `web_search`, research and retain current best practices for:
 
 | # | Topic | Search queries (suggested) |
 |---|-------|---------------------------|
-| 1 | AI video generation prompting | `"best practices prompting Sora 2" OR "Kling 2.0 3.0 video prompts" OR "Flow AI video"` |
+| 1 | AI video generation prompting | `"best practices prompting Seedance 2.0" OR "Kling 2.0 3.0 video prompts" OR "Flow AI video"` |
 | 2 | YouTube script structure | `"YouTube script structure retention" site:vidiq.com OR site:tubebuddy.com` |
 | 3 | Retention curve optimization | `"YouTube retention curve" "audience retention graph" best practices 2025` |
 | 4 | Cinematographic transitions in AI video | `"cinematic transitions" "AI generated footage" editing montage` |
@@ -54,7 +54,7 @@ Using `web_search`, research and retain current best practices for:
 After all reads and searches, produce `KNOWLEDGE_SUMMARY.md` containing:
 - Condensed retention technique inventory (from Retention Strategy doc)
 - ElevenLabs v3 tag reference card (categorized: voice, SFX, experimental)
-- AI video generation prompt patterns per model (Sora 2, Kling, Flow) — cross-referenced with sora-2-pro-prompting, kling-video-prompting, google-flow-prompting skills
+- AI video generation prompt patterns per model (Seedance 2.0, Kling, Flow) — cross-referenced with seedance-2-prompting, kling-video-prompting, google-flow-prompting skills
 - Cinematographic shot type reference (wide/medium/close-up/extreme close-up + movement: pan, tilt, dolly, crane, handheld)
 - Transition vocabulary (match cut, J-cut, L-cut, jump cut, whip pan, dissolve, smash cut)
 - Retention curve benchmark patterns extracted from competitor analysis
@@ -92,7 +92,7 @@ blueprint** comprising:
 | Layer | Content | Consumer |
 |-------|---------|----------|
 | **Narration** | Spoken text with ElevenLabs v3 audio tags, emphasis markers, pacing cues | Voiceover engine (ElevenLabs) |
-| **Visual** | Per-clip AI video/image generation prompts (multiple clips per scene — one per narration segment) with model selection, aspect ratio, duration | AI video generators (Sora 2, Kling, Flow) + editor |
+| **Visual** | Per-clip AI video/image generation prompts (multiple clips per scene — one per narration segment) with model selection, aspect ratio, duration | AI video generators (Seedance 2.0, Kling, Flow) + editor |
 | **Audio** | Music mood/tempo/genre cues, SFX markers, silence beats | Music selection + editor |
 | **Montage** | Shot type sequence, transition instructions, B-roll/A-roll markers, pacing rhythm | Video editor |
 | **Retention** | Hook markers, open-loop anchors, pattern interrupt cues, CTA placement | Self-validation layer |
@@ -175,7 +175,7 @@ and [audio tags] inline."
 **Clip 1** (narration: "{first sentence or group}")
 **Shot type:** {wide/medium/close-up/extreme CU}
 **Movement:** {static/pan L→R/tilt up/dolly in/crane/handheld}
-**Model:** {Sora 2 / Kling / Flow / Stock footage / Static image}
+**Model:** {Seedance 2.0 / Kling / Flow / Stock footage / Static image}
 **Duration:** {X}s
 **Prompt:** "{Detailed generation prompt with style, lighting, color, subject, action}"
 **Transition IN:** {cut/dissolve/J-cut from previous clip or scene}
@@ -596,8 +596,8 @@ Deliver only strategic design documents.
 
 **Role:** Visual Prompt Engineer & Montage Architect
 **Model:** `claude-opus-4-6` · Default context (200K tokens)
-**Expertise:** AI video/image generation prompting (Sora 2, Kling, Flow), cinematographic language, shot composition, color theory, visual continuity, transition design
-**Skill foundation:** `sora-2-pro-prompting` skill, `kling-video-prompting` skill, `google-flow-prompting` skill, `video-gen-prompts` skill (cross-service comparison), `ai-service-selector` skill (model selection matrix)
+**Expertise:** AI video/image generation prompting (Seedance 2.0, Kling, Flow), cinematographic language, shot composition, color theory, visual continuity, transition design
+**Skill foundation:** `seedance-2-prompting` skill, `kling-video-prompting` skill, `google-flow-prompting` skill, `video-gen-prompts` skill (cross-service comparison), `ai-service-selector` skill (model selection matrix)
 
 **System Instructions:**
 
@@ -617,8 +617,8 @@ B) READ the NICHE_STYLE_GUIDE.md for visual aesthetic constraints (color
    palette, mood board, style references).
 C) READ the marketer's RETENTION_ARCHITECTURE.md for emotional arc and
    pattern interrupt schedule — your visual choices must serve these.
-D) READ the sora-2-pro-prompting skill (.claude/skills/sora-2-pro-prompting/SKILL.md)
-   and its references/ — primary technical reference for Sora 2 prompt syntax.
+D) READ the seedance-2-prompting skill (.claude/skills/seedance-2-prompting/SKILL.md)
+   and its references/ — primary technical reference for Seedance 2.0 prompt syntax.
 E) READ the kling-video-prompting skill (.claude/skills/kling-video-prompting/SKILL.md)
    and its references/ — primary technical reference for Kling prompt syntax.
    CRITICAL: Kling reverses pan/tilt terminology vs standard cinematography.
@@ -640,17 +640,17 @@ The plan must include:
 
    TEMPORAL QUALITY RULE ("Premium Start"):
    - Scenes in the FIRST ~3 MINUTES (hook, intro, context): use PREMIUM models only
-     (Sora 2 Quality, Kling Professional, Flow Veo 3.1 Quality). This is the peak
+     (Seedance 2.0 (2K), Kling Professional, Flow Veo 3.1 Quality). This is the peak
      viewer drop-off zone — visual quality directly impacts retention.
    - Scenes AFTER ~3 MINUTES: transition to ECONOMY models. Default preference:
      Flow Veo 3.1 Fast (FREE on Google AI Ultra subscription) > Kling Standard >
-     Flow Veo 2 Fast (10 credits). Reserve Sora 2 Quality only for hero scenes
+     Flow Veo 2 Fast (10 credits). Reserve Seedance 2.0 (2K) only for hero scenes
      with human subjects after the 3-minute mark.
    - Rationale: viewers who pass the 3-minute mark are already engaged;
      a modest quality ceiling reduction is acceptable for budget optimization.
 
    Per-service guidelines:
-   - Sora 2: Complex scenes with humans, nuanced motion, cinematic quality (see sora-2-pro-prompting skill)
+   - Seedance 2.0: Complex scenes with humans, nuanced motion, cinematic quality (see seedance-2-prompting skill)
    - Kling: Stylized content, motion-heavy camera work, abstract visuals (see kling-video-prompting skill)
    - Flow: Atmospheric backgrounds, establishing shots, volume B-roll; Veo 3.1 Fast is FREE on Ultra — preferred default for economy tier (see google-flow-prompting skill)
    - Stock footage: When photorealism is critical and AI artifacts unacceptable
@@ -703,7 +703,7 @@ YOUR DELIVERABLES:
    > "{Exact narration text this clip covers}"
 
    ## Generation Parameters
-   - **Model:** {Sora 2 / Kling / Flow / Stock footage / Static image}
+   - **Model:** {Seedance 2.0 / Kling / Flow / Stock footage / Static image}
    - **Type:** {Video / Image}
    - **Duration:** {4-10}s
    - **Aspect ratio:** {16:9 / 9:16 / 1:1}
@@ -716,7 +716,7 @@ YOUR DELIVERABLES:
 
    ## Service-Adapted Prompt
    "{Prompt adapted to selected model's optimal syntax per corresponding
-   prompting skill (sora-2-pro-prompting / kling-video-prompting /
+   prompting skill (seedance-2-prompting / kling-video-prompting /
    google-flow-prompting). Includes service-specific parameters and keywords.}"
 
    ## Shot Specification
@@ -873,7 +873,7 @@ C) TECHNICAL CORRECTNESS:
    - Visual prompt completeness (all required fields present)
    - AI model selection is appropriate per ai-service-selector decision matrix
    - Visual prompts follow service-specific syntax from corresponding prompting skill
-     (sora-2-pro-prompting / kling-video-prompting / google-flow-prompting)
+     (seedance-2-prompting / kling-video-prompting / google-flow-prompting)
    - Transition pairs are consistent across scene boundaries
    - Shot diversity rule is respected (no identical consecutive shots)
    - Footage duration within 4-10 second range per clip
@@ -1484,7 +1484,7 @@ modifications.
 - [ ] T5.5.1: Parse SCRIPT.md — extract per-clip model, duration, resolution (multiple clips per scene)
 - [ ] T5.5.2: Parse TELEPROMPTER.md — count narration characters (excluding [audio tags])
 - [ ] T5.5.3: Apply production-cost-estimator skill methodology to calculate costs
-  (reference pricing from sora-2-pro-prompting, kling-video-prompting,
+  (reference pricing from seedance-2-prompting, kling-video-prompting,
   google-flow-prompting skills' cost reference files)
 - [ ] T5.5.4: Produce COST_ESTIMATE.md in project root with per-clip breakdown (grouped by scene), ElevenLabs cost,
   re-generation buffer (25%), total estimate, and budget optimization suggestions
@@ -1666,7 +1666,7 @@ Examples:
 ```
 [T1.2] Competitor analysis cards for 5 top-performing videos
 [T3.2] Draft narration for scenes 01-05 (hook + opening act)
-[T4.6] Visual prompts for scenes 01-05 with Sora 2 model selection
+[T4.6] Visual prompts for scenes 01-05 with Seedance 2.0 model selection
 ```
 
 **4. Push & PR Creation:**
@@ -1759,7 +1759,7 @@ This check is **blocking** before Phase 5 integration.
 ### 4.6.3 Banned Prompt Elements
 
 See BANNED PROMPT ELEMENTS in Section 2.4 (prompt-engineer instructions).
-These bans apply to ALL visual prompts across ALL services (Sora 2, Kling, Flow).
+These bans apply to ALL visual prompts across ALL services (Seedance 2.0, Kling, Flow).
 The proofreader must verify zero occurrences during validation.
 
 ### 4.6.4 Narration-Prompt Sync
