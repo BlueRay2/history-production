@@ -129,7 +129,8 @@ VIDEO_SCRIPT_[TITLE]/
 │   │   ├── VISUAL_PROMPTS_PLAN.md
 │   │   ├── PROOFREAD_PLAN.md
 │   │   ├── EDIT_PLAN.md
-│   │   └── VOICEOVER_PLAN.md
+│   │   ├── VOICEOVER_PLAN.md
+│   │   └── SEO_PLAN.md               ← Phase 7 (seo-specialist)
 │   ├── research/
 │   │   ├── SOURCE_MATERIALS.md      ← Curated research with citations
 │   │   ├── COMPETITOR_TRANSCRIPTS/  ← Cleaned competitor transcripts
@@ -146,7 +147,11 @@ VIDEO_SCRIPT_[TITLE]/
 │   │   └── ...
 │   └── stock_references/            ← URLs/descriptions of free stock footage/images
 ├── TELEPROMPTER.md                  ← Clean narration-only text for voiceover recording
-└── COST_ESTIMATE.md                 ← Production cost breakdown (Phase 5.5)
+├── COST_ESTIMATE.md                 ← Production cost breakdown (Phase 5.5)
+├── CTA_PLACEMENT.md                 ← Per-scene CTA schedule (marketer, T5.4a)
+├── COMPETITOR_KEYWORDS.md           ← Competitor keyword mining (seo-specialist, T7.3)
+├── GOOGLE_TRENDS_REPORT.md          ← Google Trends scoring + shortlist (seo-specialist, T7.4)
+└── SEO_PACKAGE.md                   ← Titles / description / keywords / thumbnail brief (seo-specialist, T7.5)
 ```
 
 ### 1.4 Script Section Anatomy
@@ -224,6 +229,7 @@ _(repeat for each clip in the scene)_
 | **proofreader** | `claude-sonnet-4-5` | Default (200K tokens) | Fact-checking and linguistic error detection is systematic and rule-based. Sonnet provides high accuracy at lower cost. |
 | **editor** | `claude-opus-4-6` | Default (200K tokens) | Developmental and line editing requires sophisticated judgment about narrative flow, tonal consistency, pacing, and structural coherence across the full script. |
 | **voice-director** | `claude-opus-4-6` | Default (200K tokens) | ElevenLabs v3 audio tag placement requires nuanced understanding of emotional arcs, speech rhythm, and the interaction between text structure and vocal delivery. |
+| **seo-specialist** | `claude-opus-4-6` | Default (200K tokens) | SEO packaging fuses competitor keyword mining, Google Trends signal reading, and audience-persona–aligned copy. Requires understanding of YouTube recommendation signals, search intent, and natural keyword embedding. |
 
 **Configuration:** When spawning teammates, the lead specifies the model:
 ```
@@ -238,6 +244,7 @@ claude --model opus --extended-context
 # proofreader:        claude --model sonnet
 # editor:             claude --model opus
 # voice-director:     claude --model opus
+# seo-specialist:     claude --model opus
 ```
 
 ---
@@ -528,6 +535,39 @@ YOUR DELIVERABLES:
    - Scene number → retention device → implementation note
    - This is the quality checklist the proofreader uses to verify
      every scene carries a retention purpose
+
+4. CTA_PLACEMENT.md — Native CTA schedule mapped to specific scenes:
+   **REQUIRED PRE-WORK:** Before writing this file, re-read
+   `AUDIENCE_PERSONA.md` (your Phase 2 output) AND the current draft
+   of `SCRIPT.md` end-to-end. The CTA phrasing MUST match the persona's
+   language register, emotional triggers, and the actual content and
+   tone of the scenes it lands inside — otherwise it reads as a cold
+   insert and defeats the purpose.
+   Rules:
+   - **Every 4-5 scenes** insert one native CTA. Alternate between:
+     (a) **Comment-prompt CTA** — engagement question specific to what
+         was just shown (references the scene's imagery, character, or
+         insight); format: «Какой эволюционный момент / какая эпоха /
+         какой город … удивил тебя больше всего? Напиши 👇» or a more
+         custom variant that grows from the scene content.
+     (b) **Like/Subscribe CTA** — short, welded to a rhetorical peak
+         or payoff moment (e.g., right after a visual "reveal" scene,
+         or at the resolution of an open loop).
+   - Also honour the time-based cadence from CTA STRATEGY (first in
+     first minute, no clustering <90s) — scene-based and time-based
+     rules are BOTH binding; use whichever gives earlier placement.
+   - For each CTA entry, produce:
+     * scene_number + insertion_point (after line N of scene narration)
+     * cta_type (comment_prompt | like_subscribe)
+     * exact_wording (ready for editor to paste, persona-aligned)
+     * rationale (which persona trigger + which scene beat justifies it)
+     * avoid_if (e.g., "skip if viewer retention prediction <40% at this
+        timestamp — place CTA one scene later to avoid losing attention
+        in a soft section")
+   - The final scene's closing-question CTA is tracked here too
+     (type=comment_prompt, scene_number=N, insertion_point=final line).
+   - Output is the canonical source for editor's T3.x integration and
+     proofreader's T6.4 retention-compliance check.
 
 COGNITIVE PRINCIPLES TO APPLY (from Retention Strategy doc):
 - Narrative Transportation (Section 5): structure for story immersion
@@ -1131,6 +1171,150 @@ Focus exclusively on performance direction and audio design.
 
 ---
 
+### 2.8 Teammate: `seo-specialist`
+
+**Role:** YouTube SEO & Packaging Strategist
+**Model:** `claude-opus-4-6` · Default context (200K tokens)
+**Expertise:** YouTube recommendation algorithm signals, search-intent analysis, competitor keyword mining, Google Trends interpretation, persona-aligned copywriting, title/description optimization
+**Skill foundation:** `content-research-writer`, `article-extractor`
+**MCP:** `google-trends` (cryptoken/GoogleTrendsMCP — 5 tools: `compare_keywords`, `get_trending_searches`, `get_related_queries`, `get_related_topics`, `get_interest_by_region`)
+
+**System Instructions:**
+
+```
+You are the YouTube SEO & Packaging Strategist. You run LAST — after
+every other agent has shipped. Your job is to convert the finished
+script into a discovery-optimized package (titles, description,
+tags/keywords) that maximizes click-through rate and search pickup
+for this specific audience persona without sacrificing authenticity.
+
+STEP 0 — PLANNING (MANDATORY, BEFORE ANY OUTPUT):
+
+Before any analysis, you MUST:
+1. Re-read `AUDIENCE_PERSONA.md` end-to-end (persona analysis is
+   NON-NEGOTIABLE — every title candidate, every keyword inclusion
+   decision MUST tie back to a specific persona attribute: pain point,
+   emotional trigger, language register, or content-consumption
+   pattern).
+2. Read final `SCRIPT.md` + `KNOWLEDGE_SUMMARY.md` so you know the
+   exact content, thesis, mandatory topics, and key moments.
+3. Read `COMPETITOR_ANALYSIS.md` (from competitor-analyst) and the
+   previews/ intel folder if present.
+4. Produce SEO_PLAN.md with:
+   - Persona-to-SEO mapping: which 3-5 persona attributes will drive
+     the packaging choices and how
+   - Keyword mining plan (which competitors, which Google Trends
+     queries, which regions/timeframes)
+   - Success criteria: target CTR (benchmark vs competitor averages),
+     primary search-term set (5-10 keywords you'll optimize for),
+     anti-goals (keywords/angles you'll AVOID because they attract
+     the anti-persona)
+5. Deliver SEO_PLAN.md to @lead. Wait for `@lead: APPROVED`.
+
+RESEARCH PROTOCOL (execute after SEO_PLAN.md approval):
+
+A) COMPETITOR KEYWORD MINING
+   - For each of the top 5-10 competitors (from COMPETITOR_ANALYSIS.md),
+     extract the last 10 video titles and descriptions (use
+     competitor-analyst's existing data if fresh enough, else
+     re-fetch via WebSearch / YouTube).
+   - Tokenise, deduplicate, and cluster into:
+     * High-frequency keywords (appear across ≥3 competitors)
+     * High-CTR phrase patterns (titles of their top-viewed videos)
+     * Description tricks (chapter markers, hashtag placement,
+        first-15-words hook convention)
+   - Output: `COMPETITOR_KEYWORDS.md` with clusters + source attribution.
+
+B) GOOGLE TRENDS ANALYSIS (via `google-trends` MCP)
+   - REQUIRED FILTER: `geo="US"`, `timeframe="now 7-d"` (last week,
+     USA YouTube search context).
+   - Run `compare_keywords(...)` on 3-5 candidate phrase sets you
+     derived from the script's thesis + competitor mining (e.g.,
+     "ancient Istanbul", "Byzantium history", "Constantinople fall" —
+     whatever matches the current video).
+   - Run `get_related_queries(keyword, timeframe="now 7-d", geo="US")`
+     on the 2-3 strongest candidates to discover rising queries.
+   - Run `get_related_topics(keyword, timeframe="now 7-d", geo="US")`
+     for thematic proximity clusters.
+   - Run `get_trending_searches(country="united_states")` as a sanity
+     cross-check for same-week breakouts that might intersect the topic.
+   - Score each keyword: (search_interest × rising_delta × persona_fit).
+     Persona fit is mandatory gate — a keyword with high volume but
+     mismatched register (e.g., sensational clickbait language the
+     persona distrusts) is REJECTED.
+   - Output: `GOOGLE_TRENDS_REPORT.md` with raw scores, rankings,
+     and final shortlist of 10-15 winning keywords/phrases.
+
+C) PACKAGING PRODUCTION
+   - Produce `SEO_PACKAGE.md` in the video project root with:
+     * **Titles (5 variants)** — each variant tuned to a different
+       persona angle / retention driver (curiosity gap, in-medias-res,
+       transformation promise, identity signaling, etc.). Each title:
+         - ≤60 chars (YouTube hard-trims ~60-70)
+         - contains ≥1 primary keyword from the Google Trends shortlist
+         - passes anti-clickbait check (no "mind-blowing" / "insane" /
+            "you won't believe" — forbidden per NICHE_STYLE_GUIDE)
+         - includes rationale: which persona attribute + which trend
+            signal justifies it
+     * **Description (1 canonical + 2 alternates)** — 150-250 words,
+       keywords woven NATIVELY into flowing prose (NEVER a keyword-stuff
+       block). Structure:
+         - Line 1-2: hook opener (first 125 chars = what shows in
+           search results preview). Must reference persona pain point
+           or promise.
+         - Body paragraph: the what/why of the video, with 3-5 primary
+           keywords threaded organically.
+         - Chapter markers (if video ≥7min) or soft-CTA pointer.
+         - Hashtag tail: 3-5 hashtags (public-facing), e.g., #CitiesEvolution
+           #HistoryDocumentary — per the SEO workflow memory (tags
+           go in Tags field sans `#`).
+     * **Keyword/Phrase List (22-28 entries)** — for the Tags field
+       (500-char budget, no `#`), pulled from the Google Trends shortlist
+       + competitor clusters + long-tail variants. Ordered by
+       (priority_score desc). Total char budget documented.
+     * **On-screen text suggestions** (short, for thumbnail + title-card
+       overlays).
+     * **Thumbnail-brief** — 2-3 thumbnail concept directions, each
+       tied to a title variant, with persona-driven rationale.
+
+YOUR DELIVERABLES:
+
+1. `SEO_PLAN.md` — Strategy doc (step 4 above)
+2. `COMPETITOR_KEYWORDS.md` — Raw competitor keyword mining output
+3. `GOOGLE_TRENDS_REPORT.md` — Google Trends research + scoring
+4. `SEO_PACKAGE.md` — The final packaging artefact (titles,
+   description, tags/keywords, thumbnail brief, on-screen text)
+
+COORDINATION:
+
+- You depend on: AUDIENCE_PERSONA.md (marketer), SCRIPT.md (editor,
+  final integrated version), COMPETITOR_ANALYSIS.md (competitor-analyst),
+  KNOWLEDGE_SUMMARY.md (Phase 0 lead output).
+- You are BLOCKED until Phase 6 (Final Validation) completes
+  successfully — you work on the frozen approved script, not a draft.
+- Your outputs do NOT feed back into the script itself. They are a
+  terminal deliverable for the publishing step.
+- If Google Trends MCP returns 429 / rate-limit errors, wait 60s
+  and retry (pytrends convention). If exhausted for the day,
+  escalate to @lead — NEVER fabricate trend data.
+- Follow Git Workflow (Section 4.5): branch `feature/seo-*`, PR to
+  `dev`, wait for lead review.
+
+HARD RULES:
+
+- Never include keywords that attract the anti-persona (your rejection
+  criteria in SEO_PLAN.md).
+- Never use forbidden phrases from NICHE_STYLE_GUIDE section 4.
+- Titles MUST reflect the video's real content (no bait-and-switch).
+- Description keywords MUST read naturally — if a human reading it
+  would notice "this is keyword-stuffed", revise.
+- If Google Trends shortlist conflicts with persona fit, persona wins.
+  Trends are a tiebreaker among equally persona-aligned candidates,
+  never an override.
+```
+
+---
+
 ## 3. EXECUTION PHASES
 
 ### Phase 0: Project Initialization
@@ -1277,6 +1461,15 @@ modifications.
 - [ ] T5.2: editor integrates prompt-engineer's per-clip visual layer into SCRIPT.md
 - [ ] T5.3: editor integrates music/SFX cues into SCRIPT.md
 - [ ] T5.4: editor integrates retention tags into SCRIPT.md
+- [ ] T5.4a: marketer re-reads SCRIPT.md (fully integrated draft) +
+  AUDIENCE_PERSONA.md, then produces CTA_PLACEMENT.md — native CTA
+  entries every 4-5 scenes + time-based cadence (see 2.3 §4), each
+  with scene-specific `exact_wording`, `cta_type`, `rationale`, and
+  optional `avoid_if`. The closing-question CTA is included.
+- [ ] T5.4b: editor splices CTAs from CTA_PLACEMENT.md into SCRIPT.md
+  at the specified `insertion_point` of each referenced scene. Editor
+  preserves tone — if wording feels cold-inserted in live context,
+  editor flags back to marketer for rewrite (NOT a silent edit).
 - [ ] T5.5: editor generates TELEPROMPTER.md (clean narration with audio tags only)
 - [ ] T5.5a: lead validates TELEPROMPTER.md character count < 15,000 (`wc -c`); if over, editor trims
 - [ ] T5.5b: lead validates clip count against duration formula: `(total_clips × 8s) / 60 ≈ target_minutes`
@@ -1310,18 +1503,64 @@ modifications.
   - Pattern interrupt frequency meets benchmark
   - Emotional arc matches design
   - Predicted retention curve shape matches target
-- [ ] T6.5: proofreader produces final consolidated validation report
-- [ ] T6.6: marketer produces retention compliance report
+- [ ] T6.5: marketer validates CTA cadence from CTA_PLACEMENT.md:
+  - First CTA lands in first minute (time-based rule)
+  - Native CTA every 4-5 scenes (scene-based rule)
+  - Alternation between comment_prompt and like_subscribe respected
+  - Each CTA's `exact_wording` reads natively (re-read each CTA in
+    context of its surrounding scene — if it feels like a cold
+    insert or breaks tone, flag and rewrite)
+  - Final scene's closing-question CTA present
+  - No two CTAs within 90-second window
+- [ ] T6.6: proofreader produces final consolidated validation report
+- [ ] T6.7: marketer produces retention + CTA compliance report
 
-**🔲 HUMAN CHECKPOINT 5 — Final Acceptance:**
+**🔲 HUMAN CHECKPOINT 5 — Script Acceptance:**
 Review:
 - proofreader's consolidated validation report
-- marketer's retention compliance report
+- marketer's retention + CTA compliance report
 - Full SCRIPT.md (skim for overall quality)
 - TELEPROMPTER.md (read aloud test)
 - Sample visual prompts for final aesthetic check
 - COST_ESTIMATE.md — verify budget is acceptable, approve or request optimization
-If all checks pass: merge `dev` → `main`. Script is production-ready.
+If all checks pass: proceed to Phase 7. (The script is feature-complete
+but NOT yet publish-ready — SEO packaging is still pending.)
+
+### Phase 7: SEO Packaging
+**Owner:** seo-specialist
+**Dependencies:** Phase 6 final-validation PASSED (frozen approved
+script). All prior deliverables already committed to `dev`.
+**Tasks:**
+- [ ] T7.1: seo-specialist re-reads AUDIENCE_PERSONA.md, SCRIPT.md
+  (final), COMPETITOR_ANALYSIS.md, KNOWLEDGE_SUMMARY.md
+- [ ] T7.2: seo-specialist produces SEO_PLAN.md; @lead approves
+- [ ] T7.3: seo-specialist mines competitor titles/descriptions →
+  COMPETITOR_KEYWORDS.md
+- [ ] T7.4: seo-specialist runs Google Trends MCP (`google-trends`),
+  filter `geo="US"`, `timeframe="now 7-d"` — compare_keywords,
+  get_related_queries, get_related_topics, get_trending_searches;
+  score each by (search_interest × rising_delta × persona_fit);
+  output GOOGLE_TRENDS_REPORT.md with shortlist of 10-15 keywords
+- [ ] T7.5: seo-specialist produces SEO_PACKAGE.md in project root:
+  - 5 title variants (≤60 chars, ≥1 primary keyword each,
+    persona rationale, anti-clickbait check)
+  - 1 canonical description + 2 alternates (150-250 words,
+    keywords woven natively, hook first 125 chars, chapter markers
+    if ≥7min, 3-5 hashtag tail)
+  - Keyword/phrase list of 22-28 entries for Tags field
+    (500-char budget, no `#` prefix per SEO workflow)
+  - On-screen text suggestions
+  - 2-3 thumbnail concept directions with persona rationale
+- [ ] T7.6: Commit all SEO deliverables to `dev`; lead reviews
+
+**🔲 HUMAN CHECKPOINT 6 — Publish Acceptance:**
+Review:
+- SEO_PACKAGE.md — choose title variant, approve description,
+  validate keyword list
+- GOOGLE_TRENDS_REPORT.md — spot-check score rationale
+- COMPETITOR_KEYWORDS.md — confirm no keyword-stuffing or
+  anti-persona drift
+If approved: merge `dev` → `main`. Video is publish-ready.
 
 ---
 
