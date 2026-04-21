@@ -161,12 +161,68 @@ def test_first_run_backfill_fires_on_empty_db(fresh_db, monkeypatch):
         client=client,
         today=date(2026, 4, 22),
     )
-    # BACKFILL_DAYS=45, last_target = today-2 = 2026-04-20.
-    # First target = 2026-04-22 - 45 = 2026-03-08. Range is inclusive: 44 days.
-    assert count == 44
+    # BACKFILL_DAYS=45, last_target = today-2 = 2026-04-20,
+    # first_target = today-46 = 2026-03-07 (Codex r1 fix for off-by-one).
+    # Inclusive range 2026-03-07..2026-04-20 = 45 days.
+    assert count == 45
     with dbmod.connect() as conn:
         runs = conn.execute("SELECT COUNT(*) FROM ingestion_runs").fetchone()[0]
-    assert runs == 44
+    assert runs == 45
+
+
+def test_microsecond_observed_on_survives_same_second_rerun(fresh_db):
+    """Codex r1 MED: second-resolution observed_on collided on PK; fix moved
+    to microsecond precision so two fast-succession refreshes produce two
+    distinct snapshot rows instead of one silent drop."""
+    client = MagicMock(name="youtube_client")
+    client.get_channel_analytics.return_value = _fake_analytics_response(views=100)
+    r1 = run_daily_refresh(target_date=date(2026, 4, 10), client=client, today=date(2026, 4, 22))
+    r2 = run_daily_refresh(target_date=date(2026, 4, 10), client=client, today=date(2026, 4, 22))
+    assert r1.status == "ok" and r2.status == "ok"
+    # Both runs must have written their rows — 2 runs × 2 metrics = 4 rows.
+    with dbmod.connect() as conn:
+        cnt = conn.execute(
+            "SELECT COUNT(*) FROM channel_metric_snapshots WHERE window_start='2026-04-06'"
+        ).fetchone()[0]
+    assert cnt == 4, "same-second re-run must NOT silently drop rows"
+
+
+def test_per_video_pull_writes_video_metric_rows(fresh_db):
+    """Codex r1 HIGH: per-video path was missing. Verify video_id gets
+    routed to video_metric_snapshots when present in `videos` table."""
+    with dbmod.connect() as conn:
+        conn.execute(
+            "INSERT INTO videos (video_id, title) VALUES ('vXYZ', 'Test video')",
+        )
+    client = MagicMock(name="youtube_client")
+    client.get_channel_analytics.return_value = _fake_analytics_response()
+    client.get_video_analytics.return_value = _fake_analytics_response(views=42, ctr=0.0812)
+    client.get_retention.return_value = {"rows": []}  # privacy-floor empty
+
+    result = run_daily_refresh(
+        target_date=date(2026, 4, 10), client=client, today=date(2026, 4, 22),
+    )
+    assert result.status == "ok"
+    with dbmod.connect() as conn:
+        video_cnt = conn.execute("SELECT COUNT(*) FROM video_metric_snapshots").fetchone()[0]
+        chan_cnt = conn.execute("SELECT COUNT(*) FROM channel_metric_snapshots").fetchone()[0]
+    # Only 2 metrics per video test response.
+    assert video_cnt == 2
+    assert chan_cnt == 2
+
+
+def test_preliminary_from_week_end_not_target(fresh_db):
+    """Codex r1 MED: preliminary must derive from (today - window_end), not
+    (today - target_date). Pull a target_date whose week_end is far in the
+    past — preliminary must be False even if target_date itself is recent."""
+    client = MagicMock(name="youtube_client")
+    client.get_channel_analytics.return_value = _fake_analytics_response()
+    # target = 2026-04-01 (Wed), week_end = 2026-04-05 (Sun)
+    # today = 2026-04-22, today - week_end = 17 days → NOT preliminary.
+    run_daily_refresh(target_date=date(2026, 4, 1), client=client, today=date(2026, 4, 22))
+    with dbmod.connect() as conn:
+        row = conn.execute("SELECT preliminary FROM channel_metric_snapshots LIMIT 1").fetchone()
+    assert row["preliminary"] == 0
 
 
 def test_first_run_aborts_on_quota(fresh_db, monkeypatch):

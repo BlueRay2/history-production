@@ -21,6 +21,10 @@ _LOG = logging.getLogger(__name__)
 BACKFILL_DAYS = 45
 FIRST_RUN_THRESHOLD = 7  # <this many rows means we haven't backfilled
 
+# Backfill window: target dates from (today - BACKFILL_DAYS - 1) through
+# (today - PRELIMINARY_LAG_DAYS) inclusive = BACKFILL_DAYS+2-2 = 45 days
+# iterated (Codex r1 MED fix — previously 44 due to off-by-one).
+
 
 def needs_first_run() -> bool:
     """True iff channel_metric_snapshots is near-empty."""
@@ -37,7 +41,9 @@ def run_first_time_backfill(*, client=None, today: date | None = None) -> int:
     exhaustion (leaves remaining days for the next invocation).
     """
     today = today or datetime.now(timezone.utc).date()
-    first_target = today - timedelta(days=BACKFILL_DAYS)
+    # first_target starts one day earlier than BACKFILL_DAYS so the inclusive
+    # range spans exactly BACKFILL_DAYS calendar days (Codex r1 MED).
+    first_target = today - timedelta(days=BACKFILL_DAYS + 1)
     last_target = today - timedelta(days=2)
 
     runs_completed = 0
