@@ -121,6 +121,30 @@ def migrate() -> int:
                 continue
             conn.execute("BEGIN IMMEDIATE")
             try:
+                # Concurrent-migrator race guard (Codex round-2 finding [medium]):
+                # another migrator may have applied this version in the window
+                # between our _applied_versions() snapshot and acquiring the
+                # BEGIN IMMEDIATE write lock. Re-check inside the transaction.
+                row = conn.execute(
+                    "SELECT sha256 FROM schema_migrations WHERE version = ?",
+                    (version,),
+                ).fetchone()
+                if row is not None:
+                    if row[0] != current_sha:
+                        # Another migrator applied a DIFFERENT content for this
+                        # version — real tamper or divergent deploys. Refuse.
+                        conn.execute("ROLLBACK")
+                        raise RuntimeError(
+                            f"migration {version} ({path.name}) was applied by another migrator "
+                            f"with different content (stored sha {row[0]} vs current {current_sha})"
+                        )
+                    # Same content already applied by a racing migrator — no-op.
+                    conn.execute("ROLLBACK")
+                    print(
+                        f"[migrate] {version} already applied by another migrator (race)",
+                        file=sys.stderr,
+                    )
+                    continue
                 for stmt in _split_statements(sql):
                     conn.execute(stmt)
                 conn.execute(
@@ -129,7 +153,11 @@ def migrate() -> int:
                 )
                 conn.execute("COMMIT")
             except Exception:
-                conn.execute("ROLLBACK")
+                # ROLLBACK is idempotent on sqlite3; safe even if already rolled back.
+                try:
+                    conn.execute("ROLLBACK")
+                except sqlite3.OperationalError:
+                    pass
                 raise
             pending += 1
             print(f"[migrate] applied {version} ({path.name})", file=sys.stderr)

@@ -163,3 +163,55 @@ def test_atomic_migration_rollback_on_failure(fresh_db, tmp_path, monkeypatch):
         )
     assert "good_table" not in tables, "ROLLBACK should have undone the CREATE"
     assert applied == [], "schema_migrations must not record a failed migration"
+
+
+def test_concurrent_migrator_race_noop(fresh_db, tmp_path, monkeypatch, capsys):
+    """Race guard (Codex round-2 finding [medium]): if another migrator applied
+    the same version (same content) between snapshot and BEGIN IMMEDIATE,
+    this migrator must no-op cleanly instead of failing on duplicate DDL.
+    """
+    # Simulate: bring DB to a state where migration 001 is fully applied.
+    dbmod.migrate()
+    # Now simulate a second migrator whose pre-transaction snapshot is stale
+    # (did not see 001 yet). We do this by removing 001 from the migrator's
+    # applied-versions cache path: point at a custom dir containing only a
+    # different version number 002 that is actually identical content to 001.
+    # Simpler: manipulate schema_migrations directly to "hide" 001 from the
+    # snapshot while keeping DDL present — this mimics the snapshot-vs-lock
+    # race Codex raised.
+    with dbmod.connect() as conn:
+        conn.execute("DELETE FROM schema_migrations WHERE version='001'")
+        conn.execute(
+            "INSERT INTO schema_migrations(version, applied_at, sha256) "
+            "VALUES ('001','1970-01-01T00:00:00Z','OLDHASH')"
+        )
+    # Now force the race: delete the hash row right before migrate sees the DDL.
+    # Monkey-patch _applied_versions to return empty — snapshot says "001 missing"
+    # even though DDL is still present.
+    real_applied = dbmod._applied_versions
+    call_count = {"n": 0}
+
+    def fake_applied(conn):
+        call_count["n"] += 1
+        if call_count["n"] == 1:
+            # First call: pre-transaction snapshot — pretend 001 not applied.
+            return {}
+        return real_applied(conn)
+
+    monkeypatch.setattr(dbmod, "_applied_versions", fake_applied)
+    # Also ensure schema_migrations contains the correctly-hashed row before
+    # the transaction starts, simulating another migrator finishing first.
+    migrations = dbmod._discover_migrations()
+    _, _, sql = migrations[0]
+    correct_sha = dbmod._sha256(sql)
+    with dbmod.connect() as conn:
+        conn.execute(
+            "UPDATE schema_migrations SET sha256=? WHERE version='001'",
+            (correct_sha,),
+        )
+    # Second migrate call: snapshot says pending, in-txn recheck should see
+    # the row and no-op without attempting the CREATE TABLE (which would fail).
+    result = dbmod.migrate()
+    captured = capsys.readouterr()
+    assert result == 0, "no new migrations should apply during race no-op"
+    assert "already applied by another migrator" in captured.err
