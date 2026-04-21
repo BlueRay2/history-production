@@ -72,16 +72,18 @@ Proceed through tasks in dependency order **without mid-bundle pauses** UNLESS:
 - Push cadence: after every status transition.
 - Merge strategy to `main`: deferred until all 9 tasks merged on `kpi`. Single rebase-ready merge request at end.
 
-## Ship authorization (as of 2026-04-21, Round 5 closed)
+## Ship authorization
 
-Consensus run closed at Round 5 (5-round hard cap). Judge verdict is documented in `consensus-dashboard-kpi/verdict-round5.md`:
+Consensus run extended beyond the 5-round cap by explicit owner-override (Ярослав msg 6830: "Продолжайте дебаты пока судья не даст формальное разрешение на продолжение"). **The authoritative judge verdict is the latest `verdict-roundN.md` in `consensus-dashboard-kpi/` — currently `verdict-round7.md` or later.** Do not consult earlier verdicts to determine current ship state.
 
-- **F-02, F-05, F-08** (the three high-severity findings from Round 3) — **resolved** in the task bundle.
-- **F-01** downgraded to low (Gemini research now available inline).
+Finding state across all rounds:
+- **F-02, F-05, F-08** (the three high-severity findings from Round 3) — **resolved** in the task bundle (confirmed by Codex Round 6).
+- **F-01** downgraded to low (Gemini research now available inline, 3/3 quorum).
 - **F-03, F-04, F-06, F-07** — resolved or accepted as residual risk.
-- Three new judge findings (J-01, J-02, J-03) raised in Round 5 — all addressed in this revision of the bundle before any task starts.
+- **J-01** (process/README alignment) + **J-02** (task-08 deploy path) + **J-03** (sparse-metric null semantics) — raised in Round 5, progressively resolved across Rounds 6 and 7.
+- **J-04** (cron path drift) — raised in Round 6, resolved in Round 7.
 
-Task implementations proceed autonomously from `task-01-adr-and-schema` onwards per the dep graph. Owner (Ярослав) sign-off on the amended bundle is prerequisite; once signed, Claude (coordinator) transitions tasks `pending` → `in-progress` without further pause except for the conditions listed in "Autonomous execution scope" above.
+Task implementations proceed autonomously from `task-01-adr-and-schema` onwards per the dep graph only after a `ship` verdict is recorded. Owner (Ярослав) sign-off after ship is noted; Claude (coordinator) transitions tasks `pending` → `in-progress` without further pause except for the conditions listed in "Autonomous execution scope" above.
 
 ## Gemini retroactive review policy
 

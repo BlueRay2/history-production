@@ -82,9 +82,9 @@ Each task file has a **Review loop** section with explicit sign-off slots. Workf
 - Consensus run: `/home/aiagent/assistant/git/consensus-dashboard-kpi/`
 - Topic: `consensus-dashboard-kpi/topic.md`
 - Roles: `consensus-dashboard-kpi/roles.tson`
-- Research: `consensus-dashboard-kpi/research/{claude,codex,gemini-status}.md`
+- Research: `consensus-dashboard-kpi/research/{claude,codex,gemini,gemini-status}.md`
 - Debates: `consensus-dashboard-kpi/debate/round-{1,2,3}.md`
 - Findings register: `consensus-dashboard-kpi/findings.tson`
-- Judge verdict: `consensus-dashboard-kpi/verdict.md` (Codex judge)
+- **Authoritative judge verdict:** `consensus-dashboard-kpi/verdict-round6.md` or later (Codex judge under owner-override per Ярослав msg 6830). Prior rounds `verdict.md` (Round 3), `verdict-round4.md`, `verdict-round5.md` preserved for audit trail only — do NOT use them to determine current ship state.
 - Debate quality: `consensus-dashboard-kpi/debate-quality.md`
 - Process reference (template): `/home/aiagent/assistant/git/home_server/docs/tz/gemini-delegation-hardening/README.md`
