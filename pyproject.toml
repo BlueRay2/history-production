@@ -4,16 +4,19 @@ version = "0.1.0"
 description = "Local-hosted KPI dashboard for YouTube channel Cities Evolution."
 requires-python = ">=3.11"
 dependencies = [
-    # Runtime dependencies land here in subsequent tasks:
-    #   task-02: google-api-python-client, google-auth-oauthlib, python-dotenv
-    #   task-06: flask, jinja2
-    # task-01 introduces only the stdlib-backed db layer + test harness.
+    # task-02 runtime deps (YouTube API client):
+    "google-api-python-client>=2.0,<3",
+    "google-auth-oauthlib>=1.2,<2",
+    "google-auth>=2.0,<3",
+    # task-06 (Flask FE) deps land in later task commit.
+    # No python-dotenv — we parse .env with std-lib via ingest/env_loader.py.
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0,<9",
     "pytest-cov>=5.0,<6",
+    "pyyaml>=6.0,<7",  # for cassette smoke tests
 ]
 
 [tool.pytest.ini_options]
@@ -26,4 +29,4 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["app"]
+packages = ["app", "app.lib", "ingest"]

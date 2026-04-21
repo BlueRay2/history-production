@@ -10,33 +10,40 @@
 
 The Lead (Claude) implements each task on this branch (`kpi`), then cycles it through Codex review → Gemini review → merge. Each cycle is tracked via per-task status in README.md and per-round review files in `reviews/task-XX/`.
 
-## Review loop (per task)
+## Review loop (per task) — PARALLEL Codex + Gemini (updated 2026-04-21 per Ярослав msg 6879)
+
+Earlier workflow had sequential Codex → Gemini review. Ярослав directive 2026-04-21T23:06 (msg 6879): "Ревью делай и в Codex и в Gemini и исправляй правки от их обоих, а так же добавь code review от обоих одновременно для всех остальных задач." → **both reviewers run concurrently on each round**, Claude merges the union of findings into one fix pass.
 
 1. **Implement.** Claude writes code + tests + fixtures per task file. Status: `pending` → `in-progress`.
-2. **Codex review (round N).** Claude delegates via `scripts/codex-tracked-exec.sh` with prompt pointing at the task file + diff. Codex writes `reviews/task-XX/codex-round-N.md`. Status: `in-review-codex`.
-3. **Iterate on Codex feedback.** If Codex has comments → apply fixes → repeat Codex round N+1. Status stays `in-review-codex`.
-4. **Codex accepts.** Codex returns "accepted, no comments" → Status: `in-review-gemini`.
-5. **Gemini review (round M).** Claude delegates via `scripts/gemini-agent.sh review` with same prompt shape. Gemini writes `reviews/task-XX/gemini-round-M.md`.
-6. **Iterate on Gemini feedback.** If Gemini has comments → apply fixes → if the fix touched code Codex already signed off on, regress to `in-review-codex` for one more Codex round, then return to `in-review-gemini`.
-7. **Gemini accepts.** Status: `ready-to-merge`.
+2. **Dispatch parallel review (round N).** Claude simultaneously delegates:
+   - Codex via `scripts/codex-tracked-exec.sh` with prompt pointing at the task file + diff. Output → `reviews/task-XX/codex-round-N.md`.
+   - Gemini via `scripts/gemini-agent.sh review` with the same prompt shape. Output → `reviews/task-XX/gemini-round-N.md`.
+   Status: `in-review (r N)`.
+3. **Collect both responses.** Wait for both reviewers. Normalize each to a verdict (`accepted` | `request changes`) and a list of findings.
+4. **Merge findings.** Deduplicate overlapping findings (same file:line, same category). Apply **union** of all unique findings in a single fix commit — don't split Codex fixes from Gemini fixes.
+5. **Iterate.** If either reviewer returned `request changes`, commit the merged fix and re-dispatch parallel round N+1. Status stays `in-review (r N+1)`.
+6. **Both accept.** Only when **both** reviewers return `accepted, no comments` in the same round → status `ready-to-merge`.
+7. **Gemini-degraded fallback.** If Gemini returns 429 capacity after flash-fallback retries, record `reviews/task-XX/gemini-round-N-UNAVAILABLE.md` with classifier signature. Status may advance to `ready-to-merge (gemini-degraded)` if Codex accepted AND Ярослав is notified AND the retroactive-audit queue entry is written. See "Gemini retroactive review policy" below.
 8. **Merge.** Fast-forward commits on `kpi` branch. No PR to `main` until all 9 tasks are merged. Status: `merged`.
 9. **Push.** `git push origin kpi` after every status transition.
 10. **Telegram broadcast.** One concise DM to Ярослав (208368262) per status transition — not per round. Exceptions: critical bug or scope question → immediate broadcast.
 
-## Status vocabulary (authoritative)
+**Why parallel:** halves wall-clock time per task, surfaces reviewer disagreement earlier (when both see the same diff without prior signoff bias), and Ярослав's explicit directive. Risk: review workload on agents doubles per round — mitigated by the fact that Gemini and Codex sandboxes are independent.
+
+## Status vocabulary (authoritative — parallel review model)
 
 ```
 pending
   → in-progress
-    → in-review-codex (round N)
-      → in-review-gemini (round N)
-        → ready-to-merge
-        → ready-to-merge (gemini-degraded)
-          → merged
+    → in-review (round N)   ← Codex + Gemini in parallel
+      → ready-to-merge                        (both accepted)
+      → ready-to-merge (gemini-degraded)       (Codex accepted; Gemini 429 after flash fallback)
+        → merged
 ```
 
-- **Regression allowed:** `in-review-gemini` → `in-review-codex` when Gemini findings require Codex re-check.
-- **Gemini-degraded path:** if Gemini 2.5-pro is unavailable (429 capacity) at review time, task may ship as `ready-to-merge (gemini-degraded)` + merge-commit body MUST include `Review: Codex-accepted r{N}; Gemini: unavailable 429 at review time`. Retroactive Gemini audit mandatory when capacity returns.
+- **No `in-review-codex` / `in-review-gemini` separation.** One `in-review (r N)` badge represents both reviewers.
+- **Regression:** if round N+1 fixes touch code both reviewers had signed off on in round N (rare — only when a fix from one reviewer surfaces a new issue), Claude dispatches round N+1 to both reviewers again.
+- **Gemini-degraded path:** if Gemini 2.5-pro is unavailable (429 capacity) **after flash-fallback retry**, task may ship as `ready-to-merge (gemini-degraded)` + merge-commit body MUST include `Review: Codex-accepted r{N}; Gemini: unavailable 429 at review time`. Retroactive Gemini audit mandatory when capacity returns.
 
 ## Anti-loop guard
 

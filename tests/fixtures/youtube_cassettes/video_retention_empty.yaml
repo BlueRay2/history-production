@@ -1,0 +1,26 @@
+# Empty retention response — simulates small-channel privacy floor per Gemini research.
+# Caller (task-05) must treat empty rows as reason=below_privacy_floor, not as 0.
+interactions:
+- request:
+    method: GET
+    uri: https://youtubeanalytics.googleapis.com/v2/reports?ids=channel%3D%3DMINE&startDate=2026-03-10&endDate=2026-04-20&metrics=audienceWatchRatio%2CrelativeRetentionPerformance&dimensions=elapsedVideoTimeRatio&filters=video%3D%3DvAbCdEf12345&alt=json
+    body: null
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json; charset=UTF-8
+    body:
+      string: |
+        {
+          "kind": "youtubeAnalytics#resultTable",
+          "columnHeaders": [
+            {"name": "elapsedVideoTimeRatio", "columnType": "DIMENSION", "dataType": "FLOAT"},
+            {"name": "audienceWatchRatio", "columnType": "METRIC", "dataType": "FLOAT"},
+            {"name": "relativeRetentionPerformance", "columnType": "METRIC", "dataType": "FLOAT"}
+          ],
+          "rows": []
+        }
+version: 1

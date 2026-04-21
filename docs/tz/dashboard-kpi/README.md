@@ -18,7 +18,7 @@ Full consensus artefacts (research, debates, findings register, verdicts) are in
 | ID | File | Scope | Status | Codex review | Gemini review |
 |---|---|---|---|---|---|
 | 01 | [task-01-adr-and-schema.md](task-01-adr-and-schema.md) | Stack ADR (Flask+Jinja+HTMX+Chart.js+SQLite), DB schema, raw SQL migrations, `schema_migrations` table | `merged` | ✅ accepted r3 | ✅ accepted r1 |
-| 02 | [task-02-youtube-api-client.md](task-02-youtube-api-client.md) | OAuth install-flow, refresh-token cache in `/home/aiagent/.config/youtube-api/.env` (600), typed client wrapper, vcrpy cassette fixtures | `pending` | — | — |
+| 02 | [task-02-youtube-api-client.md](task-02-youtube-api-client.md) | OAuth install-flow, refresh-token cache in `/home/aiagent/.config/youtube-api/.env` (600), typed client wrapper, vcrpy cassette fixtures | `in-review (r 1)` | pending | pending |
 | 03 | [task-03-append-snapshot-ingest.md](task-03-append-snapshot-ingest.md) | Ingestion runs table, rolling 45-d backfill, append-only writes with `observed_on`, preliminary-flag overwrite logic, first-run 45-d backfill script | `pending` | — | — |
 | 04 | [task-04-history-git-parser.md](task-04-history-git-parser.md) | `ingest/history_git.py`, heuristic commit scoring (phase-\d+ / script / final / lock patterns), confidence + evidence columns, golden git fixtures | `pending` | — | — |
 | 05 | [task-05-mapping-and-derived-kpis.md](task-05-mapping-and-derived-kpis.md) | `video_project_map` + derived KPI views: cycle-time, scripts-per-week, script-iterations (approx), cost-per-video (fail-closed parser) | `pending` | — | — |
@@ -33,15 +33,15 @@ Each task file has a **Review loop** section with explicit sign-off slots. Workf
 
 1. **Claim task:** transition status `pending` → `in-progress` in this index. Push to origin.
 2. **Implement** on this branch (code + tests + golden fixtures where the task file requires them).
-3. **Hand off to Codex review:** status `in-progress` → `in-review-codex (round 1)`.
-4. **Delegate to Codex** via `scripts/codex-tracked-exec.sh` with a prompt pointing at this task file + the diff. Codex writes review comments into `reviews/task-XX/codex-round-N.md` (create dir if needed).
-5. If Codex has comments → apply fixes → bump round counter → re-delegate until Codex returns "accepted, no comments".
-6. **Hand off to Gemini review:** status `in-review-codex` → `in-review-gemini (round 1)`.
-7. **Delegate to Gemini** via `scripts/gemini-agent.sh review`. Gemini writes to `reviews/task-XX/gemini-round-N.md`.
-8. If Gemini has comments that require code changes Codex already cleared → regress to `in-review-codex` round N+1, then return to `in-review-gemini`. Otherwise iterate Gemini round N+1.
-9. When Gemini also returns "accepted, no comments" → status `ready-to-merge`.
-10. Merge fast-forward into `kpi` branch (no PR to `main` until whole bundle is ready). Mark task `merged`.
-11. Push `origin/kpi` after every status transition.
+3. **Dispatch PARALLEL review (round 1):** status `in-progress` → `in-review (r 1)`.
+   - Codex via `scripts/codex-tracked-exec.sh` → `reviews/task-XX/codex-round-N.md`.
+   - Gemini via `scripts/gemini-agent.sh review` (with `GEMINI_ALLOW_FLASH_FALLBACK=1` on 429) → `reviews/task-XX/gemini-round-N.md`.
+   **Both delegated simultaneously**, not sequentially (Ярослав directive 2026-04-21 msg 6879).
+4. **Merge findings** from both reviewers into a single fix commit — don't split Codex fixes from Gemini fixes. Re-dispatch round N+1 to both reviewers if either returned `request changes`.
+5. **Both accept in same round** → status `ready-to-merge`.
+6. **Gemini-degraded fallback:** if Gemini returns 429 after flash-fallback retries AND Codex accepted → status `ready-to-merge (gemini-degraded)` + Telegram alert to Ярослав + retroactive-audit queue entry.
+7. **Merge** fast-forward into `kpi` branch (no PR to `main` until whole bundle is ready). Mark task `merged`.
+8. Push `origin/kpi` after every status transition.
 
 **Anti-loop guard:** if a task hits 5 review rounds without convergence, pause and escalate to Ярослав in Telegram for guidance. Do NOT silently ship a contested change.
 
