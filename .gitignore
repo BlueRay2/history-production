@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Runtime state (outside-repo per ADR)
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# Entire CLI logs (should not be committed)
+.entire/logs/
