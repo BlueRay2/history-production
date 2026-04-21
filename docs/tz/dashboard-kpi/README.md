@@ -17,7 +17,7 @@ Full consensus artefacts (research, debates, findings register, verdicts) are in
 
 | ID | File | Scope | Status | Codex review | Gemini review |
 |---|---|---|---|---|---|
-| 01 | [task-01-adr-and-schema.md](task-01-adr-and-schema.md) | Stack ADR (Flask+Jinja+HTMX+Chart.js+SQLite), DB schema, raw SQL migrations, `schema_migrations` table | `pending` | — | — |
+| 01 | [task-01-adr-and-schema.md](task-01-adr-and-schema.md) | Stack ADR (Flask+Jinja+HTMX+Chart.js+SQLite), DB schema, raw SQL migrations, `schema_migrations` table | `in-review-codex (r1)` | pending | — |
 | 02 | [task-02-youtube-api-client.md](task-02-youtube-api-client.md) | OAuth install-flow, refresh-token cache in `/home/aiagent/.config/youtube-api/.env` (600), typed client wrapper, vcrpy cassette fixtures | `pending` | — | — |
 | 03 | [task-03-append-snapshot-ingest.md](task-03-append-snapshot-ingest.md) | Ingestion runs table, rolling 45-d backfill, append-only writes with `observed_on`, preliminary-flag overwrite logic, first-run 45-d backfill script | `pending` | — | — |
 | 04 | [task-04-history-git-parser.md](task-04-history-git-parser.md) | `ingest/history_git.py`, heuristic commit scoring (phase-\d+ / script / final / lock patterns), confidence + evidence columns, golden git fixtures | `pending` | — | — |
