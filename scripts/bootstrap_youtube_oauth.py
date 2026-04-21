@@ -95,14 +95,33 @@ def _write_env_atomic(env_path: Path, refresh_token: str, project_id: str, *, ro
     ).encode("utf-8")
 
     if rotate:
-        tmp_path = env_path.with_suffix(env_path.suffix + ".tmp")
+        # Unique temp name prevents a stranded previous tmp from blocking
+        # future rotates (Codex r2 MED finding). pid + monotonic ns is enough
+        # entropy given rotate is a rare interactive op.
+        import time as _time
+
+        tmp_path = env_path.with_suffix(
+            env_path.suffix + f".tmp.{os.getpid()}.{_time.monotonic_ns()}"
+        )
         fd = os.open(tmp_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_TRUNC, 0o600)
         try:
-            os.write(fd, content)
-        finally:
-            os.close(fd)
-        os.chmod(tmp_path, 0o600)  # defensive in case umask widened
-        os.replace(tmp_path, env_path)
+            try:
+                os.write(fd, content)
+            finally:
+                os.close(fd)
+            os.chmod(tmp_path, 0o600)  # defensive in case umask widened
+            os.replace(tmp_path, env_path)
+        except Exception:
+            # Best-effort cleanup so a partial rotate does not strand a tmp
+            # file containing the new refresh token (which would also block
+            # subsequent rotates via O_EXCL if we'd used a fixed name).
+            try:
+                tmp_path.unlink()
+            except FileNotFoundError:
+                pass  # os.replace already succeeded before the failure
+            except OSError:
+                pass  # best-effort only; swallow to let original exception propagate
+            raise
     else:
         fd = os.open(env_path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_TRUNC, 0o600)
         try:
