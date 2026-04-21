@@ -2,8 +2,10 @@
 -- Source: consensus-dashboard-kpi research/codex.md §2 + finding J-03 sparse-metric semantics
 -- Ship: consensus-dashboard-kpi/verdict-round9.md
 -- Applied via: python -m app.db migrate
-
-BEGIN;
+--
+-- Note: this file does NOT contain BEGIN/COMMIT. Transaction boundaries are
+-- managed by app/db.py so that DDL + schema_migrations bookkeeping are atomic
+-- (Codex round-1 review, finding [high] atomicity, 2026-04-21).
 
 -- Schema versioning
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -129,5 +131,3 @@ CREATE INDEX idx_vpm_video_active
 
 CREATE INDEX idx_vpm_city_active
     ON video_project_map(city_slug, active);
-
-COMMIT;

@@ -65,8 +65,10 @@ def _applied_versions(conn: sqlite3.Connection) -> dict[str, str]:
     return {r["version"]: r["sha256"] for r in conn.execute("SELECT version, sha256 FROM schema_migrations")}
 
 
-def _discover_migrations(dir_: Path = _MIGRATIONS_DIR) -> list[tuple[str, Path, str]]:
-    files = sorted(p for p in dir_.glob("*.sql"))
+def _discover_migrations(dir_: Path | None = None) -> list[tuple[str, Path, str]]:
+    # Resolve at call time so tests can monkey-patch _MIGRATIONS_DIR.
+    base = dir_ if dir_ is not None else _MIGRATIONS_DIR
+    files = sorted(p for p in base.glob("*.sql"))
     out: list[tuple[str, Path, str]] = []
     for p in files:
         version = p.stem.split("_", 1)[0]
@@ -74,7 +76,36 @@ def _discover_migrations(dir_: Path = _MIGRATIONS_DIR) -> list[tuple[str, Path, 
     return out
 
 
+def _split_statements(sql: str) -> list[str]:
+    """Split semicolon-delimited SQL into individual statements.
+
+    Good enough for DDL-only migrations (no string literals containing ';').
+    Drops empty statements and standalone BEGIN/COMMIT — transaction boundaries
+    are owned by the migrator, not the SQL file (Codex round-1 finding [high]).
+    """
+    out: list[str] = []
+    for raw in sql.split(";"):
+        stmt = raw.strip()
+        if not stmt:
+            continue
+        if stmt.upper() in ("BEGIN", "COMMIT"):
+            continue
+        # Drop SQL line comments that stand alone; keep multi-line bodies intact
+        lines = [ln for ln in stmt.splitlines() if not ln.strip().startswith("--")]
+        body = "\n".join(lines).strip()
+        if body:
+            out.append(body)
+    return out
+
+
 def migrate() -> int:
+    """Apply pending migrations atomically per version.
+
+    Each migration's DDL + schema_migrations insert run inside one
+    BEGIN IMMEDIATE transaction so a crash between steps cannot leave the DB
+    with schema applied but unrecorded (Codex round-1 finding [high]).
+    BEGIN IMMEDIATE also serializes concurrent migrators against each other.
+    """
     with connect() as conn:
         applied = _applied_versions(conn)
         migrations = _discover_migrations()
@@ -88,11 +119,18 @@ def migrate() -> int:
                         f"(stored sha {applied[version]} vs current {current_sha}) — refusing to overwrite"
                     )
                 continue
-            conn.executescript(sql)
-            conn.execute(
-                "INSERT INTO schema_migrations(version, applied_at, sha256) VALUES (?,?,?)",
-                (version, _now_iso(), current_sha),
-            )
+            conn.execute("BEGIN IMMEDIATE")
+            try:
+                for stmt in _split_statements(sql):
+                    conn.execute(stmt)
+                conn.execute(
+                    "INSERT INTO schema_migrations(version, applied_at, sha256) VALUES (?,?,?)",
+                    (version, _now_iso(), current_sha),
+                )
+                conn.execute("COMMIT")
+            except Exception:
+                conn.execute("ROLLBACK")
+                raise
             pending += 1
             print(f"[migrate] applied {version} ({path.name})", file=sys.stderr)
         if pending == 0:

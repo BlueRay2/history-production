@@ -72,3 +72,94 @@ def test_schema_migrations_table_shape(fresh_db):
     with dbmod.connect() as conn:
         cols = {r["name"] for r in conn.execute("PRAGMA table_info(schema_migrations)")}
     assert cols == {"version", "applied_at", "sha256"}
+
+
+def test_full_kpi_schema_shape(fresh_db):
+    """Asserts all 8 KPI tables + 5 indexes + key FKs land from migration 001.
+
+    Addresses Codex round-1 finding [medium]: previous tests would pass even if
+    a required table/FK/index were missing. This test catches regressions in
+    the schema promised by task-01.
+    """
+    dbmod.migrate()
+    expected_tables = {
+        "schema_migrations",
+        "videos",
+        "projects",
+        "video_project_map",
+        "ingestion_runs",
+        "channel_metric_snapshots",
+        "video_metric_snapshots",
+        "video_retention_points",
+        "git_events",
+    }
+    expected_indexes = {
+        "idx_channel_metric_latest",
+        "idx_video_metric_latest",
+        "idx_git_events_city_type",
+        "idx_vpm_video_active",
+        "idx_vpm_city_active",
+    }
+    with dbmod.connect() as conn:
+        tables = {
+            r["name"]
+            for r in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            )
+        }
+        indexes = {
+            r["name"]
+            for r in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='index' AND name NOT LIKE 'sqlite_%'"
+            )
+        }
+        # Key FK edges we promised
+        vpm_fks = list(conn.execute("PRAGMA foreign_key_list(video_project_map)"))
+        vms_fks = list(conn.execute("PRAGMA foreign_key_list(video_metric_snapshots)"))
+        ge_fks = list(conn.execute("PRAGMA foreign_key_list(git_events)"))
+    assert expected_tables.issubset(tables), f"missing tables: {expected_tables - tables}"
+    assert expected_indexes.issubset(indexes), f"missing indexes: {expected_indexes - indexes}"
+    # video_project_map: both FKs must exist
+    fk_targets_vpm = {(fk["table"], fk["from"], fk["to"]) for fk in vpm_fks}
+    assert ("projects", "city_slug", "city_slug") in fk_targets_vpm
+    assert ("videos", "video_id", "video_id") in fk_targets_vpm
+    # video_metric_snapshots: FK to videos + ingestion_runs
+    fk_targets_vms = {(fk["table"], fk["from"], fk["to"]) for fk in vms_fks}
+    assert ("videos", "video_id", "video_id") in fk_targets_vms
+    assert ("ingestion_runs", "run_id", "run_id") in fk_targets_vms
+    # git_events: FK to projects
+    fk_targets_ge = {(fk["table"], fk["from"], fk["to"]) for fk in ge_fks}
+    assert ("projects", "city_slug", "city_slug") in fk_targets_ge
+
+
+def test_atomic_migration_rollback_on_failure(fresh_db, tmp_path, monkeypatch):
+    """If a migration SQL errors mid-way, the transaction rolls back AND
+    the schema_migrations row is NOT inserted (so re-running migrate works).
+
+    Covers Codex round-1 finding [high]: atomicity between DDL + bookkeeping.
+    """
+    # Point migrator at a custom migrations dir containing a broken migration.
+    custom_dir = tmp_path / "migrations"
+    custom_dir.mkdir()
+    (custom_dir / "999_broken.sql").write_text(
+        "CREATE TABLE good_table (id INTEGER PRIMARY KEY);\n"
+        "CREATE TABLE bad_table (id INTEGER PRIMARY KEY REFERENCES nonexistent_table(id));\n"
+        "SYNTAX ERROR HERE;\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(dbmod, "_MIGRATIONS_DIR", custom_dir)
+    with pytest.raises(sqlite3.OperationalError):
+        dbmod.migrate()
+    # After failure: neither tables nor the schema_migrations row should exist
+    # for version 999. good_table was created before the syntax error but the
+    # explicit ROLLBACK undoes it.
+    with dbmod.connect() as conn:
+        tables = {
+            r["name"]
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        }
+        applied = list(
+            conn.execute("SELECT version FROM schema_migrations WHERE version='999'")
+        )
+    assert "good_table" not in tables, "ROLLBACK should have undone the CREATE"
+    assert applied == [], "schema_migrations must not record a failed migration"
