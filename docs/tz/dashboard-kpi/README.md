@@ -1,7 +1,7 @@
 # Process — Dashboard KPI (identical to gemini-delegation-hardening)
 
 **Branch:** `kpi`
-**Source of truth:** `/home/aiagent/assistant/git/consensus-dashboard-kpi/` (consensus v3 run, 2026-04-21). Current authoritative verdict: `verdict-round6.md` (Codex-judge under owner-override of 5-round cap per msg 6830). Prior verdicts `verdict.md` (Round 3), `verdict-round4.md`, `verdict-round5.md` are preserved for audit trail; only Round 6 (or later) governs ship authorization.
+**Source of truth:** `/home/aiagent/assistant/git/consensus-dashboard-kpi/` (consensus v3 run, 2026-04-21). **Authoritative verdict:** the highest-numbered `verdict-roundN.md` file in that directory (Codex-judge under owner-override of 5-round cap per Ярослав msg 6830). Prior verdicts `verdict.md` (Round 3) and earlier `verdict-roundM.md` where M < N are preserved for audit trail only — they do NOT govern current ship authorization.
 **Created:** 2026-04-21T19:25+03:00
 **Owner:** Claude (coordinator). Review: Codex + Gemini per-task (see review loop below).
 
@@ -9,7 +9,7 @@
 
 Consensus Mode v3 run diagnosed the 9-task bundle for a local-hosted KPI dashboard for YouTube channel "Cities Evolution" (44 subs / 24 videos / 8.5k views). Dashboard pulls daily at 03:30 GMT+3 via pure-Python YouTube API client, extracts intelligent KPIs from `history-production` git repo (cycle time idea→publish, script iterations, cost-per-video estimates), serves at `127.0.0.1:<port>` via Flask + Jinja + HTMX + Chart.js + SQLite.
 
-**Consensus state:** initial Round 5 verdict was `no-ship` with three fixable findings (J-01 process/README alignment, J-02 task-08 deploy path, J-03 sparse-metric semantics). J-02 and J-03 confirmed resolved in Round 6. J-01 partial → remaining alignment fixes applied in this revision. Latest judge decision documented in `consensus-dashboard-kpi/verdict-round6.md` (or later).
+**Consensus state:** initial Round 5 verdict was `no-ship` with three fixable findings (J-01 process/README alignment, J-02 task-08 deploy path, J-03 sparse-metric semantics). J-02 and J-03 confirmed resolved in Round 6. J-01 converged across Rounds 6–8. J-04 (cron path drift) raised Round 6 and resolved Round 7. Latest judge decision is always the highest-numbered `verdict-roundN.md` in the consensus directory.
 
 Full consensus artefacts (research, debates, findings register, verdicts) are in `assistant/git/consensus-dashboard-kpi/`.
 
@@ -85,6 +85,6 @@ Each task file has a **Review loop** section with explicit sign-off slots. Workf
 - Research: `consensus-dashboard-kpi/research/{claude,codex,gemini,gemini-status}.md`
 - Debates: `consensus-dashboard-kpi/debate/round-{1,2,3}.md`
 - Findings register: `consensus-dashboard-kpi/findings.tson`
-- **Authoritative judge verdict:** `consensus-dashboard-kpi/verdict-round6.md` or later (Codex judge under owner-override per Ярослав msg 6830). Prior rounds `verdict.md` (Round 3), `verdict-round4.md`, `verdict-round5.md` preserved for audit trail only — do NOT use them to determine current ship state.
+- **Authoritative judge verdict:** the highest-numbered `consensus-dashboard-kpi/verdict-roundN.md` file (Codex judge under owner-override per Ярослав msg 6830). Prior rounds (`verdict.md` Round 3 through earlier `verdict-roundM.md` files) preserved for audit trail only — do NOT use them to determine current ship state.
 - Debate quality: `consensus-dashboard-kpi/debate-quality.md`
 - Process reference (template): `/home/aiagent/assistant/git/home_server/docs/tz/gemini-delegation-hardening/README.md`

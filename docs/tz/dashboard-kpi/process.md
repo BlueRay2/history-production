@@ -2,7 +2,7 @@
 
 **This file:** describes how to execute the 9-task bundle.
 **Status table + task index:** [README.md](README.md)
-**Source of truth:** `/home/aiagent/assistant/git/consensus-dashboard-kpi/` (consensus v3 run, 2026-04-21). Authoritative verdict: `verdict-round6.md` or later (Codex-judge under owner-override of 5-round cap per Ярослав msg 6830). Prior verdicts (Round 3/4/5) preserved for audit only.
+**Source of truth:** `/home/aiagent/assistant/git/consensus-dashboard-kpi/` (consensus v3 run, 2026-04-21). **Authoritative verdict:** the highest-numbered `verdict-roundN.md` file in that directory (Codex-judge under owner-override of 5-round cap per Ярослав msg 6830). Prior verdicts preserved for audit only.
 
 ## Execution model
 
@@ -74,7 +74,7 @@ Proceed through tasks in dependency order **without mid-bundle pauses** UNLESS:
 
 ## Ship authorization
 
-Consensus run extended beyond the 5-round cap by explicit owner-override (Ярослав msg 6830: "Продолжайте дебаты пока судья не даст формальное разрешение на продолжение"). **The authoritative judge verdict is the latest `verdict-roundN.md` in `consensus-dashboard-kpi/` — currently `verdict-round7.md` or later.** Do not consult earlier verdicts to determine current ship state.
+Consensus run extended beyond the 5-round cap by explicit owner-override (Ярослав msg 6830: "Продолжайте дебаты пока судья не даст формальное разрешение на продолжение"). **The authoritative judge verdict is the highest-numbered `verdict-roundN.md` in `consensus-dashboard-kpi/`.** Do not consult earlier verdicts to determine current ship state.
 
 Finding state across all rounds:
 - **F-02, F-05, F-08** (the three high-severity findings from Round 3) — **resolved** in the task bundle (confirmed by Codex Round 6).
