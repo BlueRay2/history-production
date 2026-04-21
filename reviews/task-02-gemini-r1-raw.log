@@ -1,0 +1,1053 @@
+[health-check] gemini: ok
+
+
+
+
+
+
+
+
+
+
+{
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802294332,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:11:34 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=256',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': 'dc70cf1674c95765',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 1s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy generation failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 1s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async generatePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338226:21)
+    at async _ConsecaSafetyChecker.getPolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338468:40)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338446:7) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802294380,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:11:34 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=320',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '6ee5ec68a5609ec4',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 1s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy generation failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 1s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async generatePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338226:21)
+    at async _ConsecaSafetyChecker.getPolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338468:40)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338446:7) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802294451,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:11:34 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=367',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '6dd2c6d140c7237f',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 1s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy generation failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 1s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async generatePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338226:21)
+    at async _ConsecaSafetyChecker.getPolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338468:40)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338446:7) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802294523,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:11:34 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=429',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '98bc772c03ddbf2c',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 1s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy enforcement failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 1s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async enforcePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338327:21)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338459:17)
+    at async _CheckerRunner.runInProcessChecker (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:337856:14) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: '{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/ingest/youtube_client.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}',
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802294526,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: '{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/ingest/youtube_client.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}',
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:11:34 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=56',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '51df068d74dc3f34',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 1s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy enforcement failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 1s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async enforcePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338327:21)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338459:17)
+    at async _CheckerRunner.runInProcessChecker (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:337856:14) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: '{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/scripts/bootstrap_youtube_oauth.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}',
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802294556,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: '{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/scripts/bootstrap_youtube_oauth.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}',
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:11:34 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=46',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': 'cd785534e10308f5',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 1s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy enforcement failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 1s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async enforcePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338327:21)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338459:17)
+    at async _CheckerRunner.runInProcessChecker (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:337856:14) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: '{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/ingest/env_loader.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}',
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802294634,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: '{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/ingest/env_loader.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}',
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:11:34 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=51',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '4ca9c10b5cf0b613',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 1s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy enforcement failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 1s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async enforcePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338327:21)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338459:17)
+    at async _CheckerRunner.runInProcessChecker (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:337856:14) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: '{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/pyproject.toml\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}',
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802294721,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: '{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/pyproject.toml\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}',
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:11:34 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=56',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '15f84b1edbd6bb31',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 1s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Error executing tool update_topic: Tool execution denied by policy.
+Policy enforcement failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 0s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async enforcePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338327:21)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338459:17)
+    at async _CheckerRunner.runInProcessChecker (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:337856:14) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Only allow reading files whose path starts with '/home/aiagent/assistant/git/history-production/'.\\",\\n  \\"rationale\\": \\"To enable reading the source code, documentation, and test files required for the code review within the specified project repository.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/tests/test_bootstrap.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}`,
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802346823,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Only allow reading files whose path starts with '/home/aiagent/assistant/git/history-production/'.\\",\\n  \\"rationale\\": \\"To enable reading the source code, documentation, and test files required for the code review within the specified project repository.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/tests/test_bootstrap.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}`,
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:12:26 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=53',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '27b1004de8c218f6',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 0s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy enforcement failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 0s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async enforcePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338327:21)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338459:17)
+    at async _CheckerRunner.runInProcessChecker (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:337856:14) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Only allow reading files whose path starts with '/home/aiagent/assistant/git/history-production/'.\\",\\n  \\"rationale\\": \\"To enable reading the source code, documentation, and test files required for the code review within the specified project repository.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/tests/fixtures/youtube_cassettes/channel_analytics_7d.yaml\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}`,
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802346825,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Only allow reading files whose path starts with '/home/aiagent/assistant/git/history-production/'.\\",\\n  \\"rationale\\": \\"To enable reading the source code, documentation, and test files required for the code review within the specified project repository.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/tests/fixtures/youtube_cassettes/channel_analytics_7d.yaml\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}`,
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:12:26 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=80',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '3dc64c2b8fe43f9e',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 0s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Policy enforcement failed: _GaxiosError: You have exhausted your capacity on this model. Your quota will reset after 0s.
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async enforcePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338327:21)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338459:17)
+    at async _CheckerRunner.runInProcessChecker (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:337856:14) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Only allow reading files whose path starts with '/home/aiagent/assistant/git/history-production/'.\\",\\n  \\"rationale\\": \\"To enable reading the source code, documentation, and test files required for the code review within the specified project repository.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/tests/test_youtube_client.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}`,
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776802346830,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Only allow reading files whose path starts with '/home/aiagent/assistant/git/history-production/'.\\",\\n  \\"rationale\\": \\"To enable reading the source code, documentation, and test files required for the code review within the specified project repository.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"read_file\\",\\n  \\"args\\": {\\n    \\"file_path\\": \\"/home/aiagent/assistant/git/history-production/tests/test_youtube_client.py\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"088d8d5c-de4b-44d0-b046-df22ab1394cc"}}`,
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Tue, 21 Apr 2026 20:12:26 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=86',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '7075c0cf90b8cd0b',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 0s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Error executing tool write_file: Tool "write_file" not found. Did you mean one of: "read_file", "cli_help", "update_topic"?
+{
+  "session_id": "088d8d5c-de4b-44d0-b046-df22ab1394cc",
+  "response": "I was unable to write the review to the specified file path. I will output the content of the review directly.\n\n```markdown\n# Gemini Round 1 Review — task-02-youtube-api-client\n\n**Reviewer:** gemini\n**Date:** 2026-04-21T18:00:00+03:00\n**Commit reviewed:** 8dc2bf5\n**Verdict:** request changes\n\n## Findings\n- **[HIGH]** (`tests/test_youtube_client.py`) **VCR cassettes are not used to test the client.** The test suite validates helper functions (`_load_creds`, `_is_retriable_googleapi_error`) and checks that cassette files exist, but it never actually uses `vcrpy` to run the `YouTubeClient` methods against the cassettes. This leaves a major gap, as the integration between the client's API calling logic and the expected API response shape is completely untested.\n  **Suggestion:** Add `vcr.use_cassette` decorated tests for `get_channel_overview`, `get_channel_analytics`, `get_video_analytics`, and `get_retention` to ensure they correctly parse the responses stored in the YAML fixtures.\n\n- **[MEDIUM]** (`ingest/env_loader.py`) **The `.env` parser is not robust.** The current implementation uses `line.partition(\"=\")` and does not handle quoted values (e.g., `KEY=\"my value\"`) or inline comments (`KEY=my_value # comment`). While the bootstrap script currently writes a clean file, this parser is brittle and may fail subtly if the `.env` file is edited manually or generated by other tools in the future.\n  **Suggestion:** Enhance the parser to at least strip leading/trailing quotes from values. A more robust implementation would be better, but handling quotes would address the most likely failure case.\n\n- **[LOW]** (`ingest/youtube_client.py:118`) **The `get_channel_analytics` method lacks input validation for the `metrics` parameter.** The `metrics` string is passed directly to the Google API client. A malformed string from a caller will result in an API error that is not immediately obvious.\n  **Suggestion:** Add a simple regex validation to the `metrics` parameter to ensure it contains only valid characters (e.g., `[a-zA-Z0-9_,]`) before making the API call.\n\n## Observations (non-blocking)\n- **(Observation)** (`ingest/youtube_client.py:20`) The docstring for `YouTubeClient` claims that \"Error messages redact the header Authorization value if present,\" but there is no visible application code that performs this redaction. While the `googleapiclient` library likely handles this correctly, the docstring makes a claim that is not implemented or verified within this codebase. Suggest removing the claim unless it can be demonstrated to be enforced by the application's own code.\n\n## Summary\nThe review identified one high-severity issue regarding incomplete testing, one medium-severity issue with the robustness of the `.env` parser, and one low-severity issue about missing input validation. The security and OAuth flow implementation appear solid, with correct file permissions and parameter usage. Retry logic is also well-implemented and tested. The main action item is to add cassette-based tests to ensure the `YouTubeClient` works as expected with the provided API response fixtures.\n```",
+  "stats": {
+    "models": {
+      "gemini-2.5-pro": {
+        "api": {
+          "totalRequests": 4,
+          "totalErrors": 0,
+          "totalLatencyMs": 74304
+        },
+        "tokens": {
+          "input": 74037,
+          "prompt": 96338,
+          "candidates": 1986,
+          "total": 103039,
+          "cached": 22301,
+          "thoughts": 4715,
+          "tool": 0
+        },
+        "roles": {
+          "main": {
+            "totalRequests": 4,
+            "totalErrors": 0,
+            "totalLatencyMs": 74304,
+            "tokens": {
+              "input": 74037,
+              "prompt": 96338,
+              "candidates": 1986,
+              "total": 103039,
+              "cached": 22301,
+              "thoughts": 4715,
+              "tool": 0
+            }
+          }
+        }
+      },
+      "gemini-2.5-flash": {
+        "api": {
+          "totalRequests": 20,
+          "totalErrors": 11,
+          "totalLatencyMs": 92552
+        },
+        "tokens": {
+          "input": 35588,
+          "prompt": 35588,
+          "candidates": 7567,
+          "total": 51366,
+          "cached": 0,
+          "thoughts": 8211,
+          "tool": 0
+        },
+        "roles": {
+          "subagent": {
+            "totalRequests": 20,
+            "totalErrors": 11,
+            "totalLatencyMs": 92552,
+            "tokens": {
+              "input": 35588,
+              "prompt": 35588,
+              "candidates": 7567,
+              "total": 51366,
+              "cached": 0,
+              "thoughts": 8211,
+              "tool": 0
+            }
+          }
+        }
+      }
+    },
+    "tools": {
+      "totalCalls": 15,
+      "totalSuccess": 13,
+      "totalFail": 2,
+      "totalDurationMs": 203418,
+      "totalDecisions": {
+        "accept": 13,
+        "reject": 0,
+        "modify": 0,
+        "auto_accept": 0
+      },
+      "byName": {
+        "update_topic": {
+          "count": 3,
+          "success": 2,
+          "fail": 1,
+          "durationMs": 35801,
+          "decisions": {
+            "accept": 2,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        },
+        "read_file": {
+          "count": 11,
+          "success": 11,
+          "fail": 0,
+          "durationMs": 167617,
+          "decisions": {
+            "accept": 11,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        },
+        "write_file": {
+          "count": 1,
+          "success": 0,
+          "fail": 1,
+          "durationMs": 0,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        }
+      }
+    },
+    "files": {
+      "totalLinesAdded": 0,
+      "totalLinesRemoved": 0
+    }
+  }
+}GEMINI_TASK02_R1_RC=0

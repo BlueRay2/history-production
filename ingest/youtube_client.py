@@ -16,18 +16,35 @@ Quota accounting:
 
 No secrets in logs:
   - Refresh token never logged. Access token never logged.
-  - Error messages redact the header Authorization value if present.
+  - googleapiclient's default error formatting does not include Authorization
+    headers; we do not explicitly redact them ourselves (earlier docstring
+    claim removed in r1 per Gemini obs).
 """
 
 from __future__ import annotations
 
 import logging
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
 from .env_loader import load_env
 from app.lib.retry import NonRetriable, is_transient_http_status, retry
+
+# Gemini LOW r1: guard against malformed `metrics`/`dimensions` strings before
+# hitting the API. YouTube Analytics v2 metric identifiers are ASCII word
+# chars + commas; reject everything else to surface a callsite bug early.
+_METRIC_TOKEN_RE = re.compile(r"^[A-Za-z0-9_,]+$")
+
+
+def _validate_metrics(metrics: str) -> None:
+    if not _METRIC_TOKEN_RE.match(metrics):
+        raise ValueError(
+            f"metrics string contains invalid characters: {metrics!r}. "
+            "Expected comma-separated ASCII identifiers, e.g. "
+            "'views,impressionsClickThroughRate,averageViewDuration'"
+        )
 
 _LOG = logging.getLogger(__name__)
 
@@ -100,10 +117,12 @@ class YouTubeClient:
     ):
         self._creds = _load_creds(env_path, client_secret_path)
         self._google_creds = _build_credentials(self._creds)
-        from googleapiclient.discovery import build
+        # Import at call site so tests can monkey-patch `ingest.youtube_client.build`.
+        from googleapiclient import discovery as _discovery  # noqa: WPS433 (local import)
 
-        self._data = build("youtube", "v3", credentials=self._google_creds, cache_discovery=False)
-        self._analytics = build(
+        build_fn = getattr(_discovery, "build")  # respects monkey-patch on _discovery
+        self._data = build_fn("youtube", "v3", credentials=self._google_creds, cache_discovery=False)
+        self._analytics = build_fn(
             "youtubeAnalytics", "v2", credentials=self._google_creds, cache_discovery=False
         )
 
@@ -131,6 +150,7 @@ class YouTubeClient:
         run_id: str,
     ) -> dict:
         """Channel-level Analytics API query. start_date/end_date in YYYY-MM-DD."""
+        _validate_metrics(metrics)
         _LOG.info(
             "get_channel_analytics run_id=%s start=%s end=%s metrics=%s dims=%s",
             run_id,
@@ -167,6 +187,7 @@ class YouTubeClient:
         run_id: str,
     ) -> dict:
         """Per-video Analytics query. Default dimension=day for time-series."""
+        _validate_metrics(metrics)
         _LOG.info(
             "get_video_analytics run_id=%s video_id=%s start=%s end=%s metrics=%s",
             run_id,

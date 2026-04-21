@@ -51,9 +51,10 @@ def test_load_gcp_project(tmp_path, bootstrap):
     assert bootstrap._load_gcp_project(cs) == "my-project-42"
 
 
-def test_write_env_creates_600_file(tmp_path, bootstrap):
+def test_write_env_creates_600_file_exclusive(tmp_path, bootstrap):
+    """First-create path uses O_EXCL (r1 Codex MED)."""
     env = tmp_path / ".env"
-    bootstrap._write_env(env, "1//fake-token", "my-project-42")
+    bootstrap._write_env_atomic(env, "1//fake-token", "my-project-42", rotate=False)
     assert env.exists()
     mode = env.stat().st_mode & 0o777
     assert mode == 0o600, f"expected 0o600 perms, got {oct(mode)}"
@@ -61,6 +62,29 @@ def test_write_env_creates_600_file(tmp_path, bootstrap):
     assert "YOUTUBE_REFRESH_TOKEN=1//fake-token" in content
     assert "GCP_PROJECT=my-project-42" in content
     assert "YOUTUBE_SCOPES=" in content
+
+
+def test_write_env_refuses_when_exists_without_rotate(tmp_path, bootstrap):
+    """O_EXCL must reject a pre-existing file when rotate=False."""
+    env = tmp_path / ".env"
+    env.write_text("pre-existing\n", encoding="utf-8")
+    os.chmod(env, 0o600)
+    with pytest.raises(FileExistsError):
+        bootstrap._write_env_atomic(env, "1//fake-token", "my-project-42", rotate=False)
+
+
+def test_write_env_atomic_rotate(tmp_path, bootstrap):
+    """Rotate path writes a temp file + os.replace() atomically."""
+    env = tmp_path / ".env"
+    env.write_text("old=1\n", encoding="utf-8")
+    os.chmod(env, 0o600)
+    bootstrap._write_env_atomic(env, "1//NEW", "proj", rotate=True)
+    content = env.read_text(encoding="utf-8")
+    assert "1//NEW" in content
+    assert "old=1" not in content
+    # No stale temp file left behind
+    assert not (tmp_path / ".env.tmp").exists()
+    assert env.stat().st_mode & 0o777 == 0o600
 
 
 def test_main_refuses_overwrite(tmp_path, bootstrap, monkeypatch, capsys):
@@ -83,7 +107,7 @@ def test_main_rotate_backs_up(tmp_path, bootstrap, monkeypatch):
     env.write_text("YOUTUBE_REFRESH_TOKEN=old\nGCP_PROJECT=old\n", encoding="utf-8")
     os.chmod(env, 0o600)
 
-    monkeypatch.setattr(bootstrap, "_run_oauth_flow", lambda _p: "1//NEW-TOKEN")
+    monkeypatch.setattr(bootstrap, "_run_oauth_flow", lambda _p, port=0: "1//NEW-TOKEN")
     rc = bootstrap.main(["--client-secret", str(cs), "--env", str(env), "--rotate"])
     assert rc == 0
     backups = list(tmp_path.glob(".env.bak.*"))
