@@ -2,7 +2,7 @@
 
 **This file:** describes how to execute the 9-task bundle.
 **Status table + task index:** [README.md](README.md)
-**Source of truth:** `/home/aiagent/assistant/git/consensus-dashboard-kpi/` (consensus v3 run, 2026-04-21, judge verdict: `round-4-required` — see coordinator addendum).
+**Source of truth:** `/home/aiagent/assistant/git/consensus-dashboard-kpi/` (consensus v3 run, 2026-04-21). Authoritative verdict: `verdict-round6.md` or later (Codex-judge under owner-override of 5-round cap per Ярослав msg 6830). Prior verdicts (Round 3/4/5) preserved for audit only.
 
 ## Execution model
 

@@ -6,18 +6,19 @@
 
 ## Scope
 
-1. `scripts/run_refresh.py`:
+1. `scripts/run_refresh.py` — lives **inside the dashboard repo tree** at `{repo_root}/scripts/run_refresh.py` where `{repo_root}` is this (`history-production`) repo. Invocation via the deploy symlink: `/home/aiagent/assistant/deploys/kpi-dashboard/scripts/run_refresh.py`.
    - Entry point for daily cron.
    - Calls `ingest.jobs.run_daily_refresh(target_date=date.today() - timedelta(days=2))` (preliminary data handling).
    - Exit codes: 0 ok, 1 api failure, 2 db failure, 3 partial, 40 quota exhausted.
-   - Logs to `logs/dashboard-kpi.log` (rotated daily, keep 30 files).
+   - Logs to `/home/aiagent/assistant/logs/dashboard-kpi.log` (rotated daily, keep 30 files; path outside repo because logs are runtime state).
    - On non-zero: Telegram alert to Ярослав (208368262) via `scripts/queue-eta-notify.sh` pattern.
 2. Cron registration: `CronCreate` durable:true, id `dashboard_kpi_refresh`, schedule `30 3 * * *` (GMT+3 local), prompt:
    ```
    # cron-id: dashboard_kpi_refresh
-   Execute /home/aiagent/assistant/scripts/run_refresh.py and verify rc=0.
+   Execute /home/aiagent/assistant/deploys/kpi-dashboard/scripts/run_refresh.py and verify rc=0.
    ```
-   Fallback: systemd user timer `~/.config/systemd/user/dashboard-kpi-refresh.{service,timer}` with `OnCalendar=*-*-* 03:30:00 Europe/Minsk`. Both layers per CLAUDE.md bypass-the-weakness rule.
+   Note: path uses the deploy symlink established in step 3 (`deploys/kpi-dashboard → history-production`) — resolves regardless of which branch is checked out.
+   Fallback: systemd user timer `~/.config/systemd/user/dashboard-kpi-refresh.{service,timer}` with `OnCalendar=*-*-* 03:30:00 Europe/Minsk` and `ExecStart=/home/aiagent/miniconda3/envs/practicum/bin/python /home/aiagent/assistant/deploys/kpi-dashboard/scripts/run_refresh.py`. Both layers per CLAUDE.md bypass-the-weakness rule.
 3. **Deploy path (J-02 resolution from consensus Round 5):** dashboard code lives in `history-production` repo `kpi` branch. Install script creates symlink:
    `/home/aiagent/assistant/deploys/kpi-dashboard → /home/aiagent/assistant/git/history-production` (worktree on `kpi` branch while WIP; switched to `main` once task bundle merges).
    Acceptance criterion: `readlink /home/aiagent/assistant/deploys/kpi-dashboard` must exit 0 post-install.

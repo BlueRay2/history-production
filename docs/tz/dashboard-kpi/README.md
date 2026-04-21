@@ -1,7 +1,7 @@
 # Process — Dashboard KPI (identical to gemini-delegation-hardening)
 
 **Branch:** `kpi`
-**Source of truth:** `/home/aiagent/assistant/git/consensus-dashboard-kpi/` (consensus v3 run, 2026-04-21, ship verdict by Codex-judge; quorum degraded due to Gemini 429 capacity).
+**Source of truth:** `/home/aiagent/assistant/git/consensus-dashboard-kpi/` (consensus v3 run, 2026-04-21). Current authoritative verdict: `verdict-round6.md` (Codex-judge under owner-override of 5-round cap per msg 6830). Prior verdicts `verdict.md` (Round 3), `verdict-round4.md`, `verdict-round5.md` are preserved for audit trail; only Round 6 (or later) governs ship authorization.
 **Created:** 2026-04-21T19:25+03:00
 **Owner:** Claude (coordinator). Review: Codex + Gemini per-task (see review loop below).
 
@@ -9,7 +9,9 @@
 
 Consensus Mode v3 run diagnosed the 9-task bundle for a local-hosted KPI dashboard for YouTube channel "Cities Evolution" (44 subs / 24 videos / 8.5k views). Dashboard pulls daily at 03:30 GMT+3 via pure-Python YouTube API client, extracts intelligent KPIs from `history-production` git repo (cycle time idea→publish, script iterations, cost-per-video estimates), serves at `127.0.0.1:<port>` via Flask + Jinja + HTMX + Chart.js + SQLite.
 
-Full consensus artefacts, including independent judge verdict and findings register, are in `assistant/git/consensus-dashboard-kpi/`.
+**Consensus state:** initial Round 5 verdict was `no-ship` with three fixable findings (J-01 process/README alignment, J-02 task-08 deploy path, J-03 sparse-metric semantics). J-02 and J-03 confirmed resolved in Round 6. J-01 partial → remaining alignment fixes applied in this revision. Latest judge decision documented in `consensus-dashboard-kpi/verdict-round6.md` (or later).
+
+Full consensus artefacts (research, debates, findings register, verdicts) are in `assistant/git/consensus-dashboard-kpi/`.
 
 ## Task index + live status
 
@@ -29,16 +31,17 @@ Full consensus artefacts, including independent judge verdict and findings regis
 
 Each task file has a **Review loop** section with explicit sign-off slots. Workflow (identical to gemini-delegation-hardening):
 
-1. **I (Claude) implement** the task on this branch (code + tests + golden fixtures where required).
-2. **Status update** in the task file + this index: `pending` → `in-review-codex`.
-3. **Delegate to Codex** via `scripts/codex-tracked-exec.sh` with a prompt pointing at this task file + the diff. Codex writes its review comments into `reviews/task-XX/codex-round-N.md` (create dir if needed).
-4. If Codex has comments → I apply fixes → status `in-review-codex` stays → round N+1 with Codex.
-5. When Codex returns "accepted, no comments" → status `in-review-gemini`.
-6. **Delegate to Gemini** via `scripts/gemini-agent.sh review`. Gemini writes to `reviews/task-XX/gemini-round-N.md`.
-7. If Gemini has comments → fix → return to step 6 (round N+1).
-8. When Gemini also returns "accepted, no comments" → status `ready-to-merge`.
-9. Merge into this branch (fast-forward commits; no PR to main until whole bundle is ready).
-10. Mark task `merged` in the index; push to `origin/kpi`.
+1. **Claim task:** transition status `pending` → `in-progress` in this index. Push to origin.
+2. **Implement** on this branch (code + tests + golden fixtures where the task file requires them).
+3. **Hand off to Codex review:** status `in-progress` → `in-review-codex (round 1)`.
+4. **Delegate to Codex** via `scripts/codex-tracked-exec.sh` with a prompt pointing at this task file + the diff. Codex writes review comments into `reviews/task-XX/codex-round-N.md` (create dir if needed).
+5. If Codex has comments → apply fixes → bump round counter → re-delegate until Codex returns "accepted, no comments".
+6. **Hand off to Gemini review:** status `in-review-codex` → `in-review-gemini (round 1)`.
+7. **Delegate to Gemini** via `scripts/gemini-agent.sh review`. Gemini writes to `reviews/task-XX/gemini-round-N.md`.
+8. If Gemini has comments that require code changes Codex already cleared → regress to `in-review-codex` round N+1, then return to `in-review-gemini`. Otherwise iterate Gemini round N+1.
+9. When Gemini also returns "accepted, no comments" → status `ready-to-merge`.
+10. Merge fast-forward into `kpi` branch (no PR to `main` until whole bundle is ready). Mark task `merged`.
+11. Push `origin/kpi` after every status transition.
 
 **Anti-loop guard:** if a task hits 5 review rounds without convergence, pause and escalate to Ярослав in Telegram for guidance. Do NOT silently ship a contested change.
 
