@@ -18,15 +18,22 @@
    Execute /home/aiagent/assistant/scripts/run_refresh.py and verify rc=0.
    ```
    Fallback: systemd user timer `~/.config/systemd/user/dashboard-kpi-refresh.{service,timer}` with `OnCalendar=*-*-* 03:30:00 Europe/Minsk`. Both layers per CLAUDE.md bypass-the-weakness rule.
-3. Systemd user service `claude-kpi-dashboard.service`:
-   - `ExecStart=flask --app app.main run --host 127.0.0.1 --port ${DASHBOARD_KPI_PORT:-8787}`
+3. **Deploy path (J-02 resolution from consensus Round 5):** dashboard code lives in `history-production` repo `kpi` branch. Install script creates symlink:
+   `/home/aiagent/assistant/deploys/kpi-dashboard → /home/aiagent/assistant/git/history-production` (worktree on `kpi` branch while WIP; switched to `main` once task bundle merges).
+   Acceptance criterion: `readlink /home/aiagent/assistant/deploys/kpi-dashboard` must exit 0 post-install.
+
+4. Systemd user service `claude-kpi-dashboard.service`:
+   - `ExecStart=/home/aiagent/miniconda3/envs/practicum/bin/flask --app app.main run --host 127.0.0.1 --port ${DASHBOARD_KPI_PORT:-8787}`
    - `Restart=always`
-   - `WorkingDirectory=/home/aiagent/assistant/assistant-kpi-dashboard` (will be added as git submodule or symlink from main-branch deploy dir).
+   - `WorkingDirectory=/home/aiagent/assistant/deploys/kpi-dashboard` (symlink established in step 3).
    - `Environment=PYTHONUNBUFFERED=1 DASHBOARD_KPI_DB=/home/aiagent/assistant/state/dashboard-kpi.sqlite`.
-4. Install script `scripts/install_kpi_dashboard.sh`:
+
+5. Install script `scripts/install_kpi_dashboard.sh`:
+   - `mkdir -p /home/aiagent/assistant/deploys/` and creates the symlink per step 3.
    - Copies systemd unit; `systemctl --user daemon-reload && systemctl --user enable --now claude-kpi-dashboard.service`.
    - Verifies `curl -sf http://127.0.0.1:8787/weekly` returns 200.
    - Writes port binding check: `ss -ltn | grep 127.0.0.1:8787` must show, NOT `0.0.0.0:8787`.
+   - Acceptance: `[[ -L /home/aiagent/assistant/deploys/kpi-dashboard ]]` AND systemctl active.
 5. Runbook `docs/runbook.md`:
    - Start/stop/restart.
    - Debug cron (pull last run log; inspect `ingestion_runs` table).

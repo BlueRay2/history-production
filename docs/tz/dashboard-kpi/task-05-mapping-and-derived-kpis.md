@@ -20,7 +20,20 @@
    - `v_cost_per_video` — LEFT JOIN `cost_parse` output; NULL when fail-closed.
    - `v_weekly_channel_kpis` — impressions, CTR, AVD, AVP, retention-summary from `channel_metric_snapshots` latest-per-week.
    - `v_monthly_channel_kpis` — subs-gained/lost, RPM, revenue, top-performers by composite score.
-3. Composite score formula (for "Top performers"): normalized z-score across (views_30d, retention_avg, subs_gained_per_video) equal-weighted.
+3. Composite score formula (for "Top performers"): normalized z-score across (views_30d, retention_avg, subs_gained_per_video) equal-weighted. Videos with any input metric `NULL` are excluded from ranking (not ranked as 0).
+
+4. **Sparse-metric semantics (J-03 resolution from consensus Round 5):** per Gemini research, small channels (Cities Evolution: 44 subs, <100 views-per-video median) frequently hit YouTube Analytics privacy floors. KPI views MUST return `NULL` (SQL NULL) when underlying `video_metric_snapshots` has no row for the metric — never 0, never synthetic. The repository layer surfaces the distinction:
+   - `repositories.metrics.value_with_reason(video_id, metric)` returns `(value: float|None, reason: "ok" | "below_privacy_floor" | "channel_too_new" | "no_data_pulled")`.
+   - Reason classification:
+     - `below_privacy_floor`: video has <100 lifetime views OR channel has <50 subs (per Gemini research).
+     - `channel_too_new`: channel age <14 days (per YouTube Analytics SLA).
+     - `no_data_pulled`: ingestion_runs gap for the window.
+     - `ok`: real data.
+
+5. **`session starts by source` decision (J-03):** implemented best-effort gated:
+   - Schema: `channel_metric_snapshots` accepts `metric_key='session_starts_by_source'` with `grain='daily'`.
+   - Ingest (task-03): pulls via `dimensions='insightTrafficSourceType'` — if API returns empty (privacy floor), row is NOT written; repository returns `value_with_reason(..., reason="below_privacy_floor")`.
+   - UI (task-06/07): renders as `N/A (below privacy floor)` with tooltip.
 
 ## Test plan
 

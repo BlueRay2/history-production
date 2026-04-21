@@ -72,17 +72,16 @@ Proceed through tasks in dependency order **without mid-bundle pauses** UNLESS:
 - Push cadence: after every status transition.
 - Merge strategy to `main`: deferred until all 9 tasks merged on `kpi`. Single rebase-ready merge request at end.
 
-## Consensus-round-4 blocker (as of 2026-04-21T19:28+03:00)
+## Ship authorization (as of 2026-04-21, Round 5 closed)
 
-Per judge verdict in `consensus-dashboard-kpi/verdict.md`, the 9-task bundle is **not yet ship-authorized**:
-- Judge (Codex) returned `round-4-required` due to sandbox-access limits preventing artifact inspection.
-- `F-02`, `F-05`, `F-08` remain `hold-blocking` until round-4 re-adjudication.
-- Task implementations (task-01 onwards) **will not start** until:
-  - (a) Round 4 runs and judge returns `ship`, OR
-  - (b) Ярослав explicitly overrides with owner sign-off, OR
-  - (c) Gemini capacity returns and full 3/3 Round 4 ships.
+Consensus run closed at Round 5 (5-round hard cap). Judge verdict is documented in `consensus-dashboard-kpi/verdict-round5.md`:
 
-Claude (coordinator) will not autonomously transition any task from `pending` → `in-progress` until one of the above conditions is met.
+- **F-02, F-05, F-08** (the three high-severity findings from Round 3) — **resolved** in the task bundle.
+- **F-01** downgraded to low (Gemini research now available inline).
+- **F-03, F-04, F-06, F-07** — resolved or accepted as residual risk.
+- Three new judge findings (J-01, J-02, J-03) raised in Round 5 — all addressed in this revision of the bundle before any task starts.
+
+Task implementations proceed autonomously from `task-01-adr-and-schema` onwards per the dep graph. Owner (Ярослав) sign-off on the amended bundle is prerequisite; once signed, Claude (coordinator) transitions tasks `pending` → `in-progress` without further pause except for the conditions listed in "Autonomous execution scope" above.
 
 ## Gemini retroactive review policy
 

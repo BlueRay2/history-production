@@ -19,6 +19,10 @@
    - `/exceptions/cost_templates` — list of cities with parse-fail cost estimates (F-02 backlog surface).
 4. RECENT_PUBLISHES widget (bumped from task-06): last 5 videos, publish date, week-1 performance — surfaced on both tabs.
 
+5. **Sparse-metric rendering (J-03 resolution, same standard as task-06):** all Monthly metric cards use `repositories.metrics.value_with_reason()`. Same four states: `ok / below_privacy_floor / channel_too_new / no_data_pulled`. Top-performers table excludes videos with any NULL composite-score input (not ranks them as 0).
+
+6. **Exceptions panel — expanded (J-03):** adds a `Sparse-metrics gated` section listing all (metric × video|channel) pairs currently below privacy floors with explicit reason. Helps Ярослав/Насте видеть что именно «пока скрыто» и знать чего ждать при росте канала.
+
 ## Test plan
 
 - `tests/test_monthly_view.py`: seeded DB → `/monthly` renders all sections.

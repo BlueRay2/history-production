@@ -46,3 +46,18 @@
 ## UX notes (per consensus DX simulation)
 
 - "What's missing that Настя needs" — `RECENT_PUBLISHES` widget with last 5 videos + publish date + week-1 performance snapshot (from `research/claude.md#8`). Deferred to task-07 if time-boxed.
+
+## Sparse-metric rendering (J-03 resolution from consensus Round 5)
+
+All metric cards MUST consult `repositories.metrics.value_with_reason()` (defined in task-05) and render according to:
+
+| reason | card display |
+|---|---|
+| `ok` | numeric value + WoW delta + R/Y/G (if calibration active) |
+| `below_privacy_floor` | `N/A` + tooltip "Ниже порога приватности YouTube (<100 просмотров или <50 подписчиков)" |
+| `channel_too_new` | `—` + tooltip "Канал младше 14 дней, API ещё не отчитывается" |
+| `no_data_pulled` | `?` + tooltip "Нет данных ingestion-прогона за этот период" |
+
+Templates MUST handle all four states in `_card.html` partial; empty-state tests in `tests/test_empty_state.py` cover each reason.
+
+**Session starts by source** (from task-05 schema): rendered in exceptions panel if any video returns `below_privacy_floor` for this metric (usual state for 44-sub channel) — flags "гейтед фичей, включится когда канал вырастет".
