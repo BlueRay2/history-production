@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import os
 import sqlite3
+from datetime import date
 from pathlib import Path
 
 from flask import Flask, redirect, render_template, request, url_for
@@ -28,6 +29,7 @@ def create_app(
     *,
     channel_subs: int | None = None,
     channel_published_at: str | None = None,
+    today: date | None = None,
 ) -> Flask:
     app = Flask(
         __name__,
@@ -41,9 +43,10 @@ def create_app(
         else _env_int("DASHBOARD_CHANNEL_SUBS")
     app.config["CHANNEL_PUBLISHED_AT"] = channel_published_at \
         or os.environ.get("DASHBOARD_CHANNEL_PUBLISHED_AT")
+    app.config["FROZEN_TODAY"] = today  # None = use real clock
 
     def _ctx_globals() -> dict:
-        age = channel_age_days(app.config["CHANNEL_PUBLISHED_AT"])
+        age = channel_age_days(app.config["CHANNEL_PUBLISHED_AT"], today=app.config["FROZEN_TODAY"])
         weeks = age // 7 if age is not None else None
         return {
             "calibration_active": age is not None and age < _CALIBRATION_MIN_DAYS,
@@ -66,6 +69,7 @@ def create_app(
                 conn,
                 channel_subs=app.config["CHANNEL_SUBS"],
                 channel_published_at=app.config["CHANNEL_PUBLISHED_AT"],
+                today=app.config["FROZEN_TODAY"],
             )
         return render_template("weekly.html", snap=snap)
 

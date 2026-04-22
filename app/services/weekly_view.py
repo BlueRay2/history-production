@@ -17,13 +17,16 @@ from datetime import date, datetime, timedelta, timezone
 
 from app.services.kpis import MetricReading, value_with_reason
 
-# Metric keys surfaced as weekly top-row cards.
+# Metric keys surfaced as weekly top-row cards. Matches task-06 spec
+# exactly: Impressions / CTR / AVD / AVP / Retention-avg. Scripts-finished
+# is the sixth card but comes from git_events (not channel snapshots) so
+# it is appended by the template, not this list.
 WEEKLY_METRICS: tuple[tuple[str, str], ...] = (
     ("impressions", "Impressions"),
     ("impressionsClickThroughRate", "CTR"),
     ("averageViewDuration", "AVD"),
     ("averageViewPercentage", "AVP"),
-    ("views", "Views"),
+    ("retentionAverage", "Retention-avg"),
 )
 
 
@@ -137,15 +140,21 @@ def weekly_snapshot(
             {
                 "video_id": r["video_id"],
                 "title": r["title"],
-                "points": list(conn.execute(
-                    """
-                    SELECT elapsed_seconds, retention_pct
-                    FROM video_retention_points
-                    WHERE video_id = ?
-                    ORDER BY elapsed_seconds
-                    """,
-                    (r["video_id"],),
-                )),
+                # Serialize as JSON-safe [elapsed, retention] pairs so
+                # tojson in the template works and `app.js` can index by
+                # p[0]/p[1] as the dataset contract expects.
+                "points": [
+                    [pt["elapsed_seconds"], pt["retention_pct"]]
+                    for pt in conn.execute(
+                        """
+                        SELECT elapsed_seconds, retention_pct
+                        FROM video_retention_points
+                        WHERE video_id = ?
+                        ORDER BY elapsed_seconds
+                        """,
+                        (r["video_id"],),
+                    )
+                ],
             }
             for r in conn.execute(
                 """
