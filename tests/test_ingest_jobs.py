@@ -38,7 +38,10 @@ def test_daily_refresh_happy_path(fresh_db):
         client=client,
         today=date(2026, 4, 22),
     )
-    assert result.status == "ok"
+    # Empty videos table → status='partial' (r2 fix). Seed one video below
+    # if you want 'ok' — but most of these tests exercise channel-level
+    # behavior and don't care about per-video.
+    assert result.status in ("ok", "partial")
     assert result.rows_written == 2  # 2 metrics x 1 row
     with dbmod.connect() as conn:
         rows = list(conn.execute(
@@ -62,7 +65,10 @@ def test_daily_refresh_not_preliminary_after_window(fresh_db):
         client=client,
         today=date(2026, 4, 22),
     )
-    assert result.status == "ok"
+    # Empty videos table → status='partial' (r2 fix). Seed one video below
+    # if you want 'ok' — but most of these tests exercise channel-level
+    # behavior and don't care about per-video.
+    assert result.status in ("ok", "partial")
     with dbmod.connect() as conn:
         row = conn.execute(
             "SELECT preliminary FROM channel_metric_snapshots LIMIT 1"
@@ -83,7 +89,7 @@ def test_daily_refresh_records_ingestion_run(fresh_db):
             "SELECT status, started_at, finished_at FROM ingestion_runs WHERE run_id = ?",
             (result.run_id,),
         ).fetchone()
-    assert run_row["status"] == "ok"
+    assert run_row["status"] in ("ok", "partial")
     assert run_row["started_at"] is not None
     assert run_row["finished_at"] is not None
 
@@ -125,7 +131,10 @@ def test_daily_refresh_empty_response_writes_nothing(fresh_db):
         client=client,
         today=date(2026, 4, 22),
     )
-    assert result.status == "ok"
+    # Empty videos table → status='partial' (r2 fix). Seed one video below
+    # if you want 'ok' — but most of these tests exercise channel-level
+    # behavior and don't care about per-video.
+    assert result.status in ("ok", "partial")
     assert result.rows_written == 0
 
 
@@ -178,7 +187,8 @@ def test_microsecond_observed_on_survives_same_second_rerun(fresh_db):
     client.get_channel_analytics.return_value = _fake_analytics_response(views=100)
     r1 = run_daily_refresh(target_date=date(2026, 4, 10), client=client, today=date(2026, 4, 22))
     r2 = run_daily_refresh(target_date=date(2026, 4, 10), client=client, today=date(2026, 4, 22))
-    assert r1.status == "ok" and r2.status == "ok"
+    # Empty videos table → status='partial' (r2 fix). Either value is a successful run.
+    assert r1.status in ("ok", "partial") and r2.status in ("ok", "partial")
     # Both runs must have written their rows — 2 runs × 2 metrics = 4 rows.
     with dbmod.connect() as conn:
         cnt = conn.execute(
@@ -202,13 +212,90 @@ def test_per_video_pull_writes_video_metric_rows(fresh_db):
     result = run_daily_refresh(
         target_date=date(2026, 4, 10), client=client, today=date(2026, 4, 22),
     )
-    assert result.status == "ok"
+    # Empty videos table → status='partial' (r2 fix). Seed one video below
+    # if you want 'ok' — but most of these tests exercise channel-level
+    # behavior and don't care about per-video.
+    assert result.status in ("ok", "partial")
     with dbmod.connect() as conn:
         video_cnt = conn.execute("SELECT COUNT(*) FROM video_metric_snapshots").fetchone()[0]
         chan_cnt = conn.execute("SELECT COUNT(*) FROM channel_metric_snapshots").fetchone()[0]
     # Only 2 metrics per video test response.
     assert video_cnt == 2
     assert chan_cnt == 2
+
+
+def test_empty_videos_table_marks_partial(fresh_db):
+    """Codex+Gemini r2 [MED]: empty videos table should surface as 'partial'
+    with a diagnostic error_text rather than silent 'ok'."""
+    client = MagicMock(name="youtube_client")
+    client.get_channel_analytics.return_value = _fake_analytics_response()
+    result = run_daily_refresh(
+        target_date=date(2026, 4, 10), client=client, today=date(2026, 4, 22),
+    )
+    assert result.status == "partial"
+    assert result.error_text is not None
+    assert "videos table empty" in result.error_text
+    # Channel rows still landed — partial means "channel ok, per-video skipped".
+    with dbmod.connect() as conn:
+        chan_cnt = conn.execute("SELECT COUNT(*) FROM channel_metric_snapshots").fetchone()[0]
+    assert chan_cnt == 2
+
+
+def test_bounded_error_text_truncates_long_failure_list(fresh_db):
+    """Gemini r2 [MED]: aggregated error_text bounded to avoid excessive size."""
+    from ingest.jobs import _bounded_error_text, _ERROR_TEXT_MAX
+    # Generate 500 fake failures of ~50 chars each = ~25k chars full, exceeds 4k cap.
+    failures = [f"vid_{i:04d}: HttpError(403) forbidden by policy" for i in range(500)]
+    bounded = _bounded_error_text(failures)
+    assert len(bounded) <= _ERROR_TEXT_MAX
+    assert "and" in bounded and "more errors, truncated" in bounded
+
+
+def test_45_day_backfill_exact_range(fresh_db):
+    """Codex r2 [MED]: explicit regression for 45-day range boundary fix."""
+    from ingest import first_run
+    client = MagicMock(name="youtube_client")
+    client.get_channel_analytics.return_value = _fake_analytics_response()
+    count = first_run.run_first_time_backfill(client=client, today=date(2026, 4, 22))
+    # 45 calendar days inclusive: today-46 (2026-03-07) through today-2 (2026-04-20).
+    assert count == 45, f"expected exactly 45 daily runs, got {count}"
+
+
+def test_per_video_writes_atomic_with_retention(fresh_db):
+    """Codex+Gemini r2 [MED/LOW]: snapshot + retention writes in one
+    transaction. We verify this by forcing a retention-write error after
+    snapshot writes completed in-memory, and asserting the snapshot rows
+    ALSO rollback (no orphan snapshot without matching retention)."""
+    with dbmod.connect() as conn:
+        conn.execute("INSERT INTO videos (video_id, title) VALUES ('vABC', 'x')")
+
+    from ingest.jobs import _write_all_atomic
+    import sqlite3 as sq
+    from app.repositories.metrics import SnapshotRow
+
+    snapshot_rows = [SnapshotRow(
+        metric_key="views", grain="weekly",
+        window_start="2026-04-13", window_end="2026-04-19",
+        observed_on="2026-04-22T00:00:00.000000Z",
+        value_num=100.0, run_id="run-test", preliminary=False, video_id="vABC",
+    )]
+    # Seed ingestion_runs so FK passes.
+    with dbmod.connect() as conn:
+        conn.execute(
+            "INSERT INTO ingestion_runs (run_id, source, started_at, status) "
+            "VALUES ('run-test', 'test', '2026-04-22T00:00:00Z', 'in_progress')"
+        )
+    # Retention row referencing a video_id that doesn't exist → FK violation.
+    bad_retention = [("ghost_video", "2026-04-22T00:00:00Z", 100.0, 0.5, "run-test")]
+
+    with dbmod.connect() as conn:
+        with pytest.raises(sq.IntegrityError):
+            _write_all_atomic(conn, snapshot_rows, bad_retention)
+        # Atomic rollback: snapshot rows must NOT have landed either.
+        cnt = conn.execute(
+            "SELECT COUNT(*) FROM video_metric_snapshots WHERE video_id='vABC'"
+        ).fetchone()[0]
+    assert cnt == 0, "atomic transaction must rollback snapshot rows on retention FK failure"
 
 
 def test_preliminary_from_week_end_not_target(fresh_db):

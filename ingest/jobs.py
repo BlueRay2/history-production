@@ -211,19 +211,37 @@ def run_daily_refresh(
                     # video shouldn't kill the whole run.
                     per_video_failures.append(f"{vid}: {per_vid_exc}")
 
-            # --- single-txn write (channel + video + retention) ---
+            # --- single-txn write (channel + video + retention atomically) ---
+            # Codex+Gemini r2 [MED]: snapshot batch and retention points must
+            # land in one transaction; otherwise a crash between them leaves
+            # the DB with video metrics but no matching retention curve for
+            # that logical observation.
             try:
-                written = write_snapshot_batch(conn, channel_rows + video_rows)
-                if retention_points:
-                    _write_retention_points(conn, retention_points)
+                written = _write_all_atomic(conn, channel_rows + video_rows, retention_points)
             except sqlite3.Error as db_exc:
                 _close_ingestion_run(conn, run_id, "db_failure", error_text=str(db_exc))
                 return RunResult(run_id, "db_failure", 0, str(db_exc))
 
-            # Partial status if any per-video call failed but channel + some
-            # videos succeeded.
-            status = "partial" if per_video_failures else "ok"
-            err = "; ".join(per_video_failures) if per_video_failures else None
+            # Empty-videos-table diagnostic (Codex+Gemini r2 [MED]): channel
+            # ingest succeeded but no per-video rows were written because the
+            # videos registry was empty. Log WARNING and mark status='partial'
+            # so the row is flagged as "worth attention", not silent-ok.
+            no_videos_ingested = not vids_to_pull
+            if no_videos_ingested and not per_video_failures:
+                _LOG.warning(
+                    "run_id=%s channel ingest ok, but videos table is empty — "
+                    "no per-video analytics or retention data pulled. "
+                    "Task-04 (history git parser) must populate `videos` table.",
+                    run_id,
+                )
+                status = "partial"
+                err = "videos table empty — per-video ingest skipped"
+            elif per_video_failures:
+                status = "partial"
+                err = _bounded_error_text(per_video_failures)
+            else:
+                status = "ok"
+                err = None
             _close_ingestion_run(conn, run_id, status, error_text=err)
             return RunResult(run_id, status, written, err)
 
@@ -301,26 +319,93 @@ def _retention_to_rows(retention: dict, video_id: str, run_id: str):
         )
 
 
-def _write_retention_points(conn: sqlite3.Connection, rows: list[tuple]) -> None:
-    if not rows:
-        return
+def _write_all_atomic(
+    conn: sqlite3.Connection,
+    snapshot_rows: list,
+    retention_rows: list[tuple],
+) -> int:
+    """Atomically write snapshot + retention for a single run.
+
+    One BEGIN IMMEDIATE / COMMIT covers both writes so a crash between them
+    cannot desync the snapshot row and its matching retention curve (Codex
+    r2 [MED] + Gemini r2 [LOW]).
+
+    Returns the count of snapshot rows inserted (retention insertions are
+    not counted in the primary "rows_written" metric).
+    """
+    if not snapshot_rows and not retention_rows:
+        return 0
     conn.execute("BEGIN IMMEDIATE")
     try:
-        conn.executemany(
-            """
-            INSERT OR IGNORE INTO video_retention_points
-                (video_id, observed_on, elapsed_seconds, retention_pct, run_id)
-            VALUES (?, ?, ?, ?, ?)
-            """,
-            rows,
-        )
+        inserted_snapshots = 0
+        for r in snapshot_rows:
+            table = "video_metric_snapshots" if r.video_id is not None else "channel_metric_snapshots"
+            if r.video_id is not None:
+                cur = conn.execute(
+                    f"""
+                    INSERT OR IGNORE INTO {table}
+                        (video_id, metric_key, grain, window_start, window_end,
+                         observed_on, value_num, run_id, preliminary)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        r.video_id, r.metric_key, r.grain, r.window_start,
+                        r.window_end, r.observed_on, r.value_num, r.run_id,
+                        1 if r.preliminary else 0,
+                    ),
+                )
+            else:
+                cur = conn.execute(
+                    f"""
+                    INSERT OR IGNORE INTO {table}
+                        (metric_key, grain, window_start, window_end,
+                         observed_on, value_num, run_id, preliminary)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        r.metric_key, r.grain, r.window_start, r.window_end,
+                        r.observed_on, r.value_num, r.run_id,
+                        1 if r.preliminary else 0,
+                    ),
+                )
+            inserted_snapshots += cur.rowcount
+        if retention_rows:
+            conn.executemany(
+                """
+                INSERT OR IGNORE INTO video_retention_points
+                    (video_id, observed_on, elapsed_seconds, retention_pct, run_id)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                retention_rows,
+            )
         conn.execute("COMMIT")
+        return inserted_snapshots
     except Exception:
         try:
             conn.execute("ROLLBACK")
         except sqlite3.OperationalError:
             pass
         raise
+
+
+# Gemini r2 [MED]: bound the aggregated error_text. ingestion_runs.error_text
+# is TEXT (unbounded in sqlite3) but a 10MB concatenation from many
+# systematic per-video failures would still be wasteful / unreadable.
+_ERROR_TEXT_MAX = 4096
+
+
+def _bounded_error_text(failures: list[str]) -> str:
+    """Concatenate per-video failure strings, truncate if excessive."""
+    full = "; ".join(failures)
+    if len(full) <= _ERROR_TEXT_MAX:
+        return full
+    # Keep first N chars + summary suffix.
+    truncated = full[: _ERROR_TEXT_MAX - 80]
+    remaining = len(failures) - sum(
+        1 for i, _ in enumerate(failures)
+        if len("; ".join(failures[: i + 1])) <= _ERROR_TEXT_MAX - 80
+    )
+    return f"{truncated}... (and {remaining} more errors, truncated)"
 
 
 def _discover_mapped_video_ids(conn: sqlite3.Connection) -> list[str]:
