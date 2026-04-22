@@ -98,6 +98,59 @@ def test_rc40_on_quota(tmp_path, monkeypatch):
     alert.assert_called_once()
 
 
+def test_lock_oserror_alerts_and_returns_rc2(tmp_path, monkeypatch):
+    """r1 MED: PermissionError / OSError on lock acquisition must alert,
+    not silently propagate."""
+    mod = _reload()
+    bad_path = tmp_path / "nonexistent-readonly-dir" / "lock"
+    monkeypatch.setattr(mod, "_LOCK_FILE", bad_path)
+    monkeypatch.setattr(mod, "_LOG_FILE", tmp_path / "log")
+    monkeypatch.setattr(mod, "_LOG_DIR", tmp_path)
+
+    alert = MagicMock()
+    monkeypatch.setattr(mod, "_alert_telegram", alert)
+
+    # Prevent mkdir — simulate unwritable state/ dir by making the parent
+    # a read-only file (so `mkdir(parents=True, exist_ok=True)` fails).
+    readonly_parent = tmp_path / "blocker"
+    readonly_parent.touch()
+    monkeypatch.setattr(mod, "_LOCK_FILE", readonly_parent / "child" / "lock")
+
+    rc = mod.run()
+    assert rc == mod._EXIT_DB_FAIL
+    alert.assert_called_once()
+    assert "cannot acquire lock" in alert.call_args.args[0]
+
+
+def test_classify_does_not_misroute_api_errors_mentioning_database(tmp_path, monkeypatch):
+    """r1 MED: generic 'database' in API error text must NOT route to rc=2."""
+    mod = _reload()
+    monkeypatch.setattr(mod, "_LOCK_FILE", tmp_path / "lock")
+    monkeypatch.setattr(mod, "_LOG_FILE", tmp_path / "log")
+    monkeypatch.setattr(mod, "_LOG_DIR", tmp_path)
+    monkeypatch.setattr(mod, "_alert_telegram", MagicMock())
+    result = _make_result("failed",
+                         error_text="YouTube Analytics database unavailable (503)")
+    with patch(f"{_RUN_REFRESH_PATH}.run_daily_refresh", return_value=result):
+        rc = mod.run()
+    assert rc == 1  # API fail, NOT db fail
+
+
+def test_classify_sqlite_specific_markers_route_to_rc2(tmp_path, monkeypatch):
+    """r1 MED: actual sqlite3 errors still route to rc=2."""
+    mod = _reload()
+    monkeypatch.setattr(mod, "_LOCK_FILE", tmp_path / "lock")
+    monkeypatch.setattr(mod, "_LOG_FILE", tmp_path / "log")
+    monkeypatch.setattr(mod, "_LOG_DIR", tmp_path)
+    monkeypatch.setattr(mod, "_alert_telegram", MagicMock())
+    for marker in ("sqlite3.OperationalError: database is locked",
+                   "disk I/O error during commit"):
+        result = _make_result("failed", error_text=marker)
+        with patch(f"{_RUN_REFRESH_PATH}.run_daily_refresh", return_value=result):
+            rc = mod.run()
+        assert rc == 2, f"marker {marker!r} should route to rc=2"
+
+
 def test_crash_exception_alerts_and_returns_rc1(tmp_path, monkeypatch):
     mod = _reload()
     monkeypatch.setattr(mod, "_LOCK_FILE", tmp_path / "lock")

@@ -99,7 +99,16 @@ def _alert_telegram(text: str) -> None:
 
 
 def _classify(result: RunResult) -> int:
-    """Map a RunResult into a task-08 exit code."""
+    """Map a RunResult into a task-08 exit code.
+
+    Heuristic priority: partial > quota > sqlite-specific markers > api.
+    We deliberately prefer `sqlite3.`/`OperationalError`/`disk I/O error`
+    over the broader word "database", because "database" is common in
+    YouTube API error messages too (r1 MED finding). When ambiguous,
+    fall back to API-fail — SQLite issues are far rarer than API hiccups
+    for this workload, and mis-routing to the API runbook is lower-cost
+    than the opposite.
+    """
     status = getattr(result, "status", None)
     error_text = getattr(result, "error_text", "") or ""
     if status == "ok":
@@ -109,25 +118,41 @@ def _classify(result: RunResult) -> int:
     low = error_text.lower()
     if "quota" in low or "ratelimit" in low or "rate limit" in low:
         return _EXIT_QUOTA
-    if "sqlite" in low or "database" in low or "db" in low.split():
+    # SQLite-specific markers only. Bare "database" alone does NOT trigger.
+    sqlite_markers = (
+        "sqlite3.", "sqliteerror", "operationalerror", "disk i/o error",
+        "database is locked", "database disk image is malformed",
+    )
+    if any(m in low for m in sqlite_markers):
         return _EXIT_DB_FAIL
     return _EXIT_API_FAIL
 
 
 def run(target_date: date | None = None) -> int:
     _setup_logging()
-    _LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     # File-based flock: `fcntl.flock` is POSIX-only but this script is
     # linux-only too. Using `open + flock` non-blocking: if another process
     # holds the lock we exit 0 silently (that run is authoritative).
+    # r1 MED: non-BlockingIOError failures during lock acquisition (e.g.
+    # PermissionError on a read-only state dir, OSError on disk full, or
+    # NotADirectoryError when the parent path is a file) must surface with
+    # an alert — not silently propagate out of the function.
     import fcntl
     try:
+        _LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
         lock_fp = open(_LOCK_FILE, "w")
         fcntl.flock(lock_fp.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
         logging.info("another run_refresh is active — exiting 0")
         return _EXIT_OK
+    except OSError as exc:
+        logging.exception("could not acquire lock")
+        _alert_telegram(
+            f"🔴 KPI refresh cannot acquire lock on {_LOCK_FILE}: "
+            f"{type(exc).__name__}: {exc}"
+        )
+        return _EXIT_DB_FAIL
 
     try:
         target_date = target_date or (date.today() - timedelta(days=2))
