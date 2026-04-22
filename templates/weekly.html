@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Weekly — KPI{% endblock %}
+{% block main %}
+
+{% if not snap.window %}
+  <p class="empty-state">Нет данных ingestion-прогона ещё. Дождись ночного cron-а или запусти <code>python -m ingest.first_run</code>.</p>
+{% else %}
+  <section class="window-header">
+    <h2>Неделя {{ snap.window[0] }} — {{ snap.window[1] }}</h2>
+    <span class="meta">Scripts finished: {{ snap.scripts_finished_this_week }}</span>
+  </section>
+
+  <section class="cards">
+    {% for card in snap.cards %}
+      {% include '_card.html' %}
+    {% endfor %}
+    <div class="card" data-metric="scripts_finished">
+      <div class="card-label">Scripts finished</div>
+      <div class="card-value">{{ snap.scripts_finished_this_week }}</div>
+    </div>
+  </section>
+
+  <section class="retention">
+    <h3>Retention curves</h3>
+    {% if snap.retention_curves %}
+      <canvas id="retention-chart"
+              data-curves='{{ snap.retention_curves|tojson }}'></canvas>
+    {% else %}
+      <p class="empty-state">Нет опубликованных видео в этом окне.</p>
+    {% endif %}
+  </section>
+{% endif %}
+
+<aside class="exceptions-aside">
+  <h3>Exceptions</h3>
+  <p><a href="{{ url_for('exceptions') }}">Unmapped videos: {{ snap.unmapped_videos }}</a></p>
+</aside>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{#
+  Metric card partial — renders J-03 four-state reasons.
+  Usage: {% include '_card.html' with card=card %}
+#}
+<div class="card card-{{ card.current.reason }}" data-metric="{{ card.metric_key }}">
+  <div class="card-label">{{ card.label }}</div>
+  {% if card.current.reason == 'ok' %}
+    <div class="card-value">{{ '%.2f'|format(card.current.value) }}</div>
+    {% if card.wow_delta is not none %}
+      <div class="card-wow {% if card.wow_delta >= 0 %}wow-pos{% else %}wow-neg{% endif %}">
+        {{ '%+.1f%%'|format(card.wow_delta * 100) }} WoW
+      </div>
+    {% endif %}
+  {% elif card.current.reason == 'below_privacy_floor' %}
+    <div class="card-value">N/A</div>
+    <div class="card-tooltip">Ниже порога приватности YouTube (&lt;100 просмотров или &lt;50 подписчиков)</div>
+  {% elif card.current.reason == 'channel_too_new' %}
+    <div class="card-value">—</div>
+    <div class="card-tooltip">Канал младше 14 дней, API ещё не отчитывается</div>
+  {% elif card.current.reason == 'no_data_pulled' %}
+    <div class="card-value">?</div>
+    <div class="card-tooltip">Нет данных ingestion-прогона за этот период</div>
+  {% endif %}
+</div>

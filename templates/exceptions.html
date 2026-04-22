@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Exceptions — KPI{% endblock %}
+{% block main %}
+
+<section>
+  <h2>Unmapped videos ({{ unmapped|length }})</h2>
+  {% if unmapped %}
+    <table class="exceptions-table">
+      <thead><tr><th>Video</th><th>Published</th></tr></thead>
+      <tbody>
+        {% for v in unmapped %}
+          <tr>
+            <td>{{ v.title }}</td>
+            <td>{{ v.published_at }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty-state">Все видео сопоставлены с городом.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Pending mapping suggestions ({{ pending|length }})</h2>
+  {% if pending %}
+    <table class="exceptions-table">
+      <thead><tr><th>Video</th><th>City</th><th>Confidence</th><th>Notes</th><th></th></tr></thead>
+      <tbody>
+        {% for p in pending %}
+          <tr>
+            <td>{{ p.title }}</td>
+            <td>{{ p.city_slug }}</td>
+            <td>{{ '%.2f'|format(p.confidence) }}</td>
+            <td>{{ p.notes or '' }}</td>
+            <td>
+              <form method="post"
+                    hx-post="{{ url_for('mapping_approve') }}"
+                    hx-swap="none"
+                    style="display:inline">
+                <input type="hidden" name="video_id" value="{{ p.video_id }}">
+                <input type="hidden" name="city_slug" value="{{ p.city_slug }}">
+                <button type="submit">Approve</button>
+              </form>
+              <form method="post"
+                    hx-post="{{ url_for('mapping_reject') }}"
+                    hx-swap="none"
+                    style="display:inline">
+                <input type="hidden" name="video_id" value="{{ p.video_id }}">
+                <input type="hidden" name="city_slug" value="{{ p.city_slug }}">
+                <button type="submit">Reject</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty-state">Нет pending-предложений.</p>
+  {% endif %}
+</section>
+
+{% endblock %}
