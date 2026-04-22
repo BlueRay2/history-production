@@ -219,3 +219,49 @@ def test_top_performers_aligned_window_only(tmp_path, monkeypatch):
         rows = top_performers(conn, limit=10, grain="monthly")
     vids = {r["video_id"] for r in rows}
     assert vids == {"v1"}  # v2 excluded because it lacks retention/subs in aligned window
+
+
+def test_top_performers_r2_split_metrics_window_rejected(tmp_path, monkeypatch):
+    """Codex r2 regression: a window where the three metrics are split
+    across different videos must NOT be selected as aligned. The query must
+    fall back to the latest window where ANY single video has all three.
+    """
+    db_file = tmp_path / "t.sqlite"
+    monkeypatch.setenv("DASHBOARD_KPI_DB", str(db_file))
+    dbmod.migrate()
+    with dbmod.connect() as conn:
+        conn.execute(
+            "INSERT INTO ingestion_runs (run_id, source, started_at, status) "
+            "VALUES ('run-1', 'test', '2026-04-22T00:00:00Z', 'ok')"
+        )
+        conn.execute(
+            "INSERT INTO videos (video_id, title, published_at) VALUES "
+            "('v1', 'A', '2026-03-15T00:00:00Z'),"
+            "('v2', 'B', '2026-04-02T00:00:00Z'),"
+            "('v3', 'C', '2026-04-03T00:00:00Z'),"
+            "('v4', 'D', '2026-04-04T00:00:00Z')"
+        )
+
+        def ins(video, metric, ws, we, val, obs_tag):
+            conn.execute(
+                "INSERT INTO video_metric_snapshots "
+                "(video_id, metric_key, grain, window_start, window_end, "
+                " observed_on, value_num, run_id, preliminary) "
+                "VALUES (?, ?, 'monthly', ?, ?, ?, ?, 'run-1', 0)",
+                (video, metric, ws, we, f"2026-04-30T00:00:00.{obs_tag}Z", val),
+            )
+
+        # W2 (April) — three metrics split across three different videos.
+        ins("v2", "views", "2026-04-01", "2026-04-30", 500, "aaa")
+        ins("v3", "averageViewPercentage", "2026-04-01", "2026-04-30", 40, "bbb")
+        ins("v4", "subscribersGained", "2026-04-01", "2026-04-30", 5, "ccc")
+        # W1 (March) — v1 has all three.
+        ins("v1", "views", "2026-03-01", "2026-03-31", 800, "ddd")
+        ins("v1", "averageViewPercentage", "2026-03-01", "2026-03-31", 55, "eee")
+        ins("v1", "subscribersGained", "2026-03-01", "2026-03-31", 7, "fff")
+
+    with dbmod.connect() as conn:
+        rows = top_performers(conn, limit=10, grain="monthly")
+    vids = {r["video_id"] for r in rows}
+    # Must fall back to March (W1) and rank v1, NOT pick April and return empty.
+    assert vids == {"v1"}

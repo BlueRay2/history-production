@@ -327,13 +327,23 @@ def top_performers(
         latest AS (
             SELECT * FROM ranked WHERE rn = 1
         ),
-        -- The aligned window = the latest window_end for which at least one
-        -- video has all three metrics.
+        -- Per-video coverage inside each window: how many of the three
+        -- metrics the video has with a non-null value.
+        video_window_coverage AS (
+            SELECT video_id, window_start, window_end,
+                   COUNT(DISTINCT metric_key) AS n_metrics
+            FROM latest
+            GROUP BY video_id, window_start, window_end
+        ),
+        -- Aligned window = the latest window_end for which AT LEAST ONE
+        -- video has all three metrics (covering the r2 finding: a window
+        -- where metrics are split across different videos must NOT be
+        -- selected).
         aligned AS (
             SELECT window_start, window_end
-            FROM latest
+            FROM video_window_coverage
+            WHERE n_metrics = 3
             GROUP BY window_start, window_end
-            HAVING COUNT(DISTINCT metric_key) = 3
             ORDER BY window_end DESC
             LIMIT 1
         ),
