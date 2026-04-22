@@ -1,0 +1,337 @@
+[health-check] gemini: ok
+
+
+
+
+
+
+
+
+
+
+
+{
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Allowed to list directories in common test paths (e.g., 'tests/', 'src/test/', 'pkg/tests/'). This is to locate the new test files mentioned in the commit.\\",\\n  \\"rationale\\": \\"To identify where the new test files covering 'git status A/R/C' might be located in the codebase.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"list_directory\\",\\n  \\"args\\": {\\n    \\"dir_path\\": \\"/home/aiagent/assistant/git/\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"9d5736d7-8991-460c-b8a5-fdde1d0c4b52"}}`,
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776822194054,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Allowed to list directories in common test paths (e.g., 'tests/', 'src/test/', 'pkg/tests/'). This is to locate the new test files mentioned in the commit.\\",\\n  \\"rationale\\": \\"To identify where the new test files covering 'git status A/R/C' might be located in the codebase.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"list_directory\\",\\n  \\"args\\": {\\n    \\"dir_path\\": \\"/home/aiagent/assistant/git/\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"9d5736d7-8991-460c-b8a5-fdde1d0c4b52"}}`,
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Wed, 22 Apr 2026 01:43:13 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=70',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '5143bb007cbb0daf',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'You have exhausted your capacity on this model. Your quota will reset after 0s.',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Error executing tool read_file: Tool execution denied by policy.
+Error executing tool run_shell_command: Tool "run_shell_command" not found. Did you mean one of: "update_topic", "grep_search", "cli_help"?
+Policy enforcement failed: _GaxiosError: No capacity available for model gemini-2.5-flash on the server
+    at Gaxios._request (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:8578:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async _OAuth2Client.requestAsync (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:10541:16)
+    at async CodeAssistServer.requestPost (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277441:17)
+    at async CodeAssistServer.generateContent (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:277324:22)
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:278082:26
+    at async file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:255118:23
+    at async enforcePolicy (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338327:21)
+    at async _ConsecaSafetyChecker.check (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:338459:17)
+    at async _CheckerRunner.runInProcessChecker (file:///home/aiagent/.local/lib/node_modules/@google/gemini-cli/bundle/chunk-IWSCP2GY.js:337856:14) {
+  config: {
+    url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'GeminiCLI/0.38.2/gemini-2.5-pro (linux; x64; terminal) google-api-nodejs-client/9.15.1',
+      Authorization: '<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.',
+      'x-goog-api-client': 'gl-node/22.22.2',
+      Accept: 'application/json'
+    },
+    responseType: 'json',
+    body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Allowed patterns are restricted to terms related to 'git status', 'A/R/C', 'test', 'verify', 'assert', or other keywords commonly found in test files. Search paths should be limited to identified test directories.\\",\\n  \\"rationale\\": \\"To specifically locate and examine the content of the new tests related to 'git status A/R/C' within relevant files.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"grep_search\\",\\n  \\"args\\": {\\n    \\"dir_path\\": \\"/home/aiagent/assistant/git/\\",\\n    \\"include_pattern\\": \\"**/.git/logs/HEAD\\",\\n    \\"pattern\\": \\"55fd714\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"9d5736d7-8991-460c-b8a5-fdde1d0c4b52"}}`,
+    retryConfig: {
+      retryDelay: 1000,
+      retry: 3,
+      noResponseRetries: 3,
+      statusCodesToRetry: [Array],
+      currentRetryAttempt: 0,
+      httpMethodsToRetry: [Array],
+      retryDelayMultiplier: 2,
+      timeOfFirstRequest: 1776822211241,
+      totalTimeout: 9007199254740991,
+      maxRetryDelay: 9007199254740991
+    },
+    paramsSerializer: [Function: paramsSerializer],
+    validateStatus: [Function: validateStatus],
+    errorRedactor: [Function: defaultErrorRedactor]
+  },
+  response: {
+    config: {
+      url: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent',
+      method: 'POST',
+      headers: [Object],
+      responseType: 'json',
+      body: `{"model":"gemini-2.5-flash","project":"continual-heuristic-wtd63","user_prompt_id":"conseca-policy-enforcement","request":{"contents":[{"role":"user","parts":[{"text":"\\nYou are a security enforcement engine. Your goal is to check if a specific tool call complies with a given security policy.\\n\\nInput:\\n1.  **Security Policy:** A set of rules defining allowed and denied actions for this specific tool.\\n2.  **Tool Call:** The actual function call the system intends to execute.\\n\\nSecurity Policy:\\n{\\n  \\"permissions\\": \\"allow\\",\\n  \\"constraints\\": \\"Allowed patterns are restricted to terms related to 'git status', 'A/R/C', 'test', 'verify', 'assert', or other keywords commonly found in test files. Search paths should be limited to identified test directories.\\",\\n  \\"rationale\\": \\"To specifically locate and examine the content of the new tests related to 'git status A/R/C' within relevant files.\\"\\n}\\n\\nTool Call:\\n{\\n  \\"name\\": \\"grep_search\\",\\n  \\"args\\": {\\n    \\"dir_path\\": \\"/home/aiagent/assistant/git/\\",\\n    \\"include_pattern\\": \\"**/.git/logs/HEAD\\",\\n    \\"pattern\\": \\"55fd714\\"\\n  }\\n}\\n\\nEvaluate the tool call against the policy.\\n1. Check if the tool is allowed.\\n2. Check if the arguments match the constraints.\\n3. Output a JSON object with:\\n   - \\"decision\\": \\"allow\\", \\"deny\\", or \\"ask_user\\".\\n   - \\"reason\\": A brief explanation.\\n\\nOutput strictly JSON.\\n"}]}],"generationConfig":{"responseMimeType":"application/json","responseSchema":{"type":"object","properties":{"decision":{"type":"string","enum":["allow","deny","ask_user"]},"reason":{"type":"string"}},"required":["decision","reason"],"additionalProperties":false}},"session_id":"9d5736d7-8991-460c-b8a5-fdde1d0c4b52"}}`,
+      retryConfig: [Object],
+      paramsSerializer: [Function: paramsSerializer],
+      validateStatus: [Function: validateStatus],
+      errorRedactor: [Function: defaultErrorRedactor]
+    },
+    data: { error: [Object] },
+    headers: {
+      'alt-svc': 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      'content-encoding': 'gzip',
+      'content-type': 'application/json; charset=UTF-8',
+      date: 'Wed, 22 Apr 2026 01:43:31 GMT',
+      server: 'ESF',
+      'server-timing': 'gfet4t7; dur=588',
+      'transfer-encoding': 'chunked',
+      vary: 'Origin, X-Origin, Referer',
+      'x-cloudaicompanion-trace-id': '8b39f30bf29e5130',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'SAMEORIGIN',
+      'x-xss-protection': '0'
+    },
+    status: 429,
+    statusText: 'Too Many Requests',
+    request: {
+      responseURL: 'https://cloudcode-pa.googleapis.com/v1internal:generateContent'
+    }
+  },
+  error: undefined,
+  status: 429,
+  code: 429,
+  errors: [
+    {
+      message: 'No capacity available for model gemini-2.5-flash on the server',
+      domain: 'global',
+      reason: 'rateLimitExceeded'
+    }
+  ],
+  [Symbol(gaxios-gaxios-error)]: '6.7.1'
+}
+Error executing tool glob: Tool execution denied by policy.
+Error executing tool read_file: Tool execution denied by policy.
+Error executing tool grep_search: Tool execution denied by policy.
+{
+  "session_id": "9d5736d7-8991-460c-b8a5-fdde1d0c4b52",
+  "response": "accepted (no comments)",
+  "stats": {
+    "models": {
+      "gemini-2.5-pro": {
+        "api": {
+          "totalRequests": 8,
+          "totalErrors": 0,
+          "totalLatencyMs": 63409
+        },
+        "tokens": {
+          "input": 21179,
+          "prompt": 131379,
+          "candidates": 210,
+          "total": 134807,
+          "cached": 110200,
+          "thoughts": 3218,
+          "tool": 0
+        },
+        "roles": {
+          "main": {
+            "totalRequests": 8,
+            "totalErrors": 0,
+            "totalLatencyMs": 63409,
+            "tokens": {
+              "input": 21179,
+              "prompt": 131379,
+              "candidates": 210,
+              "total": 134807,
+              "cached": 110200,
+              "thoughts": 3218,
+              "tool": 0
+            }
+          }
+        }
+      },
+      "gemini-2.5-flash": {
+        "api": {
+          "totalRequests": 9,
+          "totalErrors": 2,
+          "totalLatencyMs": 111662
+        },
+        "tokens": {
+          "input": 17439,
+          "prompt": 32501,
+          "candidates": 8909,
+          "total": 50294,
+          "cached": 15062,
+          "thoughts": 8884,
+          "tool": 0
+        },
+        "roles": {
+          "subagent": {
+            "totalRequests": 9,
+            "totalErrors": 2,
+            "totalLatencyMs": 111662,
+            "tokens": {
+              "input": 17439,
+              "prompt": 32501,
+              "candidates": 8909,
+              "total": 50294,
+              "cached": 15062,
+              "thoughts": 8884,
+              "tool": 0
+            }
+          }
+        }
+      }
+    },
+    "tools": {
+      "totalCalls": 8,
+      "totalSuccess": 1,
+      "totalFail": 7,
+      "totalDurationMs": 79579,
+      "totalDecisions": {
+        "accept": 1,
+        "reject": 0,
+        "modify": 0,
+        "auto_accept": 0
+      },
+      "byName": {
+        "update_topic": {
+          "count": 1,
+          "success": 0,
+          "fail": 1,
+          "durationMs": 30032,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        },
+        "list_directory": {
+          "count": 1,
+          "success": 0,
+          "fail": 1,
+          "durationMs": 30029,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        },
+        "read_file": {
+          "count": 2,
+          "success": 0,
+          "fail": 2,
+          "durationMs": 6865,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        },
+        "run_shell_command": {
+          "count": 1,
+          "success": 0,
+          "fail": 1,
+          "durationMs": 0,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        },
+        "grep_search": {
+          "count": 2,
+          "success": 1,
+          "fail": 1,
+          "durationMs": 6219,
+          "decisions": {
+            "accept": 1,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        },
+        "glob": {
+          "count": 1,
+          "success": 0,
+          "fail": 1,
+          "durationMs": 6434,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        }
+      }
+    },
+    "files": {
+      "totalLinesAdded": 0,
+      "totalLinesRemoved": 0
+    }
+  }
+}GEMINI_TASK04_R3_RC=0

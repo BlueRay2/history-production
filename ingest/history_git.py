@@ -107,14 +107,22 @@ def _iter_commits(repo_root: Path):
             current_sha, current_dt, current_subject = parts[0], parts[1], parts[2]
             current_files = []
         elif line and current_sha is not None:
-            # Raw format: ':MODES SRC DST STATUS\tpath'
+            # Raw format for non-rename: ':MODES SRC DST STATUS\tpath'
+            # Raw format for rename/copy: ':MODES SRC DST R100\told_path\tnew_path'
+            #   (three tab-separated fields instead of two)
             if line.startswith(":"):
                 try:
-                    meta, path = line.split("\t", 1)
-                    status = meta.split()[-1]  # last whitespace-separated token = status letter(s)
-                    # Normalise R100 → R, C100 → C, M → M, D → D, A → A.
-                    status = status[0] if status else "?"
-                    current_files.append((status, path.strip()))
+                    meta, _, path_part = line.partition("\t")
+                    status = meta.split()[-1]  # last whitespace-separated token
+                    first_char = status[0] if status else "?"
+                    # For renames (R) and copies (C), path_part is "old\tnew".
+                    # Use the destination path — that's what the commit now
+                    # contains and what _classify compares against with ==.
+                    if first_char in ("R", "C") and "\t" in path_part:
+                        _old, _, new_path = path_part.partition("\t")
+                        current_files.append((first_char, new_path.strip()))
+                    else:
+                        current_files.append((first_char, path_part.strip()))
                 except Exception:  # noqa: BLE001
                     continue
     if current_sha is not None:
