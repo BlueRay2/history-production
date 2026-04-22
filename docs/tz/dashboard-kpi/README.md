@@ -25,7 +25,7 @@ Full consensus artefacts (research, debates, findings register, verdicts) are in
 | 06 | [task-06-web-shell-and-weekly-tab.md](task-06-web-shell-and-weekly-tab.md) | Flask app skeleton, `/weekly` route, metric cards, retention chart, exceptions panel, calibration banner | `merged (gemini-degraded)` | ✅ accepted r2 | ⚠️ unavailable 429 |
 | 07 | [task-07-monthly-tab-and-exceptions.md](task-07-monthly-tab-and-exceptions.md) | `/monthly` route, composite-score top-performers, cost-distribution, unmapped-cities panel | `merged (gemini-degraded)` | ✅ accepted r2 | ⚠️ unavailable 429 |
 | 08 | [task-08-cron-systemd-runbook.md](task-08-cron-systemd-runbook.md) | `30 3 * * *` cron via CronCreate durable:true, systemd user unit, 127.0.0.1 bind check, failure→Telegram alert, runbook | `merged (delegation-degraded)` | ⚠️ self-review r1 | ⚠️ unavailable 429 |
-| 09 | [task-09-baseline-calibration.md](task-09-baseline-calibration.md) | 4-week data accumulation gate, `config/kpi-thresholds.yaml` bootstrap, R/Y/G activation only after gate | `pending` | — | — |
+| 09 | [task-09-baseline-calibration.md](task-09-baseline-calibration.md) | 4-week data accumulation gate, `config/kpi-thresholds.yaml` bootstrap, R/Y/G activation only after gate | `merged (delegation-degraded)` | ⚠️ self-review r1 | ⚠️ unavailable 429 |
 
 ## Per-task review loop
 

@@ -19,6 +19,7 @@ from pathlib import Path
 from flask import Flask, redirect, render_template, request, url_for
 
 from app import db as dbmod
+from app.services.calibration import load_status as load_calibration_status
 from app.services.mapping import approve_mapping, reject_mapping
 from app.services.monthly_view import (
     monthly_snapshot,
@@ -28,6 +29,7 @@ from app.services.monthly_view import (
 from app.services.weekly_view import channel_age_days, weekly_snapshot
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
+_DEFAULT_THRESHOLDS = _REPO_ROOT / "config" / "kpi-thresholds.yaml"
 
 _CALIBRATION_MIN_DAYS = 28  # matches task-09 gate
 
@@ -53,14 +55,28 @@ def create_app(
         or os.environ.get("DASHBOARD_CHANNEL_PUBLISHED_AT")
     app.config["FROZEN_TODAY"] = today  # None = use real clock
     app.config["REPO_ROOT"] = repo_root or _REPO_ROOT
+    app.config["THRESHOLDS_PATH"] = (repo_root or _REPO_ROOT) / "config" / "kpi-thresholds.yaml"
 
     def _ctx_globals() -> dict:
         age = channel_age_days(app.config["CHANNEL_PUBLISHED_AT"], today=app.config["FROZEN_TODAY"])
-        weeks = age // 7 if age is not None else None
+        weeks_from_age = age // 7 if age is not None else None
+        # Data-driven calibration gate (task-09): require both config
+        # flag AND enough weeks of actual data. Falls back to age-based
+        # heuristic when DB is unreachable (degraded mode).
+        try:
+            with dbmod.connect() as conn:
+                cal = load_calibration_status(conn, config_path=app.config["THRESHOLDS_PATH"])
+            weeks_of_data = cal.weeks_of_data
+            required = cal.required_weeks
+            active = not cal.is_activated
+        except Exception:  # noqa: BLE001
+            weeks_of_data = weeks_from_age
+            required = _CALIBRATION_MIN_DAYS // 7
+            active = age is not None and age < _CALIBRATION_MIN_DAYS
         return {
-            "calibration_active": age is not None and age < _CALIBRATION_MIN_DAYS,
-            "calibration_weeks": weeks,
-            "calibration_target_weeks": _CALIBRATION_MIN_DAYS // 7,
+            "calibration_active": active,
+            "calibration_weeks": weeks_of_data,
+            "calibration_target_weeks": required,
         }
 
     @app.context_processor

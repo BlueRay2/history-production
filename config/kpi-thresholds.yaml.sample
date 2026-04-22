@@ -1,0 +1,38 @@
+# KPI threshold bands — auto-proposed after 4 weeks of calibration, then
+# Ярослав approves. Null means no threshold yet (calibration in progress).
+#
+# Semantics:
+#   green_above   — value >= green_above  → Green (healthy)
+#   yellow_above  — value >= yellow_above → Yellow (acceptable)
+#   red_below     — value <  red_below    → Red (alert)
+# Values between yellow_above and red_below are uncoloured (grey).
+
+channel_ctr:
+  green_above: null   # e.g. 0.055
+  yellow_above: null  # e.g. 0.045
+  red_below: null     # e.g. 0.035
+
+channel_avp:
+  green_above: null
+  yellow_above: null
+  red_below: null
+
+channel_avd:
+  green_above: null
+  yellow_above: null
+  red_below: null
+
+channel_impressions:
+  green_above: null
+  yellow_above: null
+  red_below: null
+
+channel_retention_avg:
+  green_above: null
+  yellow_above: null
+  red_below: null
+
+calibration:
+  start_date: "YYYY-MM-DD"   # set by install_kpi_dashboard.sh on first run
+  required_weeks: 4
+  activated: false
