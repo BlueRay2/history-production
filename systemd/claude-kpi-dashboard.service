@@ -1,0 +1,18 @@
+[Unit]
+Description=KPI dashboard (Flask, 127.0.0.1)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/aiagent/assistant/deploys/kpi-dashboard
+Environment=PYTHONUNBUFFERED=1
+Environment=DASHBOARD_KPI_DB=/home/aiagent/assistant/state/dashboard-kpi.sqlite
+Environment=DASHBOARD_KPI_PORT=8787
+ExecStart=/home/aiagent/miniconda3/envs/practicum/bin/flask --app app.main run --host 127.0.0.1 --port ${DASHBOARD_KPI_PORT}
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/aiagent/assistant/logs/dashboard-kpi-service.log
+StandardError=append:/home/aiagent/assistant/logs/dashboard-kpi-service.log
+
+[Install]
+WantedBy=default.target
