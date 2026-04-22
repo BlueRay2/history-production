@@ -234,6 +234,63 @@ def test_scaffold_regex_rejects_false_positive():
     assert _SCAFFOLD_SUBJECT.search("chore: scaffold kyoto directory") is not None
 
 
+def test_added_file_included_in_active_set(tmp_path):
+    """Codex r2 MED: status=A (newly added) must be included in active_files
+    so SCRIPT.md additions trigger script_started."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    env = {**os.environ, "GIT_AUTHOR_NAME": "T", "GIT_AUTHOR_EMAIL": "t@t",
+           "GIT_COMMITTER_NAME": "T", "GIT_COMMITTER_EMAIL": "t@t", "LC_ALL": "C"}
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "checkout", "-q", "-b", "main"], cwd=repo, check=True, env=env)
+    # Newly added file (status=A in --raw output)
+    (repo / "prague").mkdir()
+    (repo / "prague" / "SCRIPT.md").write_text("fresh script")
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-q", "-m", "feat(prague): add script"], cwd=repo, check=True, env=env)
+    events = parse_history_repo(repo)
+    prague = [e for e in events if e.city_slug == "prague"]
+    assert any(e.event_type == "script_started" for e in prague), \
+        "newly added SCRIPT.md (status=A) must trigger script_started"
+
+
+def test_rename_preserves_active_file(tmp_path):
+    """Codex r2 MED: git rename detection produces status like R100 which
+    must normalise to R (kept in active set) — renamed SCRIPT.md still counts."""
+    from ingest.history_git import _active_files
+    # Directly unit-test the normaliser: if _iter_commits emits ('R', path),
+    # _active_files should keep it.
+    assert _active_files([("R", "istanbul/SCRIPT.md")]) == ["istanbul/SCRIPT.md"]
+    assert _active_files([("A", "new.md"), ("D", "gone.md"), ("M", "mod.md")]) == ["new.md", "mod.md"]
+    # Copy status (C100 → C) also kept.
+    assert _active_files([("C", "copied.md")]) == ["copied.md"]
+
+
+def test_rename_normalisation_via_real_git(tmp_path):
+    """End-to-end: actually trigger a rename via git mv and confirm parser
+    doesn't lose the file from the active set."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    env = {**os.environ, "GIT_AUTHOR_NAME": "T", "GIT_AUTHOR_EMAIL": "t@t",
+           "GIT_COMMITTER_NAME": "T", "GIT_COMMITTER_EMAIL": "t@t", "LC_ALL": "C"}
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "checkout", "-q", "-b", "main"], cwd=repo, check=True, env=env)
+    (repo / "warsaw").mkdir()
+    (repo / "warsaw" / "DRAFT.md").write_text("initial content" * 50)
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-q", "-m", "feat(warsaw): draft"], cwd=repo, check=True, env=env)
+    # Rename DRAFT.md → SCRIPT.md — git should detect as R.
+    subprocess.run(["git", "mv", "warsaw/DRAFT.md", "warsaw/SCRIPT.md"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-q", "-m", "feat(warsaw): rename to SCRIPT"], cwd=repo, check=True, env=env)
+    events = parse_history_repo(repo)
+    warsaw = [e for e in events if e.city_slug == "warsaw"]
+    # The rename commit should carry SCRIPT.md in active_files and trigger
+    # script_started (since it's the first appearance of SCRIPT.md in the city).
+    rename_event = warsaw[-1]  # last chronologically
+    assert "SCRIPT.md" in " ".join(rename_event.payload.get("touched_files", [])), \
+        f"rename commit missing SCRIPT.md in active files: {rename_event.payload}"
+
+
 def test_unclassified_events_still_written(git_repo, tmp_path, monkeypatch):
     db_file = tmp_path / "t.sqlite"
     monkeypatch.setenv("DASHBOARD_KPI_DB", str(db_file))
