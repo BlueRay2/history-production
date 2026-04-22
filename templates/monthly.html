@@ -50,8 +50,11 @@
   <section class="cost-distribution">
     <h3>Cost per video <span class="meta">(estimated)</span></h3>
     {% if snap.cost_distribution %}
+      {# Codex r1 HIGH: Jinja `select` filters by truthiness, which drops
+         legitimate 0.0 costs along with None. Use `rejectattr('cost_value', 'none')`
+         on the rows first, then map, so zeroes survive. #}
       <canvas id="cost-hist"
-              data-values='{{ snap.cost_distribution|map(attribute="cost_value")|select|list|tojson }}'></canvas>
+              data-values='{{ snap.cost_distribution|rejectattr("cost_value", "none")|map(attribute="cost_value")|list|tojson }}'></canvas>
     {% else %}
       <p class="empty-state">Нет cost-данных.</p>
     {% endif %}

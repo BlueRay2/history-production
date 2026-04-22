@@ -99,6 +99,11 @@ def recent_publishes(conn: sqlite3.Connection, *, limit: int = 5) -> list[dict]:
     If `video_metric_snapshots` has a `views` row for the first 7-day
     window post-publish, we surface it; otherwise `week1_views=None`.
     """
+    # Window match is deterministic: pick the weekly window that STARTS on
+    # or before the publish date and whose END is strictly after it — that
+    # is the unique "week of publish" (not the following week). Codex r1
+    # MED flagged that inclusive boundaries on both sides can double-match
+    # adjacent windows; strict `window_end > published_at` closes that.
     rows = list(conn.execute(
         """
         WITH ranked AS (
@@ -112,8 +117,8 @@ def recent_publishes(conn: sqlite3.Connection, *, limit: int = 5) -> list[dict]:
               ON vms.video_id = v.video_id
              AND vms.metric_key = 'views'
              AND vms.grain = 'weekly'
-             AND date(vms.window_start) <= date(v.published_at, '+7 days')
-             AND date(vms.window_end)   >= date(v.published_at, '+7 days')
+             AND date(vms.window_start) <= date(v.published_at)
+             AND date(vms.window_end)   >  date(v.published_at)
             WHERE v.published_at IS NOT NULL
         )
         SELECT video_id, title, published_at, value_num AS week1_views
@@ -137,12 +142,27 @@ def sparse_metrics_gated(
     """Surface metric keys that are below-privacy-floor or channel-too-new.
 
     Used by the exceptions panel to show which metrics are currently
-    gated. We enumerate the weekly+monthly top-row metrics for the latest
-    window of each grain and record anything whose reason != 'ok'.
+    gated. Enumerates all weekly+monthly top-row metrics and classifies
+    each via `value_with_reason()`.
+
+    For grains without a snapshot yet, we synthesise a placeholder window
+    `(today-7d, today)` / `(today-30d, today)` so `value_with_reason()`
+    can still evaluate channel-level gating (below_privacy_floor /
+    channel_too_new) — the two reasons that do NOT depend on a snapshot.
+    Without this, a fresh/small channel would see "Все метрики доступны"
+    on the exceptions panel, which is the exact false-negative this panel
+    is meant to prevent.
     """
+    from datetime import date as _date, datetime as _dt, timedelta as _td, timezone as _tz
     from app.services.weekly_view import WEEKLY_METRICS
 
+    today = today or _dt.now(_tz.utc).date()
     gated: list[dict] = []
+
+    grain_windows = {
+        "weekly": (today - _td(days=7), today - _td(days=1)),
+        "monthly": (today - _td(days=30), today - _td(days=1)),
+    }
 
     for grain, metrics in (("weekly", WEEKLY_METRICS), ("monthly", MONTHLY_METRICS)):
         row = conn.execute(
@@ -155,13 +175,17 @@ def sparse_metrics_gated(
             """,
             (grain,),
         ).fetchone()
-        if not row:
-            continue
+        if row:
+            ws, we = row["window_start"], row["window_end"]
+        else:
+            # Synthesised window — only channel-wide reasons can fire here.
+            ws = grain_windows[grain][0].isoformat()
+            we = grain_windows[grain][1].isoformat()
         for key, label in metrics:
             r = value_with_reason(
                 conn,
                 metric_key=key, grain=grain,
-                window_start=row["window_start"], window_end=row["window_end"],
+                window_start=ws, window_end=we,
                 channel_subs=channel_subs,
                 channel_published_at=channel_published_at,
                 today=today,
@@ -213,8 +237,16 @@ def monthly_snapshot(
 
 
 def parse_fail_cities(repo_root: Path) -> list[str]:
-    """List city slugs with a COST_ESTIMATE.md file present but no canonical
-    total line — surfaced on /exceptions/cost_templates (F-02 backlog)."""
+    """List city slugs with COST_ESTIMATE.md file(s) present but no valid
+    canonical total line — surfaced on /exceptions/cost_templates (F-02).
+
+    Mirrors `ingest.cost_parse.parse_city_cost()`'s fallback semantics:
+    a city is parse-fail only if NEITHER `{city}/COST_ESTIMATE.md` NOR
+    `{city}/docs/COST_ESTIMATE.md` parses successfully. This keeps the
+    exceptions page in agreement with `cost_per_video()` / `scan_all_cities()`.
+    """
+    from ingest.cost_parse import parse_city_cost
+
     cities: list[str] = []
     reserved = {
         "docs", "scripts", "tests", "app", "ingest", "db", "reviews",
@@ -226,10 +258,8 @@ def parse_fail_cities(repo_root: Path) -> list[str]:
     for entry in sorted(repo_root.iterdir()):
         if not entry.is_dir() or entry.name.startswith(".") or entry.name in reserved:
             continue
-        for candidate in (entry / "COST_ESTIMATE.md", entry / "docs" / "COST_ESTIMATE.md"):
-            if candidate.exists():
-                from ingest.cost_parse import _parse_file  # type: ignore
-                if _parse_file(candidate, entry.name) is None:
-                    cities.append(entry.name)
-                break
+        has_any_file = (entry / "COST_ESTIMATE.md").exists() \
+            or (entry / "docs" / "COST_ESTIMATE.md").exists()
+        if has_any_file and parse_city_cost(repo_root, entry.name) is None:
+            cities.append(entry.name)
     return cities
