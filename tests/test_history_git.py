@@ -148,6 +148,92 @@ def test_write_events_auto_creates_projects(tmp_path, monkeypatch, git_repo):
     assert "kyoto" in projects
 
 
+def test_deleted_file_does_not_count_as_revision(tmp_path):
+    """Gemini r1 MED: deleting SCRIPT.md must NOT register as a 'revision'."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    env = {**os.environ, "GIT_AUTHOR_NAME": "Test", "GIT_AUTHOR_EMAIL": "t@t",
+           "GIT_COMMITTER_NAME": "Test", "GIT_COMMITTER_EMAIL": "t@t", "LC_ALL": "C"}
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "checkout", "-q", "-b", "main"], cwd=repo, check=True, env=env)
+    # Commit 1: add istanbul/SCRIPT.md (should be script_started)
+    (repo / "istanbul").mkdir()
+    (repo / "istanbul" / "SCRIPT.md").write_text("v1")
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-q", "-m", "feat(istanbul): add script"], cwd=repo, check=True, env=env)
+    # Commit 2: DELETE istanbul/SCRIPT.md — must NOT be classified as revision.
+    (repo / "istanbul" / "SCRIPT.md").unlink()
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-q", "-m", "chore: remove istanbul script"], cwd=repo, check=True, env=env)
+
+    events = parse_history_repo(repo)
+    # First commit: script_started. Second commit: must NOT be 'revision'.
+    event_types = [e.event_type for e in events if e.city_slug == "istanbul"]
+    # At least one script_started; the deletion commit should be unclassified
+    # (inherited scaffold from the 2nd-pass upgrade may also apply).
+    assert "script_started" in event_types
+    # Count revisions — should be zero because the only other istanbul commit DELETED the file.
+    revisions = [e for e in events if e.event_type == "revision" and e.city_slug == "istanbul"]
+    assert len(revisions) == 0
+
+
+def test_batch_phase3_commit_flags_also_script_started(tmp_path):
+    """Codex r1 MED: when first SCRIPT.md touch is a phase3/final commit,
+    event_type stays script_finished but event_value carries 'also:script_started'."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    env = {**os.environ, "GIT_AUTHOR_NAME": "Test", "GIT_AUTHOR_EMAIL": "t@t",
+           "GIT_COMMITTER_NAME": "Test", "GIT_COMMITTER_EMAIL": "t@t", "LC_ALL": "C"}
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "checkout", "-q", "-b", "main"], cwd=repo, check=True, env=env)
+    (repo / "nagasaki").mkdir()
+    (repo / "nagasaki" / "SCRIPT.md").write_text("final script")
+    (repo / "nagasaki" / "TELEPROMPTER.md").write_text("teleprompter")
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, env=env)
+    subprocess.run(
+        ["git", "commit", "-q", "-m", "phase3(nagasaki): SCRIPT + TELEPROMPTER"],
+        cwd=repo, check=True, env=env,
+    )
+    events = parse_history_repo(repo)
+    nag = [e for e in events if e.city_slug == "nagasaki"]
+    assert len(nag) == 1
+    assert nag[0].event_type == "script_finished"
+    assert nag[0].event_value == "also:script_started"
+
+
+def test_no_scaffold_inferred_from_first_city_touch(tmp_path):
+    """Codex r1 MED: city with no explicit scaffold subject gets the earliest
+    commit upgraded to scaffold confidence 0.6 in the 2nd pass."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    env = {**os.environ, "GIT_AUTHOR_NAME": "Test", "GIT_AUTHOR_EMAIL": "t@t",
+           "GIT_COMMITTER_NAME": "Test", "GIT_COMMITTER_EMAIL": "t@t", "LC_ALL": "C"}
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "checkout", "-q", "-b", "main"], cwd=repo, check=True, env=env)
+    (repo / "kyoto").mkdir()
+    (repo / "kyoto" / "README.md").write_text("kyoto intro")
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True, env=env)
+    subprocess.run(["git", "commit", "-q", "-m", "feat(kyoto): add README"], cwd=repo, check=True, env=env)
+
+    events = parse_history_repo(repo)
+    kyoto = [e for e in events if e.city_slug == "kyoto"]
+    assert len(kyoto) == 1
+    assert kyoto[0].event_type == "scaffold"
+    assert kyoto[0].confidence == 0.6
+    assert kyoto[0].event_value == "inferred-first-city"
+
+
+def test_scaffold_regex_rejects_false_positive():
+    """Codex r1 MED: anchored regex rejects 'docs(x): scaffold note cleanup'."""
+    from ingest.history_git import _SCAFFOLD_SUBJECT
+    assert _SCAFFOLD_SUBJECT.search("docs(istanbul): scaffold note cleanup") is None
+    assert _SCAFFOLD_SUBJECT.search("fix: scaffold generator bug") is None
+    # True positives
+    assert _SCAFFOLD_SUBJECT.search("scaffold(istanbul): initial") is not None
+    assert _SCAFFOLD_SUBJECT.search("Initial commit") is not None
+    assert _SCAFFOLD_SUBJECT.search("chore: scaffold kyoto directory") is not None
+
+
 def test_unclassified_events_still_written(git_repo, tmp_path, monkeypatch):
     db_file = tmp_path / "t.sqlite"
     monkeypatch.setenv("DASHBOARD_KPI_DB", str(db_file))

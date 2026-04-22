@@ -28,7 +28,12 @@ _LOG = logging.getLogger(__name__)
 
 _CITY_ROOT_PATTERN = re.compile(r"^([a-z0-9][a-z0-9_-]+)/")
 
-_SCAFFOLD_SUBJECT = re.compile(r"\b(scaffold|Initial commit|chore.*scaffold)\b", re.IGNORECASE)
+# Anchored scaffold subject (Codex r1 MED): must start with a directive verb;
+# rejects cases like "docs(x): scaffold note cleanup" or "fix: scaffold generator".
+_SCAFFOLD_SUBJECT = re.compile(
+    r"^(scaffold|Initial commit|chore(?:\([^)]+\))?:\s*scaffold)\b",
+    re.IGNORECASE,
+)
 _SCRIPT_FINAL_SUBJECT = re.compile(r"\b(phase[\-]?[2-5]|final|lock|ready)\b", re.IGNORECASE)
 
 
@@ -65,34 +70,36 @@ def _run_git(args: list[str], cwd: Path) -> str:
 
 
 def _iter_commits(repo_root: Path):
-    """Yield (sha, committed_at, subject, files) tuples for every non-merge commit on all branches.
+    """Yield (sha, committed_at, subject, files_by_status) tuples for every non-merge commit on all branches.
 
-    Uses `--format="%x02%H%x01%cI%x01%s"` so each commit block BEGINS with
-    \\x02 — the touched-files list produced by `--name-only` always belongs
-    to the commit whose header appeared most recently. Parsing is line-based.
+    Uses `--raw` mode so each file entry carries its status flag
+    (A=added, M=modified, D=deleted, R=renamed, etc.). Format:
+      :src_mode dst_mode src_sha dst_sha STATUS\\tpath
+    Returns `files_by_status` as a list of (status, path) tuples. Callers
+    that only care about non-deleted files can filter for status != 'D'.
+
+    (Gemini r1 MED: previous `--name-only` did not distinguish deletions,
+    so a commit that removed SCRIPT.md was misclassified as a 'revision'.
+    `--raw` restores deletion-awareness without further git calls.)
     """
     raw = _run_git(
         [
             "log", "--all", "--no-merges",
-            "--name-only", "--format=%x02%H%x01%cI%x01%s",
+            "--raw",
+            "--format=%x02%H%x01%cI%x01%s",
         ],
         cwd=repo_root,
     )
     current_sha: str | None = None
     current_dt: str | None = None
     current_subject: str | None = None
-    current_files: list[str] = []
-
-    def flush():
-        if current_sha is not None:
-            yield current_sha, current_dt, current_subject, list(current_files)
+    current_files: list[tuple[str, str]] = []
 
     for line in raw.splitlines():
         if line.startswith("\x02"):
-            # New commit header. Flush the previous one.
             if current_sha is not None:
                 yield current_sha, current_dt, current_subject, list(current_files)
-            header = line[1:]  # strip \x02
+            header = line[1:]
             parts = header.split("\x01", 2)
             if len(parts) < 3:
                 current_sha = None
@@ -100,9 +107,23 @@ def _iter_commits(repo_root: Path):
             current_sha, current_dt, current_subject = parts[0], parts[1], parts[2]
             current_files = []
         elif line and current_sha is not None:
-            current_files.append(line.strip())
+            # Raw format: ':MODES SRC DST STATUS\tpath'
+            if line.startswith(":"):
+                try:
+                    meta, path = line.split("\t", 1)
+                    status = meta.split()[-1]  # last whitespace-separated token = status letter(s)
+                    # Normalise R100 → R, C100 → C, M → M, D → D, A → A.
+                    status = status[0] if status else "?"
+                    current_files.append((status, path.strip()))
+                except Exception:  # noqa: BLE001
+                    continue
     if current_sha is not None:
         yield current_sha, current_dt, current_subject, list(current_files)
+
+
+def _active_files(files_by_status: list[tuple[str, str]]) -> list[str]:
+    """Filter to paths that still exist after the commit (not deleted)."""
+    return [path for status, path in files_by_status if status != "D"]
 
 
 def _infer_city(files: list[str], subject: str) -> str | None:
@@ -139,13 +160,15 @@ _RESERVED_ROOT_SLUGS = {
 def _classify(subject: str, files: list[str], city_slug: str | None) -> tuple[str, float]:
     """Return (event_type, confidence) for a given commit.
 
-    Never raises. Falls back to ('unclassified', 0.0) when the combination
-    of subject + files doesn't match any known pattern.
+    Takes already-filtered `files` (call _active_files on the raw list to
+    drop deletions — Gemini r1 MED). Never raises. Returns
+    ('unclassified', 0.0) when no pattern matches.
     """
     if city_slug is None:
         return "unclassified", 0.0
 
     touches_script = any(f == f"{city_slug}/SCRIPT.md" for f in files)
+    touches_readme = any(f == f"{city_slug}/README.md" for f in files)
     touches_teleprompter = any(f == f"{city_slug}/TELEPROMPTER.md" for f in files)
     touches_seo = any(f == f"{city_slug}/SEO_PACKAGE.md" for f in files)
     touches_publish_meta = any(f == f"{city_slug}/docs/publish.json" for f in files)
@@ -153,20 +176,23 @@ def _classify(subject: str, files: list[str], city_slug: str | None) -> tuple[st
     if touches_publish_meta:
         return "publish_metadata", 1.0
 
+    # Codex r1 MED: anchored regex + reserve 0.9 ONLY when README.md (strong
+    # scaffold evidence) is touched; city-file-touch alone drops to 0.7.
     subject_scaffold = _SCAFFOLD_SUBJECT.search(subject) is not None
     if subject_scaffold:
-        return "scaffold", 0.9 if (touches_script or any(f.startswith(f"{city_slug}/") for f in files)) else 0.6
+        if touches_readme:
+            return "scaffold", 0.9
+        if any(f.startswith(f"{city_slug}/") for f in files):
+            return "scaffold", 0.7
+        return "scaffold", 0.5
 
     subject_final = _SCRIPT_FINAL_SUBJECT.search(subject) is not None
     if subject_final and (touches_teleprompter or touches_seo):
         return "script_finished", 0.8
     if subject_final:
-        return "script_finished", 0.5  # subject-only, weaker evidence
+        return "script_finished", 0.5
 
     if touches_script:
-        # Can't tell if this is the FIRST SCRIPT touch without cross-commit
-        # state. Caller sequences commits chronologically and upgrades the
-        # first occurrence to "script_started". Middle touches = revision.
         return "revision", 0.7
 
     return "unclassified", 0.2 if city_slug else 0.0
@@ -175,37 +201,88 @@ def _classify(subject: str, files: list[str], city_slug: str | None) -> tuple[st
 def parse_history_repo(repo_root: Path) -> list[GitEvent]:
     """Walk a history-production-style git repo and return GitEvents.
 
-    After initial classification, post-process to upgrade the earliest
-    `revision` per city to `script_started` (first SCRIPT.md touch).
+    Chronological post-pass rules (Codex r1 MED):
+      1. Track first SCRIPT.md touch per city using the ACTIVE file list
+         (deletions filtered out). If that first touch happens to also look
+         like a script_finished (batch-style phase3 commit), emit BOTH a
+         script_started and keep the script_finished on the same commit via
+         precedence: script_finished wins if files include
+         TELEPROMPTER/SEO, but the commit is still tagged with a secondary
+         event_value='also:script_started' for downstream KPI consumers.
+      2. Track first city sighting: if no commit for a city received a
+         scaffold classification, upgrade the earliest city-touching commit
+         to scaffold with confidence 0.6 (weaker — inferred, not declared).
     """
     events: list[GitEvent] = []
     first_script_seen: set[str] = set()
-    # Git log --all returns newest first; reverse so we see earliest per-city
-    # SCRIPT.md touch and can upgrade it to script_started.
+    first_city_seen: set[str] = set()
+    scaffolded: set[str] = set()
+
     commits = list(_iter_commits(repo_root))
-    commits.reverse()
-    for sha, committed_at, subject, files in commits:
-        city = _infer_city(files, subject)
-        event_type, confidence = _classify(subject, files, city)
-        if event_type == "revision" and city is not None and city not in first_script_seen:
-            event_type = "script_started"
-            confidence = 0.85
-            first_script_seen.add(city)
+    commits.reverse()  # chronological oldest-first
+
+    for sha, committed_at, subject, files_by_status in commits:
+        active_files = _active_files(files_by_status)
+        city = _infer_city(active_files, subject)
+        event_type, confidence = _classify(subject, active_files, city)
+
+        event_value: str | None = None
+
+        if city is not None:
+            # First SCRIPT.md touch → script_started (unless also finished).
+            touches_script = any(f == f"{city}/SCRIPT.md" for f in active_files)
+            if touches_script and city not in first_script_seen:
+                first_script_seen.add(city)
+                if event_type == "script_finished":
+                    # Batch commit — keep script_finished as primary, mark
+                    # that script_started also occurred on this SHA.
+                    event_value = "also:script_started"
+                else:
+                    event_type = "script_started"
+                    confidence = 0.85
+
+            if event_type == "scaffold":
+                scaffolded.add(city)
+
+            # First city sighting placeholder: we'll upgrade in second pass.
+            if city not in first_city_seen:
+                first_city_seen.add(city)
+
         payload = {
             "subject": subject[:200],
-            "touched_files": files[:20],
-            "file_count": len(files),
+            "touched_files": active_files[:20],
+            "file_count": len(active_files),
+            "file_status_summary": "".join(sorted({st for st, _ in files_by_status})) or "",
         }
         events.append(GitEvent(
             commit_sha=sha,
             city_slug=city,
-            branch_name=None,  # multi-branch reachability left for task-05
+            branch_name=None,
             committed_at=committed_at,
             event_type=event_type,
-            event_value=None,
+            event_value=event_value,
             payload=payload,
             confidence=confidence,
         ))
+
+    # Second pass: upgrade earliest city-touching commit to scaffold for
+    # cities that never received an explicit scaffold subject.
+    for i, e in enumerate(events):
+        if e.city_slug and e.city_slug not in scaffolded:
+            # Find the earliest event for that city and promote it.
+            if events[i].event_type in ("unclassified", "revision"):
+                events[i] = GitEvent(
+                    commit_sha=e.commit_sha,
+                    city_slug=e.city_slug,
+                    branch_name=e.branch_name,
+                    committed_at=e.committed_at,
+                    event_type="scaffold",
+                    event_value=(e.event_value or "inferred-first-city"),
+                    payload=e.payload,
+                    confidence=0.6,
+                )
+                scaffolded.add(e.city_slug)
+
     return events
 
 
@@ -229,6 +306,17 @@ def write_events(conn: sqlite3.Connection, events: list[GitEvent]) -> int:
                     """,
                     (e.city_slug, e.committed_at, e.city_slug),
                 )
+                # Gemini r1 MED: if a project already exists with a different
+                # canonical_path, log a warning so the divergence isn't silent.
+                existing = conn.execute(
+                    "SELECT canonical_path FROM projects WHERE city_slug = ?",
+                    (e.city_slug,),
+                ).fetchone()
+                if existing and existing["canonical_path"] != e.city_slug:
+                    _LOG.warning(
+                        "project %s canonical_path drift: stored=%r, expected=%r",
+                        e.city_slug, existing["canonical_path"], e.city_slug,
+                    )
             cur = conn.execute(
                 """
                 INSERT OR IGNORE INTO git_events
