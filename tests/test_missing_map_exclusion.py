@@ -75,6 +75,6 @@ def test_top_performers_includes_only_present_metrics(mixed_mapping_db):
     videos with full inputs are ranked. Here both videos have all three
     metrics, so both should appear."""
     with dbmod.connect() as conn:
-        rows = top_performers(conn, limit=10)
+        rows = top_performers(conn, limit=10, grain="weekly")
     vids = {r["video_id"] for r in rows}
     assert vids == {"v_map", "v_unmap"}

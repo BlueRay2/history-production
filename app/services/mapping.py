@@ -36,44 +36,80 @@ def _slugify_title(title: str) -> str:
 def suggest_mappings(conn: sqlite3.Connection) -> list[Suggestion]:
     """Scan unmapped videos/projects and propose candidate mappings.
 
-    Heuristics:
-      1. Exact city_slug present in video title (lowercased slug) → 0.9.
+    An "unmapped" entity = one with NO `active=1` row. Rows with `active=0`
+    remain reconsiderable in future runs (and are skipped by INSERT OR IGNORE
+    when already present); an `active=1` row blocks further suggestion for
+    that video/city, enforcing the manual-override-wins contract.
+
+    Heuristics (first non-zero confidence wins per (video, city) pair):
+      1. Bidirectional exact slug match — `city_slug in title_slug` or
+         `title_slug in city_slug` (handles short city names inside long
+         titles and short video titles inside multi-word city slugs) → 0.9.
       2. Token overlap ≥ 50% between slugified title and city slug → 0.7.
-      3. No textual match but only 1 unmapped city + 1 unmapped video
-         published within 7 days of the city's earliest script_finished →
-         0.6 (proximity fallback).
+      3. Publish-date proximity: video `published_at` within 7 days of the
+         city's earliest `script_finished` event → 0.6 (proximity fallback).
     """
     suggestions: list[Suggestion] = []
     unmapped_videos = list(conn.execute(
         """
         SELECT v.video_id, v.title, v.published_at
         FROM videos v
-        LEFT JOIN video_project_map m ON m.video_id = v.video_id
-        WHERE m.video_id IS NULL OR m.active = 0
+        WHERE NOT EXISTS (
+            SELECT 1 FROM video_project_map m
+            WHERE m.video_id = v.video_id AND m.active = 1
+        )
         """
     ))
-    unmapped_projects = [r["city_slug"] for r in conn.execute(
+    unmapped_projects = list(conn.execute(
         """
         SELECT p.city_slug
         FROM projects p
-        LEFT JOIN video_project_map m ON m.city_slug = p.city_slug
-        WHERE m.city_slug IS NULL OR m.active = 0
+        WHERE NOT EXISTS (
+            SELECT 1 FROM video_project_map m
+            WHERE m.city_slug = p.city_slug AND m.active = 1
+        )
         """
-    )]
+    ))
+    unmapped_projects = [r["city_slug"] for r in unmapped_projects]
+
+    # Per-city latest script_finished timestamp, for the proximity fallback.
+    finish_by_city = {
+        r["city_slug"]: r["finished_at"]
+        for r in conn.execute(
+            """
+            SELECT city_slug, MAX(committed_at) AS finished_at
+            FROM git_events
+            WHERE event_type = 'script_finished' AND city_slug IS NOT NULL
+            GROUP BY city_slug
+            """
+        )
+    }
 
     for v in unmapped_videos:
         title_slug = _slugify_title(v["title"] or "")
-        title_tokens = set(t for t in title_slug.split("-") if t)
+        title_tokens = {t for t in title_slug.split("-") if t}
         for city_slug in unmapped_projects:
             confidence, evidence = 0.0, ""
-            if city_slug in title_slug:
-                confidence, evidence = 0.9, f"exact slug in title: {v['title']!r}"
+            # 1. Bidirectional exact slug containment.
+            if city_slug and title_slug and (city_slug in title_slug or title_slug in city_slug):
+                confidence, evidence = 0.9, f"exact slug match: {v['title']!r}"
             else:
-                city_tokens = set(t for t in re.split(r"[-_]", city_slug) if t)
+                city_tokens = {t for t in re.split(r"[-_]", city_slug) if t}
                 overlap = title_tokens & city_tokens
                 if overlap and len(overlap) / max(1, len(city_tokens)) >= 0.5:
                     confidence = 0.7
                     evidence = f"token overlap {sorted(overlap)}"
+                elif v["published_at"] and city_slug in finish_by_city:
+                    # 3. Proximity fallback.
+                    try:
+                        pub = datetime.fromisoformat(v["published_at"].replace("Z", "+00:00"))
+                        fin = datetime.fromisoformat(finish_by_city[city_slug].replace("Z", "+00:00"))
+                        delta_days = abs((pub - fin).days)
+                        if delta_days <= 7:
+                            confidence = 0.6
+                            evidence = f"publish within {delta_days}d of script_finished"
+                    except ValueError:
+                        pass  # malformed timestamps — skip proximity
             if confidence > 0:
                 suggestions.append(Suggestion(
                     city_slug=city_slug,
@@ -121,19 +157,53 @@ def write_suggestions(conn: sqlite3.Connection, suggestions: list[Suggestion]) -
 
 
 def approve_mapping(conn: sqlite3.Connection, city_slug: str, video_id: str) -> bool:
-    """Manual override: set (city_slug, video_id) row to active=1 + confidence=1.0.
+    """Manual override: activate (city_slug, video_id) and deactivate any
+    competing mappings for that video or city so the manual choice wins.
 
-    Returns True if a row was updated.
+    A manual approval:
+      1. Inserts the row if absent (confidence=1.0, source='manual').
+      2. Sets active=1 on the target row, confidence=1.0, source='manual'.
+      3. Deactivates every OTHER row that shares the same `video_id` OR
+         the same `city_slug`, preventing duplicate joins in KPI views.
+
+    Returns True if the target row exists/was inserted (i.e. the caller's
+    pair is now the active mapping).
     """
-    cur = conn.execute(
-        """
-        UPDATE video_project_map
-        SET active = 1, confidence = 1.0, mapping_source = 'manual'
-        WHERE city_slug = ? AND video_id = ?
-        """,
-        (city_slug, video_id),
-    )
-    return cur.rowcount > 0
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO video_project_map
+                (city_slug, video_id, confidence, mapping_source, active)
+            VALUES (?, ?, 1.0, 'manual', 1)
+            """,
+            (city_slug, video_id),
+        )
+        conn.execute(
+            """
+            UPDATE video_project_map
+            SET active = 1, confidence = 1.0, mapping_source = 'manual'
+            WHERE city_slug = ? AND video_id = ?
+            """,
+            (city_slug, video_id),
+        )
+        conn.execute(
+            """
+            UPDATE video_project_map
+            SET active = 0
+            WHERE (video_id = ? OR city_slug = ?)
+              AND NOT (city_slug = ? AND video_id = ?)
+            """,
+            (video_id, city_slug, city_slug, video_id),
+        )
+        conn.execute("COMMIT")
+    except Exception:
+        try:
+            conn.execute("ROLLBACK")
+        except sqlite3.OperationalError:
+            pass
+        raise
+    return True
 
 
 def reject_mapping(conn: sqlite3.Connection, city_slug: str, video_id: str) -> bool:

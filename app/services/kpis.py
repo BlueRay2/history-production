@@ -68,21 +68,24 @@ def value_with_reason(
     """
     today = today or datetime.now(timezone.utc).date()
 
-    # Classify channel age if publish date known.
+    # 1. Privacy floor — applies to both channel and per-video metrics. A
+    #    channel under the subs floor hides ALL metrics (not just per-video),
+    #    per YouTube Analytics small-channel behavior (Gemini research).
+    #    Per-video also hides if the video itself is below the view floor.
+    if channel_subs is not None and channel_subs < SUB_FLOOR:
+        return MetricReading(None, "below_privacy_floor")
+    if video_id is not None and video_view_count is not None and video_view_count < VIDEO_VIEW_FLOOR:
+        return MetricReading(None, "below_privacy_floor")
+
+    # 2. Channel too new — classified only after privacy-floor so a tiny new
+    #    channel returns the more-actionable "below_privacy_floor" reason.
     if channel_published_at:
         try:
             pub = datetime.fromisoformat(channel_published_at.replace("Z", "+00:00")).date()
             if (today - pub).days < CHANNEL_NEW_DAYS:
                 return MetricReading(None, "channel_too_new")
         except ValueError:
-            pass  # malformed date — continue with other checks
-
-    # Privacy floor for per-video metrics.
-    if video_id is not None:
-        if video_view_count is not None and video_view_count < VIDEO_VIEW_FLOOR:
-            return MetricReading(None, "below_privacy_floor")
-        if channel_subs is not None and channel_subs < SUB_FLOOR:
-            return MetricReading(None, "below_privacy_floor")
+            pass  # malformed date — continue with data-presence check
 
     # Query latest snapshot.
     if video_id is not None:
@@ -131,46 +134,83 @@ def weekly_scripts_finished(conn: sqlite3.Connection) -> list[sqlite3.Row]:
 
 
 def cycle_time_days(conn: sqlite3.Connection) -> list[sqlite3.Row]:
-    """For each mapped video, compute (published_at - first_commit_at) days.
+    """For each mapped video, compute (published_at - first_scaffold_commit_at) days.
 
-    Uses active mappings only (video_project_map.active = 1). Videos with
-    no project match or project with no git history return NULL cycle time
-    (surfaced as 'unmapped' in exceptions panel by task-07).
+    Cycle time per task-05 spec is `published_at - first_scaffold_commit_at`,
+    where the scaffold milestone is the earliest `event_type='scaffold'` row
+    in `git_events` for the city. We fall back to `projects.first_commit_at`
+    only when no scaffold event exists (older pre-parser projects), so the
+    KPI still surfaces a value rather than dropping the row.
+
+    Uses active mappings only (video_project_map.active = 1). Videos without
+    an active mapping are excluded entirely — task-07 surfaces them in the
+    exceptions panel.
     """
     return list(conn.execute(
         """
+        WITH first_scaffold AS (
+            SELECT city_slug, MIN(committed_at) AS first_scaffold_at
+            FROM git_events
+            WHERE event_type = 'scaffold' AND city_slug IS NOT NULL
+            GROUP BY city_slug
+        )
         SELECT
             v.video_id,
             v.title,
             v.published_at,
-            p.first_commit_at,
-            julianday(v.published_at) - julianday(p.first_commit_at) AS cycle_days
+            COALESCE(fs.first_scaffold_at, p.first_commit_at) AS start_at,
+            julianday(v.published_at)
+              - julianday(COALESCE(fs.first_scaffold_at, p.first_commit_at)) AS cycle_days
         FROM videos v
         JOIN video_project_map m ON m.video_id = v.video_id AND m.active = 1
         JOIN projects p ON p.city_slug = m.city_slug
-        WHERE v.published_at IS NOT NULL AND p.first_commit_at IS NOT NULL
+        LEFT JOIN first_scaffold fs ON fs.city_slug = p.city_slug
+        WHERE v.published_at IS NOT NULL
+          AND COALESCE(fs.first_scaffold_at, p.first_commit_at) IS NOT NULL
         ORDER BY v.published_at DESC
         """
     ))
 
 
 def script_iterations_approx(conn: sqlite3.Connection) -> list[sqlite3.Row]:
-    """Count of revision events per city between script_started and script_finished.
+    """Count of `revision` events per *mapped* city strictly between
+    `script_started` and `script_finished` milestones.
 
-    Approximate — rebase/squash collapses commits, so this is labelled
-    '(approx)' in UI per J-03.
+    Approximate — rebase/squash collapses commits, and cities with batch
+    phase-3 commits have overlapping start/finish so the window degenerates
+    to zero revisions for that city (correctly). Labelled '(approx)' in UI.
+
+    Joins `video_project_map.active=1` so unmapped cities are excluded from
+    the per-video KPI surface (per task-07 exceptions contract).
     """
     return list(conn.execute(
         """
+        WITH starts AS (
+            SELECT city_slug, MIN(committed_at) AS started_at
+            FROM git_events
+            WHERE event_type = 'script_started' AND city_slug IS NOT NULL
+            GROUP BY city_slug
+        ),
+        finishes AS (
+            SELECT city_slug, MAX(committed_at) AS finished_at
+            FROM git_events
+            WHERE event_type = 'script_finished' AND city_slug IS NOT NULL
+            GROUP BY city_slug
+        )
         SELECT
-            city_slug,
-            COUNT(CASE WHEN event_type = 'revision' THEN 1 END) AS n_revisions,
-            COUNT(CASE WHEN event_type = 'script_started' THEN 1 END) AS has_start,
-            COUNT(CASE WHEN event_type = 'script_finished' THEN 1 END) AS has_finish
-        FROM git_events
-        WHERE city_slug IS NOT NULL
-        GROUP BY city_slug
-        HAVING has_start >= 1 OR has_finish >= 1
+            s.city_slug,
+            SUM(CASE
+                WHEN ge.event_type = 'revision'
+                 AND ge.committed_at >= s.started_at
+                 AND ge.committed_at <= f.finished_at
+                THEN 1 ELSE 0 END) AS n_revisions,
+            1 AS has_start,
+            1 AS has_finish
+        FROM starts s
+        JOIN finishes f ON f.city_slug = s.city_slug
+        JOIN video_project_map m ON m.city_slug = s.city_slug AND m.active = 1
+        LEFT JOIN git_events ge ON ge.city_slug = s.city_slug
+        GROUP BY s.city_slug
         ORDER BY n_revisions DESC
         """
     ))
@@ -253,57 +293,74 @@ def monthly_channel_kpis(conn: sqlite3.Connection) -> list[sqlite3.Row]:
     return _latest_window_rows(conn, grain="monthly", scope="channel")
 
 
-def top_performers(conn: sqlite3.Connection, *, limit: int = 3) -> list[sqlite3.Row]:
+def top_performers(
+    conn: sqlite3.Connection,
+    *,
+    limit: int = 3,
+    grain: str = "monthly",
+) -> list[sqlite3.Row]:
     """Composite-score ranking of videos for Top-Performers panel.
 
-    Score = equal-weight z-score across (views_30d, retention_avg,
-    subs_gained_per_video). Videos missing any input are EXCLUDED (not
-    ranked as 0) — per task-05 spec.
+    Score = equal-weight z-score across (views, averageViewPercentage,
+    subscribersGained) within a single aligned window: the most recent
+    (window_start, window_end) pair that has all three metrics present for
+    at least one video. This avoids mixing metrics across windows (Codex
+    r1 finding). Videos missing any of the three inputs inside that window
+    are EXCLUDED, not scored as 0.
 
-    SQL-only implementation: computes each metric's mean + stddev via
-    window functions, then sums z-scores.
+    SQLite has no STDDEV; we approximate via sqrt(E[x²] - E[x]²) and guard
+    divide-by-zero with NULLIF → COALESCE(..., 1).
     """
     rows = list(conn.execute(
         """
-        WITH latest AS (
-            SELECT
-                video_id,
-                metric_key,
-                value_num,
-                ROW_NUMBER() OVER (PARTITION BY video_id, metric_key ORDER BY observed_on DESC) AS rn
+        WITH ranked AS (
+            SELECT video_id, metric_key, window_start, window_end, value_num,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY video_id, metric_key, window_start, window_end
+                       ORDER BY observed_on DESC
+                   ) AS rn
             FROM video_metric_snapshots
-            WHERE grain = 'weekly'
+            WHERE grain = ?
+              AND metric_key IN ('views', 'averageViewPercentage', 'subscribersGained')
+              AND value_num IS NOT NULL
+        ),
+        latest AS (
+            SELECT * FROM ranked WHERE rn = 1
+        ),
+        -- The aligned window = the latest window_end for which at least one
+        -- video has all three metrics.
+        aligned AS (
+            SELECT window_start, window_end
+            FROM latest
+            GROUP BY window_start, window_end
+            HAVING COUNT(DISTINCT metric_key) = 3
+            ORDER BY window_end DESC
+            LIMIT 1
         ),
         pivoted AS (
             SELECT
-                video_id,
-                MAX(CASE WHEN metric_key = 'views' AND rn = 1 THEN value_num END) AS views,
-                MAX(CASE WHEN metric_key = 'averageViewPercentage' AND rn = 1 THEN value_num END) AS retention,
-                MAX(CASE WHEN metric_key = 'subscribersGained' AND rn = 1 THEN value_num END) AS subs_gained
-            FROM latest
-            GROUP BY video_id
+                l.video_id,
+                MAX(CASE WHEN metric_key = 'views' THEN value_num END) AS views,
+                MAX(CASE WHEN metric_key = 'averageViewPercentage' THEN value_num END) AS retention,
+                MAX(CASE WHEN metric_key = 'subscribersGained' THEN value_num END) AS subs_gained
+            FROM latest l
+            JOIN aligned a
+              ON l.window_start = a.window_start AND l.window_end = a.window_end
+            GROUP BY l.video_id
             HAVING views IS NOT NULL AND retention IS NOT NULL AND subs_gained IS NOT NULL
         ),
         stats AS (
             SELECT
-                AVG(views) AS mv, AVG(retention) AS mr, AVG(subs_gained) AS ms,
-                -- SQLite has no STDDEV; approximate via sqrt(avg(x²) - avg(x)²).
-                -- Use NULLIF to avoid division by zero in degenerate cases.
-                NULLIF(
-                    (SELECT SQRT(AVG(views*views) - AVG(views)*AVG(views)) FROM pivoted),
-                    0) AS sv,
-                NULLIF(
-                    (SELECT SQRT(AVG(retention*retention) - AVG(retention)*AVG(retention)) FROM pivoted),
-                    0) AS sr,
-                NULLIF(
-                    (SELECT SQRT(AVG(subs_gained*subs_gained) - AVG(subs_gained)*AVG(subs_gained)) FROM pivoted),
-                    0) AS ss
+                AVG(views)       AS mv, AVG(retention)   AS mr, AVG(subs_gained) AS ms,
+                NULLIF(SQRT(MAX(0, AVG(views*views)       - AVG(views)*AVG(views))),       0) AS sv,
+                NULLIF(SQRT(MAX(0, AVG(retention*retention)   - AVG(retention)*AVG(retention))),   0) AS sr,
+                NULLIF(SQRT(MAX(0, AVG(subs_gained*subs_gained) - AVG(subs_gained)*AVG(subs_gained))), 0) AS ss
             FROM pivoted
         )
         SELECT
             p.video_id, v.title, p.views, p.retention, p.subs_gained,
-            ((p.views - s.mv) / COALESCE(s.sv, 1) +
-             (p.retention - s.mr) / COALESCE(s.sr, 1) +
+            ((p.views       - s.mv) / COALESCE(s.sv, 1) +
+             (p.retention   - s.mr) / COALESCE(s.sr, 1) +
              (p.subs_gained - s.ms) / COALESCE(s.ss, 1)) AS composite_score
         FROM pivoted p
         CROSS JOIN stats s
@@ -311,6 +368,6 @@ def top_performers(conn: sqlite3.Connection, *, limit: int = 3) -> list[sqlite3.
         ORDER BY composite_score DESC
         LIMIT ?
         """,
-        (limit,),
+        (grain, limit),
     ))
     return rows
