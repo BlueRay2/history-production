@@ -36,4 +36,10 @@
   <p><a href="{{ url_for('exceptions') }}">Unmapped videos: {{ snap.unmapped_videos }}</a></p>
 </aside>
 
+{% if snap.recent_publishes %}
+<section class="recent-publishes">
+  {% include '_recent_publishes.html' %}
+</section>
+{% endif %}
+
 {% endblock %}

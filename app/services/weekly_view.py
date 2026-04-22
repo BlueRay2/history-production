@@ -178,12 +178,18 @@ def weekly_snapshot(
         """
     ).fetchone()["n"]
 
+    # recent_publishes is shared between /weekly and /monthly — imported
+    # lazily to avoid circular import at module load.
+    from app.services.monthly_view import recent_publishes
+    recent = recent_publishes(conn)
+
     return {
         "window": window,
         "cards": cards,
         "scripts_finished_this_week": scripts_this_week,
         "unmapped_videos": unmapped,
         "retention_curves": retention_curves,
+        "recent_publishes": recent,
     }
 
 

@@ -66,11 +66,12 @@ def test_weekly_renders_with_metric_labels(seeded_app):
     assert "2026-04-14" in body  # window header
 
 
-def test_monthly_stub_renders(seeded_app):
+def test_monthly_renders_200(seeded_app):
+    # task-07 replaced the stub with a full page; with only weekly data
+    # seeded here, the monthly view empty-states but still 200s.
     client = seeded_app.test_client()
     resp = client.get("/monthly")
     assert resp.status_code == 200
-    assert "task-07" in resp.data.decode()
 
 
 def test_exceptions_lists_unmapped_and_pending(seeded_app):

@@ -20,7 +20,14 @@ from flask import Flask, redirect, render_template, request, url_for
 
 from app import db as dbmod
 from app.services.mapping import approve_mapping, reject_mapping
+from app.services.monthly_view import (
+    monthly_snapshot,
+    parse_fail_cities,
+    sparse_metrics_gated,
+)
 from app.services.weekly_view import channel_age_days, weekly_snapshot
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
 
 _CALIBRATION_MIN_DAYS = 28  # matches task-09 gate
 
@@ -30,6 +37,7 @@ def create_app(
     channel_subs: int | None = None,
     channel_published_at: str | None = None,
     today: date | None = None,
+    repo_root: Path | None = None,
 ) -> Flask:
     app = Flask(
         __name__,
@@ -44,6 +52,7 @@ def create_app(
     app.config["CHANNEL_PUBLISHED_AT"] = channel_published_at \
         or os.environ.get("DASHBOARD_CHANNEL_PUBLISHED_AT")
     app.config["FROZEN_TODAY"] = today  # None = use real clock
+    app.config["REPO_ROOT"] = repo_root or _REPO_ROOT
 
     def _ctx_globals() -> dict:
         age = channel_age_days(app.config["CHANNEL_PUBLISHED_AT"], today=app.config["FROZEN_TODAY"])
@@ -75,9 +84,15 @@ def create_app(
 
     @app.route("/monthly")
     def monthly():
-        # task-07 populates full page; this stub is kept so /monthly is a
-        # valid navigation target from the tab bar on day one.
-        return render_template("monthly.html", snap=None)
+        with dbmod.connect() as conn:
+            snap = monthly_snapshot(
+                conn,
+                repo_root=app.config["REPO_ROOT"],
+                channel_subs=app.config["CHANNEL_SUBS"],
+                channel_published_at=app.config["CHANNEL_PUBLISHED_AT"],
+                today=app.config["FROZEN_TODAY"],
+            )
+        return render_template("monthly.html", snap=snap)
 
     @app.route("/exceptions")
     def exceptions():
@@ -102,11 +117,23 @@ def create_app(
                 ORDER BY m.confidence DESC
                 """
             ))
+            gated = sparse_metrics_gated(
+                conn,
+                channel_subs=app.config["CHANNEL_SUBS"],
+                channel_published_at=app.config["CHANNEL_PUBLISHED_AT"],
+                today=app.config["FROZEN_TODAY"],
+            )
         return render_template(
             "exceptions.html",
             unmapped=unmapped,
             pending=pending,
+            gated=gated,
         )
+
+    @app.route("/exceptions/cost_templates")
+    def exceptions_cost_templates():
+        cities = parse_fail_cities(app.config["REPO_ROOT"])
+        return render_template("cost_templates.html", cities=cities)
 
     @app.post("/mapping/approve")
     def mapping_approve():
