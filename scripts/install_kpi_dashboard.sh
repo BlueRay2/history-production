@@ -26,10 +26,16 @@ readlink "${DEPLOY_LINK}" >/dev/null || die "readlink failed"
 info "deploy symlink OK: ${DEPLOY_LINK} -> $(readlink "${DEPLOY_LINK}")"
 
 # 2. Install systemd user units.
+# Patch DASHBOARD_KPI_PORT in claude-kpi-dashboard.service so an operator
+# override via env var (DASHBOARD_KPI_PORT=...) propagates to the unit
+# (Gemini-3.1-pro F-01 R1 MEDIUM: previously installer tested $PORT but
+# unit hardcoded 8787 → custom-port deploy would fail health check).
 mkdir -p "${SYSTEMD_USER}"
 for unit in claude-kpi-dashboard.service dashboard-kpi-refresh.service dashboard-kpi-refresh.timer; do
   cp -f "${UNIT_SRC}/${unit}" "${SYSTEMD_USER}/${unit}"
 done
+sed -i "s/^Environment=DASHBOARD_KPI_PORT=.*/Environment=DASHBOARD_KPI_PORT=${PORT}/" \
+  "${SYSTEMD_USER}/claude-kpi-dashboard.service"
 systemctl --user daemon-reload
 systemctl --user enable --now claude-kpi-dashboard.service
 systemctl --user enable --now dashboard-kpi-refresh.timer

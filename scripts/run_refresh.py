@@ -22,6 +22,7 @@ dual-scheduling guarantee).
 from __future__ import annotations
 
 import logging
+import logging.handlers
 import os
 import subprocess
 import sys
@@ -51,13 +52,18 @@ _EXIT_QUOTA = 40
 
 def _setup_logging() -> None:
     _LOG_DIR.mkdir(parents=True, exist_ok=True)
+    # TimedRotatingFileHandler at midnight, keep 30 backups (per task-08 spec
+    # requirement "rotated daily, keep 30 files"; Gemini-3.1-pro F-01 R1 HIGH).
+    # force=True so re-imports during pytest re-bind handlers cleanly
+    # (Gemini-3.1-pro F-01 R1 LOW: basicConfig leak across tests).
+    rot = logging.handlers.TimedRotatingFileHandler(
+        _LOG_FILE, when="midnight", backupCount=30, encoding="utf-8"
+    )
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s %(message)s",
-        handlers=[
-            logging.FileHandler(_LOG_FILE, encoding="utf-8"),
-            logging.StreamHandler(sys.stderr),
-        ],
+        handlers=[rot, logging.StreamHandler(sys.stderr)],
+        force=True,
     )
 
 
@@ -65,7 +71,8 @@ def _bot_token() -> str | None:
     """Parse BOT_TOKEN from the telegram channel .env (plain KEY=VALUE)."""
     if not _BOT_ENV_FILE.is_file():
         return None
-    for line in _BOT_ENV_FILE.read_text(encoding="utf-8", errors="replace").splitlines():
+    # utf-8-sig auto-strips BOM if present (Gemini-3.1-pro F-01 R1 LOW).
+    for line in _BOT_ENV_FILE.read_text(encoding="utf-8-sig", errors="replace").splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
@@ -73,7 +80,8 @@ def _bot_token() -> str | None:
             continue
         key, _, value = line.partition("=")
         if key.strip() == "BOT_TOKEN":
-            return value.strip().strip('"').strip("'")
+            # Strip inline comment (#...) before quotes (Gemini F-01 R1 LOW).
+            return value.partition("#")[0].strip().strip('"').strip("'")
     return None
 
 
