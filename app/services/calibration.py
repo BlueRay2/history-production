@@ -149,16 +149,35 @@ def _dump_scalar(value: Any) -> str:
 
 def weeks_of_data(conn: sqlite3.Connection) -> int:
     """Count full ISO weeks where at least `MIN_SNAPSHOTS_PER_WEEK`
-    non-preliminary channel_metric_snapshots exist."""
+    distinct calendar days of non-preliminary channel_metric_snapshots exist.
+
+    Counts DISTINCT days (not raw rows): one ingestion run inserts
+    multiple metrics per day, so COUNT(*) would falsely satisfy the
+    snapshot threshold from a single day's data (Gemini-3.1-pro F-01
+    R1 HIGH).
+
+    Uses ISO 8601 week numbering: normalize observed_on to that week's
+    Monday before formatting so days spanning Dec 31 / Jan 1 land in
+    the same week (Gemini F-01 R1 MED — SQLite %W otherwise splits at
+    the year boundary).
+    """
+    # ISO-week Monday: shift `observed_on` back by ((weekday + 6) % 7) days,
+    # where SQLite's strftime('%w', date) returns 0=Sunday..6=Saturday. This
+    # collapses every day into its same-week Monday and avoids the
+    # %W-at-year-boundary split (Gemini-3.1-pro F-01 R1 MED).
     row = conn.execute(
         """
         WITH weekly AS (
-            SELECT strftime('%Y-W%W', observed_on) AS iso_week,
-                   COUNT(*) AS n_snapshots
+            SELECT strftime(
+                       '%Y-%m-%d',
+                       observed_on,
+                       '-' || ((CAST(strftime('%w', observed_on) AS INTEGER) + 6) % 7) || ' days'
+                   ) AS iso_week_monday,
+                   COUNT(DISTINCT substr(observed_on, 1, 10)) AS n_days
             FROM channel_metric_snapshots
             WHERE preliminary = 0
-            GROUP BY iso_week
-            HAVING n_snapshots >= ?
+            GROUP BY iso_week_monday
+            HAVING n_days >= ?
         )
         SELECT COUNT(*) AS n FROM weekly
         """,
@@ -197,13 +216,31 @@ def auto_compute_thresholds(
         "averageViewPercentage",
         "views",
     ),
+    grain: str = "weekly",
+    required_weeks: int | None = None,
+    existing_config_path: Path | None = None,
 ) -> dict[str, ThresholdBand]:
-    """Compute 25/50/75 percentile bands per metric.
+    """Compute 25/50/75 percentile bands per metric on a single time grain.
 
     Returns a dict and also writes the proposed YAML to `output_path`
     (typically `config/kpi-thresholds.yaml.proposed`) for Yaroslav's
     manual review.
+
+    Args:
+        grain: Time grain to filter snapshots by (default "weekly").
+            CRITICAL — without grain filter, daily/weekly/monthly values
+            for the same metric pile into one array → percentile bands
+            mathematically nonsensical (Gemini-3.1-pro F-01 R1 HIGH).
+        required_weeks: Minimum weeks of data needed to compute bands.
+            Defaults to module-level REQUIRED_WEEKS but can be overridden
+            so callers stay consistent with `load_status()` reading the
+            same value from YAML (Gemini F-01 R1 LOW — divergent SOT).
+        existing_config_path: If provided and the file exists, preserve
+            its `calibration.start_date` instead of overwriting with
+            today's date (Gemini F-01 R1 MED — original install date
+            was being permanently erased on every recompute).
     """
+    req_weeks = required_weeks if required_weeks is not None else REQUIRED_WEEKS
     computed: dict[str, ThresholdBand] = {}
     for key in metric_keys:
         values = [
@@ -211,12 +248,15 @@ def auto_compute_thresholds(
             for r in conn.execute(
                 """
                 SELECT value_num FROM channel_metric_snapshots
-                WHERE metric_key = ? AND preliminary = 0 AND value_num IS NOT NULL
+                WHERE metric_key = ?
+                  AND grain = ?
+                  AND preliminary = 0
+                  AND value_num IS NOT NULL
                 """,
-                (key,),
+                (key, grain),
             )
         ]
-        if len(values) < MIN_SNAPSHOTS_PER_WEEK * REQUIRED_WEEKS:
+        if len(values) < MIN_SNAPSHOTS_PER_WEEK * req_weeks:
             computed[key] = ThresholdBand(None, None, None)
             continue
         values.sort()
@@ -229,6 +269,14 @@ def auto_compute_thresholds(
             red_below=p25,
         )
 
+    # Preserve original start_date if existing config has one.
+    start_date = datetime.now(timezone.utc).date().isoformat()
+    if existing_config_path is not None and existing_config_path.is_file():
+        existing_cal = (_load_yaml(existing_config_path).get("calibration") or {})
+        existing_start = existing_cal.get("start_date")
+        if existing_start:
+            start_date = existing_start
+
     # Write proposed YAML.
     yaml_doc: dict[str, Any] = {}
     for key, band in computed.items():
@@ -238,8 +286,8 @@ def auto_compute_thresholds(
             "red_below": band.red_below,
         }
     yaml_doc["calibration"] = {
-        "start_date": datetime.now(timezone.utc).date().isoformat(),
-        "required_weeks": REQUIRED_WEEKS,
+        "start_date": start_date,
+        "required_weeks": req_weeks,
         "activated": False,  # Yaroslav flips this after review.
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)

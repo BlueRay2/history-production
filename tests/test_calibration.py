@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date, timedelta
 from pathlib import Path
 
 import pytest
@@ -18,25 +19,31 @@ from app.services.calibration import (
 
 
 def _seed_weeks(conn, n_weeks: int, *, snapshots_per_week: int = MIN_SNAPSHOTS_PER_WEEK):
-    """Seed `n_weeks` worth of channel_metric_snapshots, each with
-    `snapshots_per_week` non-preliminary rows so `weeks_of_data` counts them.
+    """Seed `n_weeks` worth of channel_metric_snapshots spread across
+    distinct calendar days within each week so `weeks_of_data()` (which
+    counts DISTINCT days, not raw rows) correctly clears the threshold.
     """
     conn.execute(
         "INSERT OR IGNORE INTO ingestion_runs (run_id, source, started_at, status) "
         "VALUES ('run-1', 'test', '2026-01-01T00:00:00Z', 'ok')"
     )
+    # Start at 2026-01-05 (Monday of ISO week 2) so each n_weeks block
+    # lands cleanly on its own ISO week without year-boundary edge cases.
+    base_monday = date(2026, 1, 5)
     for week_ix in range(n_weeks):
-        # spread observed_on dates across distinct ISO weeks
-        base = f"2026-01-{(week_ix * 7) + 1:02d}T00:00:00"
+        week_start = base_monday + timedelta(days=week_ix * 7)
+        week_end = week_start + timedelta(days=6)
         for snap_ix in range(snapshots_per_week):
-            observed_on = f"{base}.{snap_ix:03d}Z"
+            day = week_start + timedelta(days=snap_ix)  # consecutive days
+            observed_on = f"{day.isoformat()}T12:00:00Z"
             conn.execute(
                 "INSERT OR IGNORE INTO channel_metric_snapshots "
                 "(metric_key, grain, window_start, window_end, observed_on, "
                 " value_num, run_id, preliminary) "
                 "VALUES ('impressions', 'weekly', ?, ?, ?, ?, 'run-1', 0)",
                 (
-                    base[:10], base[:10],
+                    week_start.isoformat(),
+                    week_end.isoformat(),
                     observed_on,
                     100.0 + week_ix * 20 + snap_ix,
                 ),
