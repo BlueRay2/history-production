@@ -91,11 +91,12 @@ def _discover_migrations(dir_: Path | None = None) -> list[tuple[str, Path, str]
 def _split_statements(sql: str) -> list[str]:
     """Split semicolon-delimited SQL into individual statements.
 
-    SQL-aware: respects single-quoted strings, double-quoted identifiers, and
-    line comments (`--`) so that semicolons or comment markers inside quoted
-    text are preserved verbatim. Codex r1 finding (MED): naive regex-based
-    splitter mangled future migrations containing string literals with
-    semicolons or `--` sequences.
+    SQL-aware state-machine: respects single-quoted strings, double-quoted
+    identifiers, and `--` line comments. Comment characters are CONSUMED
+    (not added to the buffer) so post-pass line stripping is unnecessary —
+    Codex r2 finding (MED): the previous post-pass `splitlines()` strip
+    corrupted multiline string literals containing lines starting with `--`
+    (e.g. `INSERT ... VALUES ('a\\n-- literal\\nb');`).
 
     Limitations (acceptable for our migrations):
       - Does not handle SQLite C-style `/* ... */` block comments
@@ -114,14 +115,15 @@ def _split_statements(sql: str) -> list[str]:
         ch = sql[i]
         nxt = sql[i + 1] if i + 1 < n else ""
         if in_line_comment:
-            buf.append(ch)
+            # Consume comment chars; do not buffer them.
             if ch == "\n":
                 in_line_comment = False
+                buf.append(ch)  # preserve newline so line numbers stay aligned
             i += 1
             continue
         if in_single:
             buf.append(ch)
-            if ch == "'" and nxt == "'":           # escaped quote
+            if ch == "'" and nxt == "'":           # escaped quote — keep both
                 buf.append(nxt); i += 2; continue
             if ch == "'":
                 in_single = False
@@ -133,30 +135,26 @@ def _split_statements(sql: str) -> list[str]:
                 in_double = False
             i += 1
             continue
-        # Outside any quoted context
+        # Outside any quoted/comment context
         if ch == "-" and nxt == "-":
             in_line_comment = True
-            buf.append(ch); buf.append(nxt); i += 2; continue
+            i += 2
+            continue
         if ch == "'":
             in_single = True; buf.append(ch); i += 1; continue
         if ch == '"':
             in_double = True; buf.append(ch); i += 1; continue
         if ch == ";":
             stmt = "".join(buf).strip()
-            # Strip line comments that begin a stripped statement
-            stmt_lines = [ln for ln in stmt.splitlines() if not ln.strip().startswith("--")]
-            stmt_clean = "\n".join(stmt_lines).strip()
-            if stmt_clean:
-                out.append(stmt_clean)
+            if stmt:
+                out.append(stmt)
             buf = []
             i += 1
             continue
         buf.append(ch); i += 1
     tail = "".join(buf).strip()
-    tail_lines = [ln for ln in tail.splitlines() if not ln.strip().startswith("--")]
-    tail_clean = "\n".join(tail_lines).strip()
-    if tail_clean:
-        out.append(tail_clean)
+    if tail:
+        out.append(tail)
     return out
 
 

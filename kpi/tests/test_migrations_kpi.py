@@ -284,6 +284,18 @@ def test_split_statements_strips_line_comments():
     assert parts[1].startswith("SELECT 1")
 
 
+# Codex r2 MED: post-pass line strip corrupted multiline string literals
+def test_split_statements_preserves_dash_dash_inside_string_literal():
+    """A line starting with -- INSIDE a quoted string is NOT a comment."""
+    sql = "INSERT INTO t (msg) VALUES ('line1\n-- this is data, not a comment\nline3');"
+    parts = db_kpi._split_statements(sql)
+    assert len(parts) == 1
+    # The literal must be preserved verbatim
+    assert "-- this is data, not a comment" in parts[0]
+    assert "line1" in parts[0]
+    assert "line3" in parts[0]
+
+
 # Codex r1 MED: enum CHECK constraints work on multiple columns
 def test_enum_checks_enforce(temp_db):
     db_kpi.migrate()
