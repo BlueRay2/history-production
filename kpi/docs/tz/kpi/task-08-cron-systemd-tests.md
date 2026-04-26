@@ -25,7 +25,7 @@
    - daemon-reload + enable --now all 3 services
    - Health check: `curl -sf http://127.0.0.1:8787/api/health` returns `{status: ok}` after start
    - Aborts if 0.0.0.0 binding detected (security check from legacy)
-5. Final cleanup commit: remove legacy `app.main`, `app.services.weekly_view.py`, `app.services.monthly_view.py`, `templates/weekly.html`, `templates/monthly.html`. Keep tests for these temporarily for git-blame friendliness, removed in commit AFTER 7-day rollback window expires.
+5. **DO NOT remove legacy code in task-08.** (Codex r2 finding) Legacy `app.main`, `weekly_view.py`, `monthly_view.py`, templates and `claude-kpi-dashboard.service` STAY untouched throughout task-08. Removal is the responsibility of **task-02** (now moved to final step) AFTER ≥3 days of new system stable operation. This preserves the rollback-friendly state during stabilization.
 6. Telegram alert on first successful nightly run AND first heartbeat: «🚀 kpi vault live — first nightly success + heartbeat ok».
 
 ## Tests
@@ -54,12 +54,14 @@ Helper in `scripts/lib/telegram-alert.sh` shared by `run_nightly.sh`, `heartbeat
 
 ## Rollback
 
-For 7 days post-merge, legacy systemd units (`claude-kpi-dashboard.service` etc.) are removed but unit files preserved in git history. To rollback:
-1. `git checkout HEAD~M -- kpi/systemd/` (where M = commits since task-02)
-2. Re-run legacy `install_kpi_dashboard.sh`
-3. Restore `state/dashboard-kpi.sqlite` from `state/dashboard-kpi.sqlite.retired-2026-04-26`
+During task-08 (and the ≥3-day verification window before task-02 fires), legacy is **fully alive** — both `claude-kpi-dashboard.service` and `claude-kpi-monitoring.service` run side-by-side. To rollback at this stage:
 
-After 7 days, retired sqlite is `rm`'d by scheduled cron, rollback then requires deep-memory backup restore.
+1. `systemctl --user stop kpi-nightly-ingest.timer` — stop new ingest
+2. `systemctl --user stop claude-kpi-monitoring.service` — stop new UI
+3. `systemctl --user disable kpi-*` — disable new units
+4. Legacy continues running unchanged
+
+(Post-task-02 rollback procedure is in task-02's own rollback section.)
 
 ## Acceptance criteria
 
