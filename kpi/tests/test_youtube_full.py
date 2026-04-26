@@ -371,22 +371,24 @@ def test_retry_call_retries_connection_error(temp_db, monkeypatch):
 # -------- Codex r1 MED: failed requests still count for billing -----------
 
 
-def test_retry_call_charges_quota_even_on_failure(temp_db, monkeypatch):
-    """When transient retries are exhausted, quota was already reserved upfront —
-    matches Google's behavior: rejected requests still consume quota."""
+def test_retry_call_charges_quota_per_attempt(temp_db, monkeypatch):
+    """Codex r2 HIGH: each retry is a separate API request that YouTube bills.
+
+    5 attempts → 5 reservations of `units` each. Total = max_attempts × units.
+    """
     monkeypatch.setattr(yf.time, "sleep", lambda s: None)
     callable_ = MagicMock()
     callable_.execute.side_effect = [_http_error(503)] * 5
     from googleapiclient.errors import HttpError
 
     with pytest.raises(HttpError):
-        yf._retry_call(callable_, "data_api_v3", 1, max_attempts=5)
+        yf._retry_call(callable_, "data_api_v3", 50, max_attempts=5)
     with sqlite3.connect(str(temp_db)) as c:
         c.row_factory = sqlite3.Row
-        row = c.execute("SELECT units_used FROM quota_usage WHERE api_name='data_api_v3'").fetchone()
-    # Reservation happened up-front, before the retries.
+        row = c.execute("SELECT units_used, request_count FROM quota_usage WHERE api_name='data_api_v3'").fetchone()
     assert row is not None
-    assert row["units_used"] == 1
+    assert row["units_used"] == 250  # 5 attempts × 50 units
+    assert row["request_count"] == 5
 
 
 def test_quota_exhausted_error_does_not_charge(temp_db, monkeypatch):

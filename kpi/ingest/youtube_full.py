@@ -370,7 +370,10 @@ def _retry_call(
     unwrapped; on transient (5xx, 429, quota-403, network) retries with
     exp backoff (1/2/4/8/16 s).
     """
-    # Reserve up-front (atomic). If this raises, quota was not bumped.
+    # Codex r2 HIGH: each retry attempt is a separate API request that YouTube
+    # bills. Reserve up-front for attempt 1, and re-reserve on every subsequent
+    # retry — this also gives natural backpressure: if a hot retry loop crosses
+    # the daily cap, QuotaExhaustedError aborts the loop instead of hammering.
     quota_check_and_reserve(api_name, units, conn=conn)
     last_exc: Exception | None = None
     for attempt in range(1, max_attempts + 1):
@@ -399,6 +402,9 @@ def _retry_call(
                 status, api_name, attempt, wait, str(exc)[:120],
             )
             time.sleep(wait)
+            # Per-retry reservation. If we cross the budget mid-loop the
+            # QuotaExhaustedError will abort the retry naturally.
+            quota_check_and_reserve(api_name, units, conn=conn)
     assert last_exc is not None
     raise last_exc
 
@@ -880,7 +886,18 @@ class YouTubeFullClient:
                     timeout=120,
                 )
                 resp.raise_for_status()
-                tmp.write_text(resp.text, encoding="utf-8")
+                # Codex r2 MED: verify non-empty body before declaring success.
+                # YouTube can return 200 with empty content if a report is
+                # processed but contained zero rows; we should still write
+                # an empty placeholder, but log a warning AND require the
+                # download URL was honored (i.e. content-length present).
+                content_text = resp.text
+                if not content_text:
+                    _LOG.warning(
+                        "download_report: empty body for report %s url=%s",
+                        report.get("id"), url[:80],
+                    )
+                tmp.write_text(content_text, encoding="utf-8")
                 tmp.replace(target)  # atomic rename
                 return target
             except requests.exceptions.HTTPError as exc:
