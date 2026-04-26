@@ -1,4 +1,4 @@
-# task-08 — Cron + systemd + tests + retire legacy code
+# task-08 — Cron + systemd + tests + first ingest verification
 
 **Status:** `pending`
 **Dep:** task-04 (nightly job exists), task-05 (backfill exists), task-07 (monitoring UI exists)
@@ -69,7 +69,7 @@ During task-08 (and the ≥3-day verification window before task-02 fires), lega
 - First scheduled nightly run completes in <5min and writes >0 rows
 - Heartbeat fires hourly, writes monitoring_pings rows
 - `/api/health` returns `{status: ok}` continuously after first run
-- Legacy code removed in same commit as final ship; rollback path documented
+- **Legacy stays untouched** — task-08 ship commit contains zero changes to `app.main`, `weekly_view.py`, `monthly_view.py`, legacy templates, or `claude-kpi-dashboard.service`. Legacy retirement is task-02's scope, executed only after ≥3-day verification window.
 - All tests pass
 
 ## Review loop slots
