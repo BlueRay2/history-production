@@ -191,3 +191,142 @@ def test_quota_usage_pk(temp_db):
                 "VALUES (?, ?, ?, ?, ?)",
                 ("data_api_v3", "2026-04-26", 200, 100, "2026-04-26T01:00:00Z"),
             )
+
+
+# Codex r1 LOW: index assertions
+def test_critical_indexes_present(temp_db):
+    db_kpi.migrate()
+    with db_kpi.connect() as conn:
+        idx_names = {
+            r["name"]
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
+        }
+    expected = {
+        "idx_ingestion_runs_recent",
+        "idx_ingestion_runs_source_status",
+        "idx_channel_snapshots_lookup",
+        "idx_channel_snapshots_dim",
+        "idx_video_snapshots_lookup",
+        "idx_video_snapshots_metric",  # Codex r1 HIGH fix
+        "idx_reporting_reports_lookup",
+        "idx_schema_drift_unack",
+    }
+    missing = expected - idx_names
+    assert not missing, f"missing indexes: {missing}"
+
+
+# Codex r1 LOW: atomicity rollback test
+def test_migration_rollback_on_failure(temp_db, monkeypatch, tmp_path):
+    """If any statement in a migration fails, all prior statements roll back
+    AND schema_migrations row is NOT inserted (so re-running can retry)."""
+    fake_dir = tmp_path / "broken-migrations"
+    fake_dir.mkdir()
+    (fake_dir / "001_init.sql").write_text(
+        "CREATE TABLE good_table (id INTEGER PRIMARY KEY);\n"
+        "CREATE TABLE bad_table (id INVALID_TYPE_FOR_TESTING);\n"
+        "-- the second statement uses bogus type that SQLite still accepts ?"
+    )
+    # Actually SQLite is lenient with types. Use invalid SQL.
+    (fake_dir / "001_init.sql").write_text(
+        "CREATE TABLE good_table (id INTEGER PRIMARY KEY);\n"
+        "INVALID SQL STATEMENT;"
+    )
+    monkeypatch.setattr(db_kpi, "_MIGRATIONS_DIR", fake_dir)
+    with pytest.raises(sqlite3.OperationalError):
+        db_kpi.migrate()
+    # Verify rollback: good_table should NOT exist, schema_migrations empty
+    with db_kpi.connect() as conn:
+        rows = conn.execute(
+            "SELECT name FROM sqlite_master WHERE name IN ('good_table', 'schema_migrations')"
+        ).fetchall()
+        names = {r["name"] for r in rows}
+        # schema_migrations may exist (created by _ensure_migrations_table) but empty
+        assert "good_table" not in names
+        if "schema_migrations" in names:
+            applied = conn.execute("SELECT COUNT(*) AS n FROM schema_migrations").fetchone()
+            assert applied["n"] == 0
+
+
+# Codex r1 MED: SQL-safe statement splitter
+def test_split_statements_respects_string_literals():
+    """Semicolons inside quoted strings must NOT split statements."""
+    sql = """
+    INSERT INTO t (val) VALUES ('hello;world');
+    INSERT INTO t (val) VALUES ('quote''with semicolon; inside');
+    INSERT INTO t (msg) VALUES ('-- this is data, not a comment');
+    CREATE TABLE u (x TEXT);
+    """
+    parts = db_kpi._split_statements(sql)
+    assert len(parts) == 4
+    assert "hello;world" in parts[0]
+    assert "quote''with semicolon; inside" in parts[1]
+    assert "this is data, not a comment" in parts[2]
+    assert parts[3].startswith("CREATE TABLE u")
+
+
+def test_split_statements_respects_double_quoted_identifiers():
+    sql = 'CREATE TABLE "weird;name" (id INT);\nSELECT 1;'
+    parts = db_kpi._split_statements(sql)
+    assert len(parts) == 2
+    assert '"weird;name"' in parts[0]
+
+
+def test_split_statements_strips_line_comments():
+    sql = """
+    -- top comment
+    CREATE TABLE x (id INT); -- inline trailing
+    -- between
+    SELECT 1; -- final
+    """
+    parts = db_kpi._split_statements(sql)
+    assert len(parts) == 2
+    assert parts[0].startswith("CREATE TABLE x")
+    assert parts[1].startswith("SELECT 1")
+
+
+# Codex r1 MED: enum CHECK constraints work on multiple columns
+def test_enum_checks_enforce(temp_db):
+    db_kpi.migrate()
+    with db_kpi.connect() as conn:
+        # ingestion_runs.status CHECK
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+                "VALUES (?, ?, ?, ?)",
+                ("r_bad", "data_api", "2026-04-26T00:00:00Z", "BOGUS_STATUS"),
+            )
+        # ingestion_runs.source CHECK
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+                "VALUES (?, ?, ?, ?)",
+                ("r_bad2", "BOGUS_SOURCE", "2026-04-26T00:00:00Z", "ok"),
+            )
+        # videos.privacy_status CHECK
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO videos(video_id, privacy_status) VALUES (?, ?)",
+                ("v_bad", "secret"),
+            )
+        # videos.is_short out of range
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO videos(video_id, is_short) VALUES (?, ?)",
+                ("v_bad2", 2),
+            )
+        # video_retention_points.elapsed_ratio range
+        conn.execute(
+            "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+            "VALUES (?, ?, ?, ?)",
+            ("r_ok", "analytics_api", "2026-04-26T00:00:00Z", "ok"),
+        )
+        conn.execute(
+            "INSERT INTO videos(video_id) VALUES (?)", ("vid_ok",),
+        )
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO video_retention_points"
+                "(video_id, observed_on, window_start, window_end, elapsed_ratio, run_id) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                ("vid_ok", "2026-04-26T00:00:00Z", "2026-04-26", "2026-04-26", 1.5, "r_ok"),
+            )

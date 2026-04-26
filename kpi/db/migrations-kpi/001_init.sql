@@ -9,6 +9,17 @@
 -- Note: no BEGIN/COMMIT — transaction managed by app/db_kpi.py atomic with
 -- schema_migrations bookkeeping (Codex r1 atomicity finding from ADR 0001
 -- carried forward).
+--
+-- Temporal naming convention (Codex r1 LOW noted naming drift):
+--   - `*_at`          — internal Python-generated UTC ISO timestamps (microsecond precision)
+--                       Examples: `created_at`, `started_at`, `finished_at`, `observed_on`
+--                       (`observed_on` carries legacy ADR 0001 name; semantically equivalent to *_at)
+--   - `*_time`        — verbatim YouTube API field names mirrored 1:1 (intentional)
+--                       Examples: `start_time`, `end_time`, `create_time` from Reporting API
+--   - `*_utc`         — date-only fields (no time component) explicitly tied to UTC date
+--                       Examples: `date_utc`
+--   - `scheduled_for` — domain semantic (the planned time, not actual)
+-- This naming preserves close-mapping to YouTube API source and is intentional, not drift.
 
 -- Schema versioning (same pattern as ADR 0001 to preserve operator muscle memory)
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -26,15 +37,18 @@ CREATE TABLE videos (
     published_at          TEXT,
     channel_id            TEXT,
     duration_s            INTEGER,
-    privacy_status        TEXT,                    -- 'public' | 'unlisted' | 'private'
-    upload_status         TEXT,                    -- 'processed' | 'uploaded' | 'rejected'
+    privacy_status        TEXT CHECK (privacy_status IS NULL OR
+        privacy_status IN ('public', 'unlisted', 'private')),
+    upload_status         TEXT CHECK (upload_status IS NULL OR
+        upload_status IN ('processed', 'uploaded', 'rejected', 'failed', 'deleted')),
     category_id           TEXT,
     tags_json             TEXT,                    -- JSON array of tags as TEXT
     default_lang          TEXT,
     default_audio_lang    TEXT,
-    is_short              INTEGER NOT NULL DEFAULT 0,    -- 1 if duration ≤ 60s
-    made_for_kids         INTEGER,                       -- nullable boolean
-    live_broadcast_content TEXT,                         -- 'none' | 'live' | 'upcoming'
+    is_short              INTEGER NOT NULL DEFAULT 0 CHECK (is_short IN (0, 1)),
+    made_for_kids         INTEGER CHECK (made_for_kids IS NULL OR made_for_kids IN (0, 1)),
+    live_broadcast_content TEXT CHECK (live_broadcast_content IS NULL OR
+        live_broadcast_content IN ('none', 'live', 'upcoming')),
     created_at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
     updated_at            TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
@@ -51,12 +65,20 @@ CREATE TABLE ingestion_runs (
         -- e.g. 'analytics_api:per_video', 'reporting_api:channel_cards_a1'
     started_at    TEXT NOT NULL,
     finished_at   TEXT,
-    status        TEXT NOT NULL,
-        -- 'running' | 'ok' | 'partial' | 'api_failure' | 'db_failure' | 'quota_exhausted' | 'auth_failed' | 'schema_drift'
+    status        TEXT NOT NULL CHECK (status IN (
+        'running', 'ok', 'partial',
+        'api_failure', 'db_failure', 'quota_exhausted',
+        'auth_failed', 'schema_drift'
+    )),
     rows_written  INTEGER NOT NULL DEFAULT 0,
     quota_units   INTEGER NOT NULL DEFAULT 0,
     error_text    TEXT,
-    scheduled_for TEXT
+    scheduled_for TEXT,
+    CHECK (source IN (
+        'data_api', 'analytics_api', 'reporting_api',
+        'nightly_orchestrator', 'backfill', 'monitoring',
+        'reporting_cards'  -- legacy compatibility during 3-day verification window
+    ))
 );
 
 CREATE INDEX idx_ingestion_runs_recent ON ingestion_runs(started_at DESC);
@@ -111,6 +133,12 @@ CREATE TABLE video_snapshots (
 CREATE INDEX idx_video_snapshots_lookup
     ON video_snapshots(video_id, metric_key, grain, window_end DESC, observed_on DESC);
 
+-- Codex r1 finding HIGH: cross-video queries (e.g. coverage/freshness) need
+-- a leading-non-video-id index. Without this, "all videos with metric_key=views
+-- in last 7 days" full-scans the table.
+CREATE INDEX idx_video_snapshots_metric
+    ON video_snapshots(metric_key, grain, window_end DESC, observed_on DESC, video_id);
+
 -- ===========================================================================
 -- VIDEO RETENTION POINTS — per-video retention curves (elapsedVideoTimeRatio)
 -- ===========================================================================
@@ -119,7 +147,7 @@ CREATE TABLE video_retention_points (
     observed_on                    TEXT NOT NULL,
     window_start                   TEXT NOT NULL,
     window_end                     TEXT NOT NULL,
-    elapsed_ratio                  REAL NOT NULL,    -- 0.0 to 1.0 (Analytics API dimension)
+    elapsed_ratio                  REAL NOT NULL CHECK (elapsed_ratio >= 0.0 AND elapsed_ratio <= 1.0),
     audience_watch_ratio           REAL,
     relative_retention_performance REAL,
     run_id                         TEXT NOT NULL,
@@ -136,7 +164,7 @@ CREATE TABLE reporting_jobs (
     report_type_id  TEXT NOT NULL,                   -- e.g. 'channel_basic_a3'
     job_name        TEXT,
     created_at      TEXT NOT NULL,
-    status          TEXT NOT NULL DEFAULT 'active'   -- 'active' | 'disabled'
+    status          TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'disabled'))
 );
 
 CREATE TABLE reporting_reports (
@@ -146,7 +174,8 @@ CREATE TABLE reporting_reports (
     end_time        TEXT NOT NULL,
     create_time     TEXT NOT NULL,                    -- when YouTube generated the report
     download_url    TEXT,
-    download_status TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'downloaded' | 'parsed' | 'failed'
+    download_status TEXT NOT NULL DEFAULT 'pending' CHECK (download_status IN
+        ('pending', 'downloaded', 'parsed', 'failed')),
     downloaded_at   TEXT,
     parsed_at       TEXT,
     csv_local_path  TEXT,

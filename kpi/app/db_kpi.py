@@ -91,16 +91,73 @@ def _discover_migrations(dir_: Path | None = None) -> list[tuple[str, Path, str]
 def _split_statements(sql: str) -> list[str]:
     """Split semicolon-delimited SQL into individual statements.
 
-    Handles:
-      - inline `--` line comments (stripped before parsing terminators)
-      - statements without trailing semicolon (final stmt gets one if missing)
+    SQL-aware: respects single-quoted strings, double-quoted identifiers, and
+    line comments (`--`) so that semicolons or comment markers inside quoted
+    text are preserved verbatim. Codex r1 finding (MED): naive regex-based
+    splitter mangled future migrations containing string literals with
+    semicolons or `--` sequences.
 
-    Does not handle: triggers, BEGIN..END blocks (none in our 001 migration).
+    Limitations (acceptable for our migrations):
+      - Does not handle SQLite C-style `/* ... */` block comments
+      - Does not handle `BEGIN...END` trigger bodies (none in this codebase)
+
+    For richer cases, drop in `sqlglot` or `sqlparse` later.
     """
-    # Strip line comments
-    no_comments = re.sub(r"--[^\n]*", "", sql)
-    parts = [s.strip() for s in no_comments.split(";")]
-    return [p for p in parts if p]
+    out: list[str] = []
+    buf: list[str] = []
+    i = 0
+    n = len(sql)
+    in_single = False
+    in_double = False
+    in_line_comment = False
+    while i < n:
+        ch = sql[i]
+        nxt = sql[i + 1] if i + 1 < n else ""
+        if in_line_comment:
+            buf.append(ch)
+            if ch == "\n":
+                in_line_comment = False
+            i += 1
+            continue
+        if in_single:
+            buf.append(ch)
+            if ch == "'" and nxt == "'":           # escaped quote
+                buf.append(nxt); i += 2; continue
+            if ch == "'":
+                in_single = False
+            i += 1
+            continue
+        if in_double:
+            buf.append(ch)
+            if ch == '"':
+                in_double = False
+            i += 1
+            continue
+        # Outside any quoted context
+        if ch == "-" and nxt == "-":
+            in_line_comment = True
+            buf.append(ch); buf.append(nxt); i += 2; continue
+        if ch == "'":
+            in_single = True; buf.append(ch); i += 1; continue
+        if ch == '"':
+            in_double = True; buf.append(ch); i += 1; continue
+        if ch == ";":
+            stmt = "".join(buf).strip()
+            # Strip line comments that begin a stripped statement
+            stmt_lines = [ln for ln in stmt.splitlines() if not ln.strip().startswith("--")]
+            stmt_clean = "\n".join(stmt_lines).strip()
+            if stmt_clean:
+                out.append(stmt_clean)
+            buf = []
+            i += 1
+            continue
+        buf.append(ch); i += 1
+    tail = "".join(buf).strip()
+    tail_lines = [ln for ln in tail.splitlines() if not ln.strip().startswith("--")]
+    tail_clean = "\n".join(tail_lines).strip()
+    if tail_clean:
+        out.append(tail_clean)
+    return out
 
 
 def _apply_migration(
