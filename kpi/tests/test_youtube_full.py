@@ -555,3 +555,19 @@ def test_download_report_skips_existing_nonempty(tmp_path):
     )
     assert out == existing
     assert out.read_text() == "already here"
+
+
+def test_download_report_skips_existing_zero_byte(tmp_path):
+    """Codex r3 MED: zero-byte target is a legitimate zero-row report."""
+    c = _make_client_with_mocks()
+    target_dir = tmp_path / "csvs" / "channel_basic_a3"
+    target_dir.mkdir(parents=True)
+    existing = target_dir / "r1.csv"
+    existing.write_text("")  # zero-row report
+    out = c.download_report(
+        {"id": "r1", "downloadUrl": "https://example/csv"},
+        target_dir=tmp_path / "csvs",
+        report_type_id="channel_basic_a3",
+    )
+    assert out == existing
+    assert out.stat().st_size == 0

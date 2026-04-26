@@ -870,8 +870,10 @@ class YouTubeFullClient:
         target = target_dir / f"{report['id']}.csv"
         tmp = target.with_suffix(".csv.partial")
 
-        # Existing file verified non-empty? Skip.
-        if target.exists() and target.stat().st_size > 0:
+        # Codex r3 MED: trust target if it exists. Atomic .partial→rename means
+        # a 0-byte target is a legitimate zero-row report, not a partial write
+        # (partial writes never reach the final filename).
+        if target.exists():
             return target
 
         last_exc: Exception | None = None
