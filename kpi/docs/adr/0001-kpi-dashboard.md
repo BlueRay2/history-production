@@ -27,8 +27,8 @@ Build a local-hosted KPI dashboard for YouTube channel "Cities Evolution" (UCjLr
 - `git_events` table records heuristic parse output with confidence scores.
 
 ### Deploy layout
-- Code lives in this repo (`history-production`) under branch `kpi`.
-- Install script creates symlink `/home/aiagent/assistant/deploys/kpi-dashboard → /home/aiagent/assistant/git/history-production`.
+- Code lives in this repo (`history-production`) on branch `kpi`, under the top-level `kpi/` directory (reorganized 2026-04-26 — every dashboard artifact is contained inside `kpi/` to keep the repo navigable).
+- Install script creates symlink `/home/aiagent/assistant/deploys/kpi-dashboard → /home/aiagent/assistant/git/history-production/kpi`.
 - Runtime state (DB, logs) under `/home/aiagent/assistant/state/` and `/home/aiagent/assistant/logs/`.
 
 ### Metric handling (sparse-data discipline)

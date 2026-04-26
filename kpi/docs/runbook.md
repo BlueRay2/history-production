@@ -69,7 +69,7 @@ three systemd units, enables the service + timer, and verifies 200 on
 If the YouTube Analytics refresh token expires or is revoked:
 
 ```bash
-cd /home/aiagent/assistant/git/history-production
+cd /home/aiagent/assistant/git/history-production/kpi
 /home/aiagent/miniconda3/envs/practicum/bin/python scripts/bootstrap_youtube_oauth.py --rotate
 ```
 

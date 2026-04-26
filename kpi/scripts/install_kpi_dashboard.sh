@@ -6,10 +6,11 @@ set -euo pipefail
 
 ASSISTANT_ROOT="/home/aiagent/assistant"
 REPO_ROOT="${ASSISTANT_ROOT}/git/history-production"
+KPI_ROOT="${REPO_ROOT}/kpi"
 DEPLOY_DIR="${ASSISTANT_ROOT}/deploys"
 DEPLOY_LINK="${DEPLOY_DIR}/kpi-dashboard"
 SYSTEMD_USER="${HOME}/.config/systemd/user"
-UNIT_SRC="${REPO_ROOT}/systemd"
+UNIT_SRC="${KPI_ROOT}/systemd"
 PORT="${DASHBOARD_KPI_PORT:-8787}"
 
 info() { printf '[install] %s\n' "$*" >&2; }
@@ -20,7 +21,7 @@ mkdir -p "${DEPLOY_DIR}"
 if [[ -e "${DEPLOY_LINK}" && ! -L "${DEPLOY_LINK}" ]]; then
   die "${DEPLOY_LINK} exists and is not a symlink"
 fi
-ln -sfn "${REPO_ROOT}" "${DEPLOY_LINK}"
+ln -sfn "${KPI_ROOT}" "${DEPLOY_LINK}"
 [[ -L "${DEPLOY_LINK}" ]] || die "symlink not created"
 readlink "${DEPLOY_LINK}" >/dev/null || die "readlink failed"
 info "deploy symlink OK: ${DEPLOY_LINK} -> $(readlink "${DEPLOY_LINK}")"
