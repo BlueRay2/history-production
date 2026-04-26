@@ -67,6 +67,7 @@ QUOTA_COST: dict[str, int] = {
     "youtubeAnalytics.reports.query": 1,
     # Reporting API v1
     "youtubereporting.jobs.list": 1,
+    "youtubereporting.reportTypes.list": 1,    # Codex r1 MED: separate from jobs.list
     # Codex r1 finding F1 in TZ review: jobs.create costs 50 units, NOT 1.
     "youtubereporting.jobs.create": 50,
     "youtubereporting.jobs.delete": 50,
@@ -135,24 +136,85 @@ def _now_iso_micro() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
-def quota_check(api_name: str, units: int, *, conn: sqlite3.Connection | None = None) -> int:
-    """Return current `units_used` for `api_name` today; raise if budget exceeded.
+def _today_total_units(conn: sqlite3.Connection, today: str) -> int:
+    """Sum of units_used across ALL api_name rows for the given UTC date."""
+    row = conn.execute(
+        "SELECT COALESCE(SUM(units_used), 0) AS total FROM quota_usage WHERE date_utc=?",
+        (today,),
+    ).fetchone()
+    return int(row["total"]) if row else 0
 
-    Pre-flight check ONLY — does not increment.
+
+def quota_check_and_reserve(
+    api_name: str, units: int, *, conn: sqlite3.Connection | None = None
+) -> int:
+    """ATOMICALLY check + reserve quota in a single SQLite transaction.
+
+    Codex r1 / Gemini r1 finding (HIGH): the previous separate
+    `quota_check` + `quota_increment` was a TOCTOU race — concurrent runs
+    could each pass the check before either incremented. This function
+    wraps both in `BEGIN IMMEDIATE` so SQLite serializes the read+write.
+
+    Also (Codex r1 HIGH): budget is now applied to the SUM across ALL
+    api_name rows for the day, not per-api-method. The 9000-unit cap is
+    YouTube's daily project quota — split across endpoints, not per-method.
+
+    UTC midnight rollover: today is captured ONCE at the top of the txn so
+    a check that crosses 00:00:00Z will not commit to the wrong date.
+
+    Returns the total used-today value AFTER reservation.
     """
     own_conn = conn is None
     conn = conn or _connect_kpi_db()
+    today = _today_utc_iso()
     try:
-        row = conn.execute(
-            "SELECT units_used FROM quota_usage WHERE api_name=? AND date_utc=?",
-            (api_name, _today_utc_iso()),
-        ).fetchone()
-        used = int(row["units_used"]) if row else 0
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            total_used = _today_total_units(conn, today)
+            budget = DAILY_QUOTA_BUDGET_DEFAULT
+            if total_used + units > budget:
+                conn.execute("ROLLBACK")
+                raise QuotaExhaustedError(
+                    f"daily quota cap {budget} would be exceeded "
+                    f"(today_total_used={total_used}, requested={units}, api={api_name})"
+                )
+            conn.execute(
+                """
+                INSERT INTO quota_usage(api_name, date_utc, units_used, request_count, last_updated)
+                VALUES (?, ?, ?, 1, ?)
+                ON CONFLICT(api_name, date_utc) DO UPDATE SET
+                    units_used = units_used + excluded.units_used,
+                    request_count = request_count + 1,
+                    last_updated = excluded.last_updated
+                """,
+                (api_name, today, units, _now_iso_micro()),
+            )
+            conn.execute("COMMIT")
+            return total_used + units
+        except Exception:
+            try:
+                conn.execute("ROLLBACK")
+            except sqlite3.OperationalError:
+                pass  # not in a transaction
+            raise
+    finally:
+        if own_conn:
+            conn.close()
+
+
+# Backward-compat thin wrappers (used by older callers + tests). Prefer
+# quota_check_and_reserve in new code.
+def quota_check(api_name: str, units: int, *, conn: sqlite3.Connection | None = None) -> int:
+    """Read-only check across all api_names for today. Raises if over budget."""
+    own_conn = conn is None
+    conn = conn or _connect_kpi_db()
+    try:
+        used = _today_total_units(conn, _today_utc_iso())
         budget = DAILY_QUOTA_BUDGET_DEFAULT
         if used + units > budget:
             raise QuotaExhaustedError(
-                f"{api_name} daily budget {budget} would be exceeded "
-                f"(used={used}, requested={units})"
+                f"daily quota cap {budget} would be exceeded "
+                f"(today_total_used={used}, requested={units}, api={api_name})"
             )
         return used
     finally:
@@ -161,7 +223,7 @@ def quota_check(api_name: str, units: int, *, conn: sqlite3.Connection | None = 
 
 
 def quota_increment(api_name: str, units: int, *, conn: sqlite3.Connection | None = None) -> None:
-    """Atomically bump `units_used` and `request_count` for today."""
+    """Atomic bump (no budget check). Used for refunds/manual adjustments."""
     own_conn = conn is None
     conn = conn or _connect_kpi_db()
     try:
@@ -215,20 +277,68 @@ def _log_schema_drift(
 # ----------------------------------------------------------------------------
 
 
-def _is_transient(err: HttpError) -> bool:
-    status = getattr(err.resp, "status", None)
-    if status in (408, 429, 500, 502, 503, 504):
+def _is_transient(err: Exception) -> bool:
+    """Codex r1 HIGH: also accept non-HttpError transport failures.
+
+    Includes:
+      - HttpError with 408/429/500/502/503/504
+      - HttpError with 403 reason in {quotaExceeded, rateLimitExceeded, userRateLimitExceeded}
+      - Network exceptions: ConnectionError, OSError, TimeoutError, requests RequestException
+    """
+    if isinstance(err, HttpError):
+        status = getattr(err.resp, "status", None)
+        if status in (408, 429, 500, 502, 503, 504):
+            return True
+        if status == 403 and _is_rate_limit_403(err):
+            return True
+        return False
+    # Transport-level: socket / TLS / DNS / connection reset
+    if isinstance(err, (ConnectionError, TimeoutError)):
+        return True
+    try:
+        from requests.exceptions import RequestException
+
+        if isinstance(err, RequestException):
+            return True
+    except ImportError:
+        pass
+    if isinstance(err, OSError):
+        # broad net for socket/EAGAIN/ECONNRESET; OK because we only retry transient
         return True
     return False
 
 
-def _is_auth_error(err: HttpError) -> bool:
+def _is_rate_limit_403(err: HttpError) -> bool:
+    """Distinguish quotaExceeded / rateLimitExceeded 403s from auth 403s.
+
+    Codex r1 HIGH: 403 is NOT always auth — Google returns 403 for quota too,
+    and those should be retried (or surface as QuotaExhaustedError) rather than
+    treated as a permanent auth failure.
+    """
+    text = str(err).lower()
+    rate_indicators = (
+        "quotaexceeded", "ratelimitexceeded", "userratelimitexceeded",
+        "quota exceeded", "rate limit exceeded",
+    )
+    return any(ind in text for ind in rate_indicators)
+
+
+def _is_auth_error(err: Exception) -> bool:
+    """True only for genuine auth failures (not quota 403s)."""
+    if not isinstance(err, HttpError):
+        return False
     status = getattr(err.resp, "status", None)
-    return status in (401, 403)
+    if status == 401:
+        return True
+    if status == 403 and not _is_rate_limit_403(err):
+        return True
+    return False
 
 
-def _is_unknown_identifier(err: HttpError) -> str | None:
+def _is_unknown_identifier(err: Exception) -> str | None:
     """If error message indicates an unknown metric/dimension, return its name."""
+    if not isinstance(err, HttpError):
+        return None
     text = str(err)
     if "Unknown identifier" not in text:
         return None
@@ -247,20 +357,26 @@ def _retry_call(
     conn: sqlite3.Connection | None = None,
     max_attempts: int = 5,
 ):
-    """Run `callable_` with quota check + exp backoff retry.
+    """Run `callable_` with atomic quota reservation + exp backoff retry.
 
-    Quota budget pre-check happens once. After success, quota_increment fires
-    so concurrent runs see updated counter. On schema drift, raises
-    SchemaDriftError; on auth error, raises HttpError unwrapped.
+    Codex r1 / Gemini r1 HIGH: budget reservation is now atomic via
+    quota_check_and_reserve (BEGIN IMMEDIATE). On API rejection, we DO NOT
+    refund — YouTube's documentation states that rejected requests still
+    consume quota (Codex r1 MED finding), so our local counter must stay
+    aligned with Google's billing. The only refund case is QuotaExhaustedError
+    (which never reaches the API).
+
+    On schema drift, raises SchemaDriftError; on auth error, raises HttpError
+    unwrapped; on transient (5xx, 429, quota-403, network) retries with
+    exp backoff (1/2/4/8/16 s).
     """
-    quota_check(api_name, units, conn=conn)
+    # Reserve up-front (atomic). If this raises, quota was not bumped.
+    quota_check_and_reserve(api_name, units, conn=conn)
     last_exc: Exception | None = None
     for attempt in range(1, max_attempts + 1):
         try:
-            result = callable_.execute()
-            quota_increment(api_name, units, conn=conn)
-            return result
-        except HttpError as exc:
+            return callable_.execute()
+        except Exception as exc:
             last_exc = exc
             unknown = _is_unknown_identifier(exc)
             if unknown is not None:
@@ -271,16 +387,16 @@ def _retry_call(
                     notes=f"API rejected as unknown identifier on {api_name}",
                     conn=conn,
                 )
-                # Don't bump quota on rejected request (YouTube doesn't charge).
                 raise SchemaDriftError(f"{api_name}: unknown identifier {unknown}") from exc
             if _is_auth_error(exc):
                 raise
             if not _is_transient(exc) or attempt == max_attempts:
                 raise
             wait = 2 ** (attempt - 1)
+            status = getattr(getattr(exc, "resp", None), "status", "—")
             _LOG.warning(
                 "transient %s on %s attempt=%d, sleeping=%ds: %s",
-                exc.resp.status, api_name, attempt, wait, str(exc)[:120],
+                status, api_name, attempt, wait, str(exc)[:120],
             )
             time.sleep(wait)
     assert last_exc is not None
@@ -613,7 +729,11 @@ class YouTubeFullClient:
     def list_report_types(
         self, *, conn: sqlite3.Connection | None = None
     ) -> list[dict[str, Any]]:
-        """List all currently-active Reporting API report types (excluding deprecated)."""
+        """List all currently-active Reporting API report types (excluding deprecated).
+
+        Codex r1 MED: previously billed as `youtubereporting.jobs.list` —
+        wrong endpoint name. Now uses `youtubereporting.reportTypes.list`.
+        """
         all_types: list[dict[str, Any]] = []
         page_token: str | None = None
         while True:
@@ -623,8 +743,8 @@ class YouTubeFullClient:
             req = self._reporting.reportTypes().list(**kwargs)
             res = _retry_call(
                 req,
-                "youtubereporting.jobs.list",
-                QUOTA_COST["youtubereporting.jobs.list"],
+                "youtubereporting.reportTypes.list",
+                QUOTA_COST["youtubereporting.reportTypes.list"],
                 conn=conn,
             )
             all_types.extend(res.get("reportTypes", []))
@@ -725,31 +845,72 @@ class YouTubeFullClient:
         *,
         target_dir: Path = DEFAULT_REPORTING_CSV_DIR,
         report_type_id: str | None = None,
+        max_attempts: int = 3,
     ) -> Path:
-        """Download CSV to local file, return path. CSV is not parsed here."""
+        """Download CSV to local file, return path. CSV is not parsed here.
+
+        Codex r1 MED: retry on 401/403 mid-download by refreshing creds;
+        atomic write (download to .tmp, rename on completion) so partial
+        downloads don't poison existing files; verify file size > 0 before
+        considering existing file complete.
+        """
         import requests
         from google.auth.transport.requests import Request as _AuthReq
-
-        # Refresh creds if stale
-        creds = self._reporting._http.credentials
-        if not creds.valid:
-            creds.refresh(_AuthReq())
 
         url = report["downloadUrl"]
         rt = report_type_id or "unknown_report_type"
         target_dir = target_dir / rt
         target_dir.mkdir(parents=True, exist_ok=True)
         target = target_dir / f"{report['id']}.csv"
+        tmp = target.with_suffix(".csv.partial")
 
-        if target.exists():
-            return target  # already downloaded
+        # Existing file verified non-empty? Skip.
+        if target.exists() and target.stat().st_size > 0:
+            return target
 
-        resp = requests.get(
-            url, headers={"Authorization": f"Bearer {creds.token}"}, timeout=120
-        )
-        resp.raise_for_status()
-        target.write_text(resp.text, encoding="utf-8")
-        return target
+        last_exc: Exception | None = None
+        for attempt in range(1, max_attempts + 1):
+            creds = self._reporting._http.credentials
+            try:
+                if not creds.valid:
+                    creds.refresh(_AuthReq())
+                resp = requests.get(
+                    url,
+                    headers={"Authorization": f"Bearer {creds.token}"},
+                    timeout=120,
+                )
+                resp.raise_for_status()
+                tmp.write_text(resp.text, encoding="utf-8")
+                tmp.replace(target)  # atomic rename
+                return target
+            except requests.exceptions.HTTPError as exc:
+                last_exc = exc
+                status = getattr(exc.response, "status_code", None)
+                if status in (401, 403) and attempt < max_attempts:
+                    # Force creds refresh on next loop
+                    try:
+                        creds.refresh(_AuthReq())
+                    except Exception as refresh_exc:  # noqa: BLE001
+                        _LOG.warning("creds refresh failed: %s", refresh_exc)
+                    time.sleep(2 ** (attempt - 1))
+                    continue
+                # Cleanup partial
+                if tmp.exists():
+                    tmp.unlink(missing_ok=True)
+                raise
+            except (requests.exceptions.RequestException, OSError) as exc:
+                last_exc = exc
+                if attempt < max_attempts:
+                    _LOG.warning(
+                        "transient download error attempt=%d: %s", attempt, exc
+                    )
+                    time.sleep(2 ** (attempt - 1))
+                    continue
+                if tmp.exists():
+                    tmp.unlink(missing_ok=True)
+                raise
+        assert last_exc is not None
+        raise last_exc
 
 
 # ----------------------------------------------------------------------------
