@@ -48,11 +48,14 @@ Extend the existing `kpi/ingest/youtube_client.py` (or create new `kpi/ingest/yo
   QUOTA_COST = {
     'channels.list': 1, 'videos.list': 1, 'playlistItems.list': 1,
     'youtubeAnalytics.reports.query': 1,  # but 4 if monetary scope used (we don't)
-    'youtubereporting.jobs.list': 1, 'youtubereporting.jobs.create': 1,
+    'youtubereporting.jobs.list': 1,
+    'youtubereporting.jobs.create': 50,    # Gemini r1 finding F1: jobs.create is 50 units, not 1.
+                                           # 14 first-time job creations (task-05) = 700 units, not 14.
     'youtubereporting.jobs.reports.list': 1,
     # CSV download not counted (HTTP GET to googleapis CDN)
   }
   ```
+  - **Daily budget verification:** at the time of writing, YouTube Data API default quota is **10,000 units/day** per project. The 50-unit jobs.create cost means initial 14-job registration takes ~7% of daily budget — manageable but must be reserved.
 - Before each call, check daily quota in `quota_usage` table. If `units_used + cost > daily_budget`, raise `QuotaExhaustedError`. Default daily_budget = 9000 (100K hardcap minus 10% safety margin).
 - After successful call, increment `quota_usage` atomically via `INSERT ... ON CONFLICT DO UPDATE`.
 

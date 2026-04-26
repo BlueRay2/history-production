@@ -21,9 +21,16 @@ from app.services.kpis import MetricReading, value_with_reason
 # exactly: Impressions / CTR / AVD / AVP / Retention-avg. Scripts-finished
 # is the sixth card but comes from git_events (not channel snapshots) so
 # it is appended by the template, not this list.
+# NOTE 2026-04-26: `impressions` / `impressionsClickThroughRate` are documented
+# YouTube Analytics metrics but NOT exposed via the public reports.query() API —
+# they're Studio-UI-only (see Google issuetracker #254665034). Substituted with
+# `cardImpressions` / `cardClickRate` which the API accepts; semantically these
+# are info-card impressions (not thumbnail impressions). Closest API analog
+# until Google opens the thumbnail-impressions endpoint for non-content-owner
+# channels.
 WEEKLY_METRICS: tuple[tuple[str, str], ...] = (
-    ("impressions", "Impressions"),
-    ("impressionsClickThroughRate", "CTR"),
+    ("cardImpressions", "Card impressions"),
+    ("cardClickRate", "Card CTR"),
     ("averageViewDuration", "AVD"),
     ("averageViewPercentage", "AVP"),
     ("retentionAverage", "Retention-avg"),
@@ -135,21 +142,45 @@ def weekly_snapshot(
             """,
             (ws, we + "T23:59:59Z"),
         ).fetchone()["n"]
-        # Retention curves for videos published in the window.
+        # Retention curves: surface the most recently published videos that
+        # actually have retention data. Filtering by `published_at` ∈ the
+        # latest weekly window is too strict because YouTube Analytics only
+        # exposes retention curves once a video crosses the audience-privacy
+        # threshold (~50 watch hours over 90 days). Brand-new videos have no
+        # retention yet, which left the chart permanently blank for active
+        # publishers. The new query joins `videos` with `video_retention_points`
+        # and ranks by published_at DESC, capping at 6 curves so the legend
+        # stays readable.
+        _MAX_RETENTION_CURVES = 6
         retention_curves = [
             {
                 "video_id": r["video_id"],
                 "title": r["title"],
-                # Serialize as JSON-safe [elapsed, retention] pairs so
-                # tojson in the template works and `app.js` can index by
-                # p[0]/p[1] as the dataset contract expects.
+                # JSON-safe [elapsed, retention] pairs — `app.js` indexes by
+                # p[0]/p[1] as the Chart.js dataset contract expects. Use
+                # the latest observed snapshot per (video, elapsed) to dodge
+                # duplicate rows from append-only daily refreshes.
                 "points": [
                     [pt["elapsed_seconds"], pt["retention_pct"]]
                     for pt in conn.execute(
                         """
+                        WITH ranked AS (
+                            SELECT elapsed_seconds, retention_pct,
+                                   ROW_NUMBER() OVER (
+                                     PARTITION BY elapsed_seconds
+                                     -- Codex review 2026-04-26 [MED]: use
+                                     -- julianday() so mixed precision
+                                     -- ('…56Z' vs '…56.123456Z') sorts
+                                     -- chronologically. Plain TEXT DESC
+                                     -- would put '…56Z' AFTER '…56.123456Z'
+                                     -- and resolve to a stale snapshot.
+                                     ORDER BY julianday(observed_on) DESC
+                                   ) AS rn
+                            FROM video_retention_points
+                            WHERE video_id = ?
+                        )
                         SELECT elapsed_seconds, retention_pct
-                        FROM video_retention_points
-                        WHERE video_id = ?
+                        FROM ranked WHERE rn = 1
                         ORDER BY elapsed_seconds
                         """,
                         (r["video_id"],),
@@ -158,12 +189,16 @@ def weekly_snapshot(
             }
             for r in conn.execute(
                 """
-                SELECT video_id, title
-                FROM videos
-                WHERE published_at >= ? AND published_at <= ?
-                ORDER BY published_at DESC
+                SELECT v.video_id, v.title, v.published_at
+                FROM videos v
+                WHERE EXISTS (
+                    SELECT 1 FROM video_retention_points rp
+                    WHERE rp.video_id = v.video_id
+                )
+                ORDER BY v.published_at DESC
+                LIMIT ?
                 """,
-                (ws, we + "T23:59:59Z"),
+                (_MAX_RETENTION_CURVES,),
             )
         ]
 

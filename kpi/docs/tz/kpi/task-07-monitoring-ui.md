@@ -19,15 +19,20 @@ Replace the legacy analytical Flask app (`app.main`) with a **monitoring-focused
   - rows_written_24h
 - Top-level health badge: ✅ all green / ⚠️ degraded (any non-`ok` last status) / 🔴 down (no orchestrator run in >26h)
 
-### 2. `/freshness` — per-metric freshness matrix
-- Heatmap-style grid: rows = metric_keys (e.g. `views`, `cardImpressions`, `subscribersGained`, etc.), cols = dimension_keys ('', 'country=US', 'deviceType=MOBILE', etc.)
-- Cell color encodes `days_since_last_obs`:
-  - 0-1 days: green
-  - 2-3 days: yellow
-  - 4-7 days: orange
-  - 7+ days: red
-- Hover tooltip: exact `last_obs_jd` timestamp
-- Filter: by metric_key prefix (search bar)
+### 2. `/freshness` — per-metric freshness (Gemini r1 finding F5: redesigned away from unbounded heatmap)
+
+The number of `dimension_key` values is unbounded (countries × devices × traffic sources × ...). A heatmap with one column per dimension would be unusable horizontally. Replace with a **two-tier list view**:
+
+- **Top tier — base metrics list** (rows = unique `metric_key`, no dimension breakdown, i.e. `dimension_key=''` only):
+  - Each row: metric_key, days_since_last_obs (with color badge: 0-1 green / 2-3 yellow / 4-7 orange / 7+ red), last_obs_jd timestamp
+  - Stalest at top (sort by days_since_last_obs DESC)
+  - Click on row expands inline → second tier
+- **Second tier — dimension drill-down** (lazy-loaded via HTMX):
+  - For the selected metric, list per-dimension freshness sorted by stalest first
+  - Limited to top-30 stalest dimensions per metric (more behind a "show all" toggle to avoid render blow-up)
+- **Filter bar**: by metric_key prefix (search), by status (only show stale >Nd), by dimension prefix (when drill-down expanded)
+
+This avoids the unbounded matrix problem and matches what an operator actually does: scan for stale metrics, then drill into the worst offenders.
 
 ### 3. `/quota` — YouTube quota usage
 - For each API (data_api_v3, analytics_api_v2, reporting_api_v1):

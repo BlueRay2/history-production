@@ -167,6 +167,17 @@ def run(target_date: date | None = None) -> int:
         logging.info("daily refresh start target=%s", target_date)
         result = run_daily_refresh(target_date=target_date)
         rc = _classify(result)
+
+        # Best-effort: pull YouTube Reporting API cards data (channel_cards_a1).
+        # This complements the Analytics-API path with daily-grain card
+        # impressions / CTR sourced from the Reporting CSV pipeline. Failures
+        # here are non-fatal — the dashboard still renders from Analytics.
+        try:
+            from scripts.pull_card_reports import main as pull_cards  # noqa: WPS433
+            pull_rc = pull_cards([])
+            logging.info("reporting cards puller rc=%d", pull_rc)
+        except Exception:  # noqa: BLE001 — boundary, never break the daily run
+            logging.exception("reporting cards puller raised — continuing")
         status = getattr(result, "status", "unknown")
         rows = getattr(result, "rows_written", None)
         error = getattr(result, "error_text", "") or ""

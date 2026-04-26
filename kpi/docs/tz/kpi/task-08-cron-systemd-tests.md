@@ -17,6 +17,8 @@
    - `claude-kpi-monitoring.service` — Flask monitoring app on 127.0.0.1:8787
    - `kpi-nightly-ingest.service` (oneshot) + `kpi-nightly-ingest.timer` (`OnCalendar=*-*-* 03:30:00 Europe/Minsk; Persistent=true`) — fallback safety-net per dashboard-kpi pattern (dual-trigger)
    - `kpi-heartbeat.service` (oneshot) + `kpi-heartbeat.timer` (`OnCalendar=hourly`)
+
+   **Re: dual-trigger redundancy (Gemini r1 finding F6 — LOW):** the CronCreate entry + systemd timer for nightly ingest IS intentionally redundant per the «bypass-the-weakness» principle from CLAUDE.md and inherited from `dashboard-kpi`. The `state/kpi-ingest.lock` flock (task-04) prevents double-execution if both fire. Risk of double work: zero. Risk if only one path used and that path fails: ingest stops silently for days. Trade-off accepted.
 4. Install script `scripts/install_kpi_vault.sh` (idempotent) that:
    - Creates deploy symlink `assistant/deploys/kpi-vault → kpi/`
    - Copies systemd units to `~/.config/systemd/user/`

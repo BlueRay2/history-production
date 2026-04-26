@@ -39,6 +39,13 @@ Pacing rule: pause 1 second between calls (~5000 calls / 1s = 1.4 hours wall-clo
 - `--force` flag bypasses sentinel for explicit re-runs (e.g., schema migration requires re-pull)
 - Cursor file enables multi-day resumption if quota interrupts
 
+## Concurrency safety (Gemini r1 finding F2)
+
+- **Backfill MUST acquire the same flock as nightly** — `state/kpi-ingest.lock` (defined in task-04).
+- Acquisition is **blocking** for backfill (unlike nightly's nonblocking) — we want backfill to wait for nightly to finish, not skip itself
+- Operator should run backfill on a day when nightly hasn't fired yet (before 03:30) OR pause systemd timer during backfill: `systemctl --user stop kpi-nightly-ingest.timer` before, `start` after
+- If lock cannot be acquired within 1 hour, backfill bails with rc=2 and Telegram alert «backfill cannot get lock — concurrent run detected, retry later»
+
 ## Test plan
 
 - Mocked Analytics API with synthetic 60-day window of data, verify all rows land

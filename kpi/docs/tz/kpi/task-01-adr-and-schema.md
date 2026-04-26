@@ -157,14 +157,20 @@ CREATE TABLE quota_usage (
 );
 
 -- Schema drift detector — capture API surface changes
+-- (Gemini r1 finding F4: surrogate `id` for ack endpoint convenience + acknowledged_at column)
 CREATE TABLE schema_drift_log (
-  detected_at    TEXT NOT NULL,
-  source         TEXT NOT NULL,                     -- which API
-  drift_type     TEXT NOT NULL,                     -- 'metric_added' | 'metric_removed' | 'dimension_added' | 'report_type_added' | 'report_type_deprecated'
-  identifier     TEXT NOT NULL,                     -- metric_key / report_type_id
-  notes          TEXT,
-  PRIMARY KEY (detected_at, source, drift_type, identifier)
+  id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  detected_at     TEXT NOT NULL,
+  source          TEXT NOT NULL,                     -- which API
+  drift_type      TEXT NOT NULL,                     -- 'metric_added' | 'metric_removed' | 'dimension_added' | 'report_type_added' | 'report_type_deprecated'
+  identifier      TEXT NOT NULL,                     -- metric_key / report_type_id
+  notes           TEXT,
+  acknowledged_at TEXT,                              -- NULL = unacknowledged; set via POST /schema-drift/{id}/ack
+  acknowledged_by TEXT,                              -- optional human/operator label
+  UNIQUE(detected_at, source, drift_type, identifier)  -- preserves natural-key uniqueness
 );
+
+CREATE INDEX idx_schema_drift_unack ON schema_drift_log(acknowledged_at) WHERE acknowledged_at IS NULL;
 ```
 
 ## Observed_on convention

@@ -40,13 +40,18 @@ PRELIMINARY_LAG_DAYS = 2
 PRELIMINARY_WINDOW_DAYS = 3
 
 # Channel-level weekly metrics we always pull in the daily refresh.
+# Note: `impressions` / `impressionsClickThroughRate` removed 2026-04-26 — the v2
+# YouTube Analytics API rejects them as "Unknown identifier" for this channel
+# (they're available only via specific report types / Studio UI). Replaced
+# `impressions` with `cardImpressions` which is the closest analog the API
+# accepts unconditionally.
 CHANNEL_WEEKLY_METRICS = (
     "views",
     "estimatedMinutesWatched",
     "averageViewDuration",
     "averageViewPercentage",
-    "impressions",
-    "impressionsClickThroughRate",
+    "cardImpressions",
+    "cardClickRate",
     "subscribersGained",
     "subscribersLost",
 )

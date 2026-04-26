@@ -64,16 +64,20 @@ Replaces the current analytical KPI dashboard (`dashboard-kpi/`) with a **compre
 
 ## Dependencies between tasks
 
+**Updated post-Gemini-r1 finding F3:** task-02 moved AFTER task-08 to avoid monitoring outage during multi-day implementation of new system. New system must be operational and verified BEFORE legacy is decommissioned.
+
 - **task-01** (ADR + schema) blocks all others.
-- **task-02** (decommission old dashboard) MUST complete before task-04 (avoid double-write to legacy DB).
 - **task-03** (YouTube client) blocks task-04 and task-05.
 - **task-04** (nightly ingest) blocks task-08 (cron schedules it).
 - **task-05** (backfill) can run in parallel with task-04 implementation but DEPENDS on task-03.
 - **task-06** (monitoring schema) blocks task-07 (monitoring UI).
 - **task-07** can develop in parallel with task-04 (both depend on schema from task-01 + task-06).
-- **task-08** (cron + tests) is final integration step.
+- **task-08** (cron + tests + initial activation) blocks task-02 — legacy stays online and watched until new system runs ≥3 successful nightly cycles.
+- **task-02** (decommission legacy) is the FINAL step — only after task-08 verifies new system is healthy.
 
-Critical path: 01 → 02 → 03 → 04 → 08, with 05/06/07 parallelizable after 03/01.
+Critical path: 01 → 03 → 04 → 08 → 02, with 05/06/07 parallelizable after 03/01.
+
+Legacy `dashboard-kpi.sqlite` and its Flask service stay running (untouched, providing existing analytical view) throughout 01-08. Both systems coexist for ≥3 days post-task-08 ship; only after new monitoring system is verified does task-02 retire legacy.
 
 ## Telegram broadcast cadence
 
