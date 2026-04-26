@@ -37,7 +37,7 @@ Replaces the current analytical KPI dashboard (`dashboard-kpi/`) with a **compre
 |---|---|---|---|---|---|
 | 01 | [task-01-adr-and-schema.md](task-01-adr-and-schema.md) | ADR locking architectural shift; new flexible wide-schema for arbitrary metrics + Reporting CSV registry | `merged` | ✅ accepted r3 | ✅ accepted r3 |
 | 02 | [task-02-decommission-old-dashboard.md](task-02-decommission-old-dashboard.md) | Backup + drop `dashboard-kpi.sqlite`; disable `claude-kpi-dashboard.service`; remove old Flask routes | `pending` | — | — |
-| 03 | [task-03-extended-youtube-client.md](task-03-extended-youtube-client.md) | Full-coverage YouTubeClient: all Analytics dimensions/metrics, all Reporting jobs, quota budgeting | `pending` | — | — |
+| 03 | [task-03-extended-youtube-client.md](task-03-extended-youtube-client.md) | Full-coverage YouTubeClient: all Analytics dimensions/metrics, all Reporting jobs, quota budgeting | `in-review (r 1)` | — | — |
 | 04 | [task-04-nightly-ingest-job.md](task-04-nightly-ingest-job.md) | Comprehensive nightly job: per-day per-video × all metrics × all dimensions; resilient to partial failures | `pending` | — | — |
 | 05 | [task-05-backfill-bootstrap.md](task-05-backfill-bootstrap.md) | One-shot 60-day backfill script; quota-aware pacing; idempotent | `pending` | — | — |
 | 06 | [task-06-monitoring-schema.md](task-06-monitoring-schema.md) | Schema for ingest health: ingestion_runs extension, freshness derived view, quota_usage table, schema_drift detector | `pending` | — | — |
