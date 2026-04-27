@@ -7,8 +7,9 @@ require retroactive review when the affected agent's capacity returns.
 
 | Task | Commit | Degraded reviewer(s) | Reason | Recover via |
 |---|---|---|---|---|
-| task-04 | 698d8c1 | Codex (sandbox bug, all rounds) | `bwrap: loopback: Failed RTM_NEWADDR` blocks file reads in `codex exec`; Codex self-reports it cannot read repo files. | Owner override (`--dangerously-bypass-approvals-and-sandbox`) once authorized OR sandbox repaired. Then `codex exec ...` with the round-1/2 prompts. |
-| task-04 | 698d8c1 | Gemini r2 (auth_interactive, transient) | `rc=41 FatalAuthenticationError` on large prompts (small ping still works → flash fallback path). | After `gemini auth login` in interactive terminal: `gemini -p "$(cat r2-prompt.txt)"`. |
+| task-04 | 698d8c1 | ~~Codex (sandbox bug)~~ — RESOLVED 2026-04-27 via `codex exec --model gpt-5.5 -c sandbox_permissions=["disk-full-read-access"] -c model_reasoning_effort="xhigh" --skip-git-repo-check --json`. Real Codex r1 v2 produced 6 actionable findings. | n/a | n/a — recovered |
+| task-04 | 698d8c1 | ~~Gemini r2 (auth_interactive)~~ — RESOLVED 2026-04-27. Real Gemini r2 ACCEPTED post-r1 fixes. | n/a | n/a — recovered |
+| task-04 | 1396c58 | Gemini r3 (capacity-exhausted) | `MODEL_CAPACITY_EXHAUSTED` on gemini-3.1-pro-preview AND gemini-2.5-flash. Google-side capacity issue, not auth/quota. Codex r3 ACCEPTED this commit. | When 3.1-pro/2.5-flash capacity returns: `gemini -p "$(cat /tmp/task04-gemini-r3-prompt.txt)"`. Re-running r3 review on commit 1396c58. |
 
 ## Recovery protocol
 
