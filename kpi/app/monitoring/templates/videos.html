@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Videos — KPI Monitoring{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Per-video coverage (7-day window)</h1>
+
+<table class="min-w-full bg-white rounded shadow-sm border border-gray-200 text-sm">
+  <thead class="bg-gray-50 text-left">
+    <tr>
+      <th class="px-3 py-2">Video ID</th>
+      <th class="px-3 py-2">Title</th>
+      <th class="px-3 py-2 text-right">Metrics 7d</th>
+      <th class="px-3 py-2">Last pulled</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr class="border-t border-gray-100 {% if r.stale_red %}bg-red-50{% endif %}">
+      <td class="px-3 py-2 font-mono text-xs">{{ r.video_id[:11] }}</td>
+      <td class="px-3 py-2">{{ r.title }}</td>
+      <td class="px-3 py-2 text-right {% if r.metrics_7d == 0 %}text-red-600 font-semibold{% endif %}">
+        {{ r.metrics_7d }}
+      </td>
+      <td class="px-3 py-2 text-xs">{{ r.last_pulled_relative }}</td>
+    </tr>
+    {% endfor %}
+    {% if not rows %}
+    <tr><td colspan="4" class="px-3 py-6 text-center text-gray-500">No videos registered yet.</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+<p class="text-xs text-gray-500 mt-2">Rows tinted red: videos published in the last 90 days with zero metrics pulled in the last 7 days.</p>
+{% endblock %}

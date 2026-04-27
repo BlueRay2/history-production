@@ -1,0 +1,18 @@
+[Unit]
+Description=KPI metrics-vault monitoring web UI
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/aiagent/assistant/git/history-production/kpi
+Environment=KPI_MONITORING_HOST=127.0.0.1
+Environment=KPI_MONITORING_PORT=8787
+Environment=KPI_DB=/home/aiagent/assistant/state/kpi.sqlite
+ExecStart=/home/aiagent/miniconda3/envs/practicum/bin/python -m app.monitoring
+Restart=on-failure
+RestartSec=10s
+StandardOutput=append:/home/aiagent/assistant/logs/kpi-monitoring.log
+StandardError=append:/home/aiagent/assistant/logs/kpi-monitoring.log
+
+[Install]
+WantedBy=default.target

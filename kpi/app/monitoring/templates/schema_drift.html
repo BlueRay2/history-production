@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Schema Drift — KPI Monitoring{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Schema drift log</h1>
+
+<form method="get" class="mb-4 flex gap-2">
+  <select name="source" class="px-3 py-2 border border-gray-300 rounded text-sm">
+    <option value="">All sources</option>
+    <option value="analytics_api"  {% if source=='analytics_api' %}selected{% endif %}>analytics_api</option>
+    <option value="reporting_api"  {% if source=='reporting_api' %}selected{% endif %}>reporting_api</option>
+    <option value="data_api"       {% if source=='data_api' %}selected{% endif %}>data_api</option>
+  </select>
+  <select name="type" class="px-3 py-2 border border-gray-300 rounded text-sm">
+    <option value="">All drift types</option>
+    <option value="metric_added"          {% if drift_type=='metric_added' %}selected{% endif %}>metric_added</option>
+    <option value="metric_removed"        {% if drift_type=='metric_removed' %}selected{% endif %}>metric_removed</option>
+    <option value="dimension_added"       {% if drift_type=='dimension_added' %}selected{% endif %}>dimension_added</option>
+    <option value="report_type_added"     {% if drift_type=='report_type_added' %}selected{% endif %}>report_type_added</option>
+    <option value="report_type_deprecated" {% if drift_type=='report_type_deprecated' %}selected{% endif %}>report_type_deprecated</option>
+  </select>
+  <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Filter</button>
+</form>
+
+<table class="min-w-full bg-white rounded shadow-sm border border-gray-200 text-sm">
+  <thead class="bg-gray-50 text-left">
+    <tr>
+      <th class="px-3 py-2">Detected</th>
+      <th class="px-3 py-2">Source</th>
+      <th class="px-3 py-2">Type</th>
+      <th class="px-3 py-2">Identifier</th>
+      <th class="px-3 py-2">Notes</th>
+      <th class="px-3 py-2">Acknowledged</th>
+      <th class="px-3 py-2"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr class="border-t border-gray-100">
+      <td class="px-3 py-2 text-xs">{{ r.detected_at[:19].replace('T', ' ') }}</td>
+      <td class="px-3 py-2 font-mono text-xs">{{ r.source }}</td>
+      <td class="px-3 py-2 text-xs">{{ r.drift_type }}</td>
+      <td class="px-3 py-2 font-mono text-xs">{{ r.identifier }}</td>
+      <td class="px-3 py-2 text-xs text-gray-600">{{ r.notes or '—' }}</td>
+      <td class="px-3 py-2 text-xs">
+        {% if r.acknowledged_at %}
+          <span class="badge badge-green">{{ r.acknowledged_by or 'ui' }}</span>
+        {% else %}
+          <span class="badge badge-yellow">pending</span>
+        {% endif %}
+      </td>
+      <td class="px-3 py-2">
+        {% if not r.acknowledged_at %}
+        <button hx-post="/schema-drift/{{ r.id }}/ack"
+                hx-vals='{"by": "ui"}'
+                hx-swap="none"
+                onclick="this.closest('tr').remove()"
+                class="text-xs text-blue-600 hover:underline">ack</button>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+    {% if not rows %}
+    <tr><td colspan="7" class="px-3 py-6 text-center text-gray-500">No drift entries.</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+{% endblock %}

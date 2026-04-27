@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Summary — KPI Monitoring{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-semibold mb-2">Last 24h ingest summary</h1>
+  <div class="flex items-center gap-3">
+    <span class="text-3xl">{{ health_emoji }}</span>
+    <span class="text-lg font-medium capitalize">{{ health }}</span>
+    {% if hours_since is not none %}
+      <span class="text-sm text-gray-600">— last orchestrator run {{ hours_since }}h ago</span>
+    {% else %}
+      <span class="text-sm text-red-600">— no orchestrator run on record</span>
+    {% endif %}
+  </div>
+</div>
+
+<table class="min-w-full bg-white rounded shadow-sm border border-gray-200 text-sm">
+  <thead class="bg-gray-50 text-left">
+    <tr>
+      <th class="px-3 py-2">Source</th>
+      <th class="px-3 py-2">Detail</th>
+      <th class="px-3 py-2">Last started</th>
+      <th class="px-3 py-2">Status</th>
+      <th class="px-3 py-2">24h total</th>
+      <th class="px-3 py-2">24h failed</th>
+      <th class="px-3 py-2">Rows 24h</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr class="border-t border-gray-100">
+      <td class="px-3 py-2 font-mono text-xs">{{ r.source }}</td>
+      <td class="px-3 py-2 font-mono text-xs text-gray-600">{{ r.source_detail }}</td>
+      <td class="px-3 py-2">{{ r.last_started_relative }}</td>
+      <td class="px-3 py-2">
+        <span class="badge badge-{{ r.status_class }}">{{ r.last_status }}</span>
+      </td>
+      <td class="px-3 py-2 text-right">{{ r.count_24h_total }}</td>
+      <td class="px-3 py-2 text-right {% if r.count_24h_failed > 0 %}text-red-600 font-semibold{% endif %}">
+        {{ r.count_24h_failed }}
+      </td>
+      <td class="px-3 py-2 text-right">{{ r.rows_24h }}</td>
+    </tr>
+    {% endfor %}
+    {% if not rows %}
+    <tr><td colspan="7" class="px-3 py-6 text-center text-gray-500">No ingestion runs yet.</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+{% endblock %}
