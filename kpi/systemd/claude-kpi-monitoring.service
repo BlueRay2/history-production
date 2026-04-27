@@ -7,7 +7,8 @@ After=network.target
 # (aiagent) and `User=` is implicit. If you ever move this to a system
 # unit at /etc/systemd/system/, uncomment User=aiagent below — leaving it
 # unset there would run the service as root, which violates least-privilege
-# and would break the read-only KPI_DB sqlite handle owner check.
+# (the service has no business writing the rest of the filesystem and
+# would unnecessarily expand blast radius if it were ever exploited).
 
 [Service]
 Type=simple

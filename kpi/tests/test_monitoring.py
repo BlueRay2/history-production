@@ -350,3 +350,15 @@ def test_freshness_stale_filter(client, kpi_db_path):
     resp = client.get("/freshness?stale=3")
     assert b"ancient_metric" in resp.data
     assert b"fresh_metric" not in resp.data
+
+
+def test_freshness_stale_filter_whitelist(client):
+    """Only the documented values 1/3/7 trigger the stale filter; anything
+    else (negative, inf, garbage) silently falls back to no filter."""
+    # `stale=-1` should NOT enable a filter and should NOT 500
+    resp = client.get("/freshness?stale=-1")
+    assert resp.status_code == 200
+    resp = client.get("/freshness?stale=inf")
+    assert resp.status_code == 200
+    resp = client.get("/freshness?stale=banana")
+    assert resp.status_code == 200

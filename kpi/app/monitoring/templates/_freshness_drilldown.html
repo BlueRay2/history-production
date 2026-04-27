@@ -1,11 +1,11 @@
-<div class="bg-gray-50 border border-gray-200 rounded p-3 mt-1">
+<div class="freshness-drilldown bg-gray-50 border border-gray-200 rounded p-3 mt-1">
   <div class="flex items-center justify-between mb-2">
     <div class="text-xs font-semibold text-gray-700">
       {% if show_all %}All{% else %}Top-30{% endif %} stalest dimensions for
       <span class="font-mono">{{ metric_key }}</span>
     </div>
     <form method="get" hx-get="/freshness/{{ metric_key }}"
-          hx-target="closest div" hx-swap="outerHTML"
+          hx-target="closest .freshness-drilldown" hx-swap="outerHTML"
           class="flex gap-1 items-center text-xs">
       <input type="text" name="dim" value="{{ dim_prefix }}"
              placeholder="dimension prefix"

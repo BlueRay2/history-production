@@ -210,10 +210,10 @@ def freshness() -> str:
     try:
         prefix = (request.args.get("q") or "").strip()
         stale_min_str = (request.args.get("stale") or "").strip()
-        try:
-            stale_min = float(stale_min_str) if stale_min_str else None
-        except ValueError:
-            stale_min = None
+        # Whitelist: only the documented dropdown values are honoured.
+        # Anything else (negative, inf, garbage) silently falls back to no filter.
+        STALE_ALLOWED = {"1", "3", "7"}
+        stale_min = float(stale_min_str) if stale_min_str in STALE_ALLOWED else None
         show_all = (request.args.get("all") or "") == "1"
 
         # Top tier: dimension_key='' only, sorted by stalest first
