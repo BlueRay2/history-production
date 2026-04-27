@@ -352,13 +352,38 @@ def test_freshness_stale_filter(client, kpi_db_path):
     assert b"fresh_metric" not in resp.data
 
 
-def test_freshness_stale_filter_whitelist(client):
+def test_freshness_stale_filter_whitelist(client, kpi_db_path):
     """Only the documented values 1/3/7 trigger the stale filter; anything
-    else (negative, inf, garbage) silently falls back to no filter."""
-    # `stale=-1` should NOT enable a filter and should NOT 500
-    resp = client.get("/freshness?stale=-1")
-    assert resp.status_code == 200
-    resp = client.get("/freshness?stale=inf")
-    assert resp.status_code == 200
-    resp = client.get("/freshness?stale=banana")
-    assert resp.status_code == 200
+    else (negative, inf, garbage) silently falls back to no filter — and
+    fresh metrics that should be hidden by stale=3 must STILL appear."""
+    conn = sqlite3.connect(kpi_db_path, isolation_level=None)
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    conn.execute(
+        "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+        "VALUES ('r-wl', 'analytics_api', ?, 'ok')",
+        (now_iso,),
+    )
+    today = datetime.now(timezone.utc).date().isoformat()
+    conn.execute(
+        "INSERT INTO channel_snapshots(metric_key, dimension_key, grain, "
+        "window_start, window_end, observed_on, value_num, run_id, source) "
+        "VALUES ('whitelist_fresh', '', 'day', ?, ?, ?, 1.0, 'r-wl', 'analytics_api')",
+        (today, today, now_iso),
+    )
+    conn.close()
+
+    # Each of these MUST behave identically to no filter — i.e. the fresh
+    # metric (days≈0) is visible. Under the previous buggy implementation
+    # `stale=-1` would still pass (because -1 ≤ 0) but `stale=inf`/`stale=2`
+    # would silently bind into the SQL and hide the fresh row.
+    for bad in ("-1", "inf", "banana", "2", "0.5", ""):
+        resp = client.get(f"/freshness?stale={bad}")
+        assert resp.status_code == 200, f"stale={bad!r} → {resp.status_code}"
+        assert b"whitelist_fresh" in resp.data, (
+            f"stale={bad!r} unexpectedly hid the fresh metric — whitelist breach"
+        )
+
+    # And the documented values still filter as intended: stale=3 hides
+    # the fresh metric (days≈0 < 3).
+    resp = client.get("/freshness?stale=3")
+    assert b"whitelist_fresh" not in resp.data
