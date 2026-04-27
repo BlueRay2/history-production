@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}KPI Monitoring{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style type="text/tailwindcss">
+  .badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium; }
+  .badge-green   { @apply bg-green-100 text-green-800; }
+  .badge-yellow  { @apply bg-yellow-100 text-yellow-800; }
+  .badge-orange  { @apply bg-orange-100 text-orange-800; }
+  .badge-red     { @apply bg-red-100 text-red-800; }
+  .badge-gray    { @apply bg-gray-100 text-gray-700; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+<header class="bg-white border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+    <div class="text-lg font-semibold">KPI Vault — Ingest Health</div>
+    <nav class="flex gap-4 text-sm">
+      <a href="/"               class="hover:text-blue-600">Summary</a>
+      <a href="/freshness"      class="hover:text-blue-600">Freshness</a>
+      <a href="/quota"          class="hover:text-blue-600">Quota</a>
+      <a href="/schema-drift"   class="hover:text-blue-600">Drift</a>
+      <a href="/videos"         class="hover:text-blue-600">Videos</a>
+      <a href="/errors"         class="hover:text-blue-600">Errors</a>
+    </nav>
+  </div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-6">
+  {% block content %}{% endblock %}
+</main>
+<footer class="text-center text-xs text-gray-500 py-4">
+  KPI metrics-vault monitoring · localhost only · plumbing health, not channel performance
+</footer>
+</body>
+</html>

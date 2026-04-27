@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Cost templates — KPI{% endblock %}
+{% block main %}
+
+<h2>Parse-fail COST_ESTIMATE.md</h2>
+
+{% if cities %}
+  <p>Эти cities имеют файл <code>COST_ESTIMATE.md</code>, но без canonical total-строки вида <code>**Total: $X.XX**</code> или <code>**Итого: N credits**</code>. <code>cost_per_video</code> возвращает <code>NULL</code> для их видео (fail-closed).</p>
+  <table class="exceptions-table">
+    <thead><tr><th>City</th></tr></thead>
+    <tbody>
+      {% for c in cities %}<tr><td>{{ c }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  <p class="card-tooltip">F-02 backlog: стандартизовать шаблон — обновить Knowledge Summary каждого города и убедиться, что Team Lead Phase 5.5 пишет каноничную Total-строку.</p>
+{% else %}
+  <p class="empty-state">Все COST_ESTIMATE.md распарсились чисто.</p>
+{% endif %}
+
+{% endblock %}

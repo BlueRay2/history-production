@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}KPI Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+<header>
+  <h1>Cities Evolution — KPI</h1>
+  <nav class="tabs">
+    <a href="{{ url_for('weekly') }}"
+       class="tab {% if request.endpoint == 'weekly' %}tab-active{% endif %}">Weekly</a>
+    <a href="{{ url_for('monthly') }}"
+       class="tab {% if request.endpoint == 'monthly' %}tab-active{% endif %}">Monthly</a>
+    <a href="{{ url_for('exceptions') }}"
+       class="tab {% if request.endpoint == 'exceptions' %}tab-active{% endif %}">Exceptions</a>
+  </nav>
+  {% if calibration_active %}
+  <div class="calibration-banner" role="status">
+    Baseline calibration in progress ({{ calibration_weeks }}/{{ calibration_target_weeks }} weeks) — thresholds inactive
+  </div>
+  {% endif %}
+</header>
+<main>{% block main %}{% endblock %}</main>
+</body>
+</html>

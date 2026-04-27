@@ -1,0 +1,27 @@
+[Unit]
+Description=KPI metrics-vault monitoring web UI
+After=network.target
+
+# Installed as a systemd --user unit at ~/.config/systemd/user/.
+# When that path is used, systemd executes as the invoking session user
+# (aiagent) and `User=` is implicit. If you ever move this to a system
+# unit at /etc/systemd/system/, uncomment User=aiagent below — leaving it
+# unset there would run the service as root, which violates least-privilege
+# (the service has no business writing the rest of the filesystem and
+# would unnecessarily expand blast radius if it were ever exploited).
+
+[Service]
+Type=simple
+# User=aiagent  # required only when installed as a system unit
+WorkingDirectory=/home/aiagent/assistant/git/history-production/kpi
+Environment=KPI_MONITORING_HOST=127.0.0.1
+Environment=KPI_MONITORING_PORT=8787
+Environment=KPI_DB=/home/aiagent/assistant/state/kpi.sqlite
+ExecStart=/home/aiagent/miniconda3/envs/practicum/bin/python -m app.monitoring
+Restart=on-failure
+RestartSec=10s
+StandardOutput=append:/home/aiagent/assistant/logs/kpi-monitoring.log
+StandardError=append:/home/aiagent/assistant/logs/kpi-monitoring.log
+
+[Install]
+WantedBy=default.target

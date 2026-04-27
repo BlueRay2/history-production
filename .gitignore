@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Runtime state (outside-repo per ADR)
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+
+# Entire CLI logs (should not be committed)
+.entire/logs/
+
+# Stray prototype files that pre-date the kpi bundle and reference the
+# legacy dashboard-kpi schema. Excluded from kpi-branch commits until
+# task-04 / task-06 explicitly decide on their fate.
+kpi/ingest/reporting.py
+kpi/scripts/pull_card_reports.py

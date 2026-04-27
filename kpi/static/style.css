@@ -1,0 +1,26 @@
+* { box-sizing: border-box; }
+body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; background: #fafafa; color: #222; }
+header { background: #fff; border-bottom: 1px solid #ddd; padding: 1rem 1.5rem; }
+h1 { margin: 0 0 0.6rem 0; font-size: 1.2rem; }
+.tabs { display: flex; gap: 0.4rem; }
+.tab { padding: 0.4rem 0.9rem; text-decoration: none; color: #555; border: 1px solid transparent; border-radius: 6px 6px 0 0; }
+.tab-active { background: #fafafa; border-color: #ddd; border-bottom-color: #fafafa; color: #000; font-weight: 600; }
+.calibration-banner { margin-top: 0.6rem; padding: 0.5rem 0.8rem; background: #fff4d6; border-left: 3px solid #d9a900; border-radius: 4px; font-size: 0.9rem; }
+main { padding: 1.2rem 1.5rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.8rem; margin: 1rem 0; }
+.card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 0.8rem; }
+.card-label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.03em; }
+.card-value { font-size: 1.6rem; font-weight: 600; margin-top: 0.3rem; }
+.card-wow { font-size: 0.85rem; margin-top: 0.2rem; }
+.wow-pos { color: #1a7f2e; }
+.wow-neg { color: #c02525; }
+.card-tooltip { font-size: 0.75rem; color: #888; margin-top: 0.3rem; }
+.card-below_privacy_floor .card-value, .card-channel_too_new .card-value, .card-no_data_pulled .card-value { color: #aaa; font-weight: 400; }
+.retention { margin-top: 1.4rem; background: #fff; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 6px; }
+.exceptions-aside { margin-top: 1.2rem; background: #fff; padding: 0.8rem 1rem; border: 1px solid #e0e0e0; border-radius: 6px; }
+.exceptions-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; background: #fff; }
+.exceptions-table th, .exceptions-table td { padding: 0.4rem 0.6rem; border-bottom: 1px solid #eee; text-align: left; font-size: 0.9rem; }
+.empty-state { color: #888; font-style: italic; }
+.meta { color: #666; font-size: 0.9rem; margin-left: 0.8rem; }
+button { padding: 0.3rem 0.7rem; border: 1px solid #bbb; background: #fff; border-radius: 4px; cursor: pointer; }
+button:hover { background: #f0f0f0; }

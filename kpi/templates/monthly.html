@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Monthly — KPI{% endblock %}
+{% block main %}
+
+{% if not snap or not snap.window %}
+  <p class="empty-state">Нет monthly-данных ещё. Дождись ingestion-прогона с monthly-grain метриками.</p>
+{% else %}
+  <section class="window-header">
+    <h2>Месяц {{ snap.window[0] }} — {{ snap.window[1] }}</h2>
+  </section>
+
+  <section class="cards">
+    {% for card in snap.cards %}
+      {% include '_card.html' %}
+    {% endfor %}
+  </section>
+
+  <section class="subs-sparkline">
+    <h3>Subs — 12-month rolling</h3>
+    {% if snap.subs_sparkline %}
+      <canvas id="subs-sparkline"
+              data-points='{{ snap.subs_sparkline|tojson }}'></canvas>
+    {% else %}
+      <p class="empty-state">Нет истории по subs.</p>
+    {% endif %}
+  </section>
+
+  <section class="performers">
+    <h3>Top-3 performers</h3>
+    {% if snap.performers %}
+      <table class="exceptions-table">
+        <thead><tr><th>Video</th><th>Views</th><th>Retention</th><th>Subs</th><th>Score</th></tr></thead>
+        <tbody>
+          {% for p in snap.performers %}
+            <tr>
+              <td>{{ p.title }}</td>
+              <td>{{ '%.0f'|format(p.views) }}</td>
+              <td>{{ '%.1f%%'|format(p.retention) }}</td>
+              <td>{{ '%.0f'|format(p.subs_gained) }}</td>
+              <td>{{ '%.2f'|format(p.composite_score) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty-state">Недостаточно данных для ranking'а — нужны views + retention + subs в одном aligned окне.</p>
+    {% endif %}
+  </section>
+
+  <section class="cost-distribution">
+    <h3>Cost per video <span class="meta">(estimated)</span></h3>
+    {% if snap.cost_distribution %}
+      {# Codex r1 HIGH: Jinja `select` filters by truthiness, which drops
+         legitimate 0.0 costs along with None. Use `rejectattr('cost_value', 'none')`
+         on the rows first, then map, so zeroes survive. #}
+      <canvas id="cost-hist"
+              data-values='{{ snap.cost_distribution|rejectattr("cost_value", "none")|map(attribute="cost_value")|list|tojson }}'></canvas>
+    {% else %}
+      <p class="empty-state">Нет cost-данных.</p>
+    {% endif %}
+  </section>
+
+  <section class="iterations">
+    <h3>Script iterations (approx)</h3>
+    {% if snap.iteration_histogram %}
+      <canvas id="iter-hist"
+              data-values='{{ snap.iteration_histogram|map(attribute="n_revisions")|list|tojson }}'></canvas>
+    {% else %}
+      <p class="empty-state">Нет git-событий для histogram'а.</p>
+    {% endif %}
+  </section>
+{% endif %}
+
+<section class="recent-publishes">
+  {% include '_recent_publishes.html' %}
+</section>
+
+{% endblock %}

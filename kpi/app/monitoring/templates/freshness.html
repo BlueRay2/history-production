@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Freshness — KPI Monitoring{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Per-metric freshness</h1>
+
+<form method="get" class="mb-4 flex flex-wrap gap-2 items-center">
+  <input type="text" name="q" value="{{ query }}"
+         placeholder="metric prefix (e.g. views, estimated)"
+         class="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded text-sm">
+  <select name="stale" class="px-3 py-2 border border-gray-300 rounded text-sm">
+    <option value=""   {% if not stale %}selected{% endif %}>Any age</option>
+    <option value="1"  {% if stale=='1' %}selected{% endif %}>Stale &gt; 1d</option>
+    <option value="3"  {% if stale=='3' %}selected{% endif %}>Stale &gt; 3d</option>
+    <option value="7"  {% if stale=='7' %}selected{% endif %}>Stale &gt; 7d</option>
+  </select>
+  <label class="text-xs text-gray-600 flex items-center gap-1">
+    <input type="checkbox" name="all" value="1" {% if show_all %}checked{% endif %}>
+    show all (no 200-row cap)
+  </label>
+  <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Filter</button>
+  {% if query or stale or show_all %}<a href="/freshness" class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">Clear</a>{% endif %}
+</form>
+
+<table class="min-w-full bg-white rounded shadow-sm border border-gray-200 text-sm">
+  <thead class="bg-gray-50 text-left">
+    <tr>
+      <th class="px-3 py-2">Metric</th>
+      <th class="px-3 py-2">Days since last obs</th>
+      <th class="px-3 py-2">Last observed</th>
+      <th class="px-3 py-2">Observations</th>
+      <th class="px-3 py-2"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in metrics %}
+    <tr class="border-t border-gray-100">
+      <td class="px-3 py-2 font-mono text-xs">{{ m.metric_key }}</td>
+      <td class="px-3 py-2">
+        <span class="badge badge-{{ m.badge }}">{{ m.days if m.days is not none else '—' }}</span>
+      </td>
+      <td class="px-3 py-2 text-xs text-gray-600">{{ m.last_obs_relative }}</td>
+      <td class="px-3 py-2 text-right">{{ m.obs_count }}</td>
+      <td class="px-3 py-2">
+        <button hx-get="/freshness/{{ m.metric_key }}"
+                hx-target="#drilldown-{{ loop.index }}"
+                hx-swap="innerHTML"
+                class="text-xs text-blue-600 hover:underline">drill into dimensions →</button>
+        <div id="drilldown-{{ loop.index }}" class="mt-2"></div>
+      </td>
+    </tr>
+    {% endfor %}
+    {% if not metrics %}
+    <tr><td colspan="5" class="px-3 py-6 text-center text-gray-500">No metric snapshots match the current filters.</td></tr>
+    {% endif %}
+  </tbody>
+</table>
+{% endblock %}

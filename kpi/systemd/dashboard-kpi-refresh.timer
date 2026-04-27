@@ -1,0 +1,12 @@
+[Unit]
+Description=Trigger KPI dashboard refresh daily at 03:30 Europe/Minsk
+After=time-sync.target
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 Europe/Minsk
+Persistent=true
+AccuracySec=30s
+Unit=dashboard-kpi-refresh.service
+
+[Install]
+WantedBy=timers.target

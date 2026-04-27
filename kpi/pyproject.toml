@@ -1,0 +1,35 @@
+[project]
+name = "kpi-dashboard"
+version = "0.1.0"
+description = "Local-hosted KPI dashboard for YouTube channel Cities Evolution."
+requires-python = ">=3.11"
+dependencies = [
+    # task-02 runtime deps (YouTube API client):
+    "google-api-python-client>=2.0,<3",
+    "google-auth-oauthlib>=1.2,<2",
+    "google-auth>=2.0,<3",
+    # task-06 (Flask FE):
+    "flask>=3,<4",
+    "jinja2>=3,<4",
+    # No python-dotenv — we parse .env with std-lib via ingest/env_loader.py.
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0,<9",
+    "pytest-cov>=5.0,<6",
+    "pyyaml>=6.0,<7",  # for cassette smoke tests
+    "vcrpy>=6.0,<7",   # cassette playback for YouTubeClient tests
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["app", "app.lib", "ingest"]

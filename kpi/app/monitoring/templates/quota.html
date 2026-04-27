@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Quota — KPI Monitoring{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">YouTube quota usage today</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  {% for q in today %}
+  <div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+    <div class="text-xs uppercase tracking-wide text-gray-500 mb-1">{{ q.api }}</div>
+    <div class="text-2xl font-semibold">{{ q.used }} <span class="text-sm text-gray-500">/ 10000</span></div>
+    <div class="text-xs text-gray-600 mb-2">{{ q.requests }} requests</div>
+    <div class="w-full bg-gray-200 rounded h-2 overflow-hidden">
+      <div class="h-2 {% if q.pct >= 95 %}bg-red-500{% elif q.pct >= 80 %}bg-orange-500{% elif q.pct >= 50 %}bg-yellow-500{% else %}bg-green-500{% endif %}"
+           style="width: {{ q.pct }}%"></div>
+    </div>
+    <div class="text-xs text-gray-500 mt-1">{{ q.pct }}% of daily cap</div>
+  </div>
+  {% endfor %}
+  {% if not today %}
+  <div class="col-span-3 text-center text-gray-500 py-6 bg-white rounded border border-gray-200">
+    No quota usage recorded yet today.
+  </div>
+  {% endif %}
+</div>
+
+<div class="bg-white rounded shadow-sm border border-gray-200 p-4">
+  <h2 class="text-sm font-semibold mb-2">Last 7 days</h2>
+  <canvas id="quotaChart" height="80"></canvas>
+</div>
+
+<script>
+  const seriesData = {{ series|tojson }};
+  const labels = [...new Set(Object.values(seriesData).flat().map(p => p.date))].sort();
+  const datasets = Object.keys(seriesData).map((api, i) => ({
+    label: api,
+    data: labels.map(d => {
+      const p = seriesData[api].find(x => x.date === d);
+      return p ? p.units : null;
+    }),
+    borderColor: ['#3b82f6', '#10b981', '#f59e0b'][i % 3],
+    tension: 0.3,
+    fill: false,
+  }));
+  if (labels.length > 0) {
+    new Chart(document.getElementById('quotaChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } },
+    });
+  }
+</script>
+{% endblock %}

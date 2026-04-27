@@ -1,0 +1,27 @@
+{#
+  Recent publishes widget — last 5 videos + publish date + week-1 views.
+  Usage: {% include '_recent_publishes.html' %} — expects `snap.recent_publishes` in context.
+#}
+<h3>Recent publishes</h3>
+{% if snap and snap.recent_publishes %}
+  <table class="exceptions-table">
+    <thead><tr><th>Video</th><th>Published</th><th>Week-1 views</th></tr></thead>
+    <tbody>
+      {% for v in snap.recent_publishes %}
+        <tr>
+          <td>{{ v.title }}</td>
+          <td>{{ v.published_at }}</td>
+          <td>
+            {% if v.week1_views is none %}
+              <span class="card-tooltip">no week-1 capture</span>
+            {% else %}
+              {{ '%.0f'|format(v.week1_views) }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="empty-state">Нет опубликованных видео.</p>
+{% endif %}
