@@ -648,18 +648,47 @@ def _ingest_reporting_csv(
     for job in jobs:
         job_id = job["job_id"]
         rt = job["report_type_id"]
+        # Codex r1 v2 MED: high-water mark must use 'parsed' only, otherwise a
+        # crash between download and parse permanently skips that report.
         last_processed = conn.execute(
             """
             SELECT MAX(create_time) AS last
               FROM reporting_reports
-             WHERE job_id=? AND download_status IN ('parsed','downloaded')
+             WHERE job_id=? AND download_status='parsed'
             """,
             (job_id,),
         ).fetchone()
         since_iso = last_processed["last"] if last_processed and last_processed["last"] else None
 
+        # Re-list any reports stuck in 'downloaded' or 'pending' so a previous
+        # crash doesn't lose them on retry. We treat them as new_reports for
+        # this iteration: parsing path is idempotent (snapshot rows append-only
+        # with fresh observed_on; reporting_reports row state moves forward).
+        stuck = conn.execute(
+            """
+            SELECT report_id, job_id, start_time, end_time, create_time, download_url, csv_local_path
+              FROM reporting_reports
+             WHERE job_id=? AND download_status IN ('pending', 'downloaded', 'failed')
+            """,
+            (job_id,),
+        ).fetchall()
+        stuck_reports = [
+            {
+                "id": r["report_id"],
+                "createTime": r["create_time"],
+                "startTime": r["start_time"],
+                "endTime": r["end_time"],
+                "downloadUrl": r["download_url"],
+                "_local_path": r["csv_local_path"],
+            }
+            for r in stuck
+        ]
+
         try:
             new_reports = client.list_reports(job_id, since_iso=since_iso, conn=conn)
+            # Merge stuck (deduplicated by id) so retries happen first.
+            new_ids = {r.get("id") for r in new_reports}
+            new_reports = [r for r in stuck_reports if r["id"] not in new_ids] + new_reports
         except QuotaExhaustedError:
             raise
         except Exception as exc:  # noqa: BLE001
@@ -779,16 +808,48 @@ def _parse_and_upsert_reporting_csv(
 
     date_idx = header.index("date")
     video_idx = header.index("video_id") if "video_id" in header else None
-    metric_cols = [
+    candidate_cols = [
         (i, name)
         for i, name in enumerate(header)
         if i != date_idx and i != video_idx
     ]
+    if not candidate_cols:
+        return 0
+
+    # Codex r1 v2 HIGH: Reporting CSVs mix dimension columns (country, device,
+    # traffic_source, playback_location, subscribed_status, …) with metric
+    # columns. Treating every non-date/video_id column as a metric blew up
+    # value_num for non-numeric cells AND lost the dimension context entirely.
+    # Classify using all rows — a column is a metric iff every non-empty cell
+    # in the entire CSV coerces to numeric. Anything that ever fails coercion
+    # is a dimension. This is a single full-pass scan; cost is acceptable for
+    # the small CSVs we ingest.
+    rows = list(reader)
+    metric_indices: set[int] = set()
+    dimension_indices: list[int] = []
+    for col_idx, _ in candidate_cols:
+        all_numeric = True
+        seen_nonempty = False
+        for r in rows:
+            if not r or len(r) <= col_idx:
+                continue
+            cell = r[col_idx]
+            if cell == "":
+                continue
+            seen_nonempty = True
+            if _coerce_numeric(cell) is None:
+                all_numeric = False
+                break
+        if all_numeric and seen_nonempty:
+            metric_indices.add(col_idx)
+        else:
+            dimension_indices.append(col_idx)
+    metric_cols = [(i, n) for i, n in candidate_cols if i in metric_indices]
     if not metric_cols:
         return 0
 
     inserted = 0
-    for row in reader:
+    for row in rows:
         if not row or len(row) < len(header):
             continue
         d_raw = row[date_idx]
@@ -800,6 +861,17 @@ def _parse_and_upsert_reporting_csv(
         else:
             d_iso = d_raw  # fall through; some report types already use ISO
         v_id = row[video_idx] if video_idx is not None else None
+
+        # Codex r1 v2 HIGH: encode dimension columns into the canonical
+        # `dim=val|dim2=val2` key so the metric snapshot retains its breakdown.
+        dim_parts: list[str] = []
+        for col_idx in dimension_indices:
+            dim_name = header[col_idx]
+            dim_value = row[col_idx]
+            if dim_value == "":
+                continue
+            dim_parts.append(f"{dim_name}={dim_value}")
+        dim_key = "|".join(dim_parts)
 
         for col_idx, metric_key in metric_cols:
             value_num = _coerce_numeric(row[col_idx])
@@ -813,11 +885,12 @@ def _parse_and_upsert_reporting_csv(
                             window_start, window_end, observed_on,
                             value_num, run_id, source
                         )
-                        VALUES (?, ?, '', 'day', ?, ?, ?, ?, ?, 'reporting_api')
+                        VALUES (?, ?, ?, 'day', ?, ?, ?, ?, ?, 'reporting_api')
                         """,
                         (
                             v_id,
                             metric_key,
+                            dim_key,
                             d_iso,
                             d_iso,
                             observed_on,
@@ -833,10 +906,11 @@ def _parse_and_upsert_reporting_csv(
                             window_start, window_end, observed_on,
                             value_num, run_id, source
                         )
-                        VALUES (?, '', 'day', ?, ?, ?, ?, ?, 'reporting_api')
+                        VALUES (?, ?, 'day', ?, ?, ?, ?, ?, 'reporting_api')
                         """,
                         (
                             metric_key,
+                            dim_key,
                             d_iso,
                             d_iso,
                             observed_on,
@@ -847,42 +921,38 @@ def _parse_and_upsert_reporting_csv(
                 inserted += 1
             except sqlite3.IntegrityError:
                 # Same-microsecond collision in a tight loop; suffix-perturb retry.
-                conn.execute(
-                    """
-                    INSERT INTO channel_snapshots(
-                        metric_key, dimension_key, grain,
-                        window_start, window_end, observed_on,
-                        value_num, run_id, source
+                if v_id:
+                    conn.execute(
+                        """
+                        INSERT INTO video_snapshots(
+                            video_id, metric_key, dimension_key, grain,
+                            window_start, window_end, observed_on,
+                            value_num, run_id, source
+                        )
+                        VALUES (?, ?, ?, 'day', ?, ?, ?, ?, ?, 'reporting_api')
+                        """,
+                        (
+                            v_id, metric_key, dim_key, d_iso, d_iso,
+                            _now_iso_micro()[:-1] + f"{col_idx:03d}Z",
+                            value_num, orchestrator_run_id,
+                        ),
                     )
-                    VALUES (?, '', 'day', ?, ?, ?, ?, ?, 'reporting_api')
-                    """,
-                    (
-                        metric_key,
-                        d_iso,
-                        d_iso,
-                        _now_iso_micro()[:-1] + f"{col_idx:03d}Z",
-                        value_num,
-                        orchestrator_run_id,
-                    ),
-                ) if not v_id else conn.execute(
-                    """
-                    INSERT INTO video_snapshots(
-                        video_id, metric_key, dimension_key, grain,
-                        window_start, window_end, observed_on,
-                        value_num, run_id, source
+                else:
+                    conn.execute(
+                        """
+                        INSERT INTO channel_snapshots(
+                            metric_key, dimension_key, grain,
+                            window_start, window_end, observed_on,
+                            value_num, run_id, source
+                        )
+                        VALUES (?, ?, 'day', ?, ?, ?, ?, ?, 'reporting_api')
+                        """,
+                        (
+                            metric_key, dim_key, d_iso, d_iso,
+                            _now_iso_micro()[:-1] + f"{col_idx:03d}Z",
+                            value_num, orchestrator_run_id,
+                        ),
                     )
-                    VALUES (?, ?, '', 'day', ?, ?, ?, ?, ?, 'reporting_api')
-                    """,
-                    (
-                        v_id,
-                        metric_key,
-                        d_iso,
-                        d_iso,
-                        _now_iso_micro()[:-1] + f"{col_idx:03d}Z",
-                        value_num,
-                        orchestrator_run_id,
-                    ),
-                )
                 inserted += 1
     return inserted
 
@@ -926,6 +996,7 @@ def _sync_schema_drift(
         )
     # Gemini r1 HIGH: spec Phase 6 mandates auto-creation of jobs for added types.
     # ensure_jobs is idempotent + persists into reporting_jobs (50 quota units each).
+    ensure_jobs_failed: Exception | None = None
     if added:
         try:
             client.ensure_jobs(added, conn=conn)
@@ -933,11 +1004,15 @@ def _sync_schema_drift(
             # Quota gate is the gating boundary, propagate to orchestrator.
             raise
         except Exception as exc:  # noqa: BLE001
+            # Codex r1 v2 MED: silent swallow let orchestrator close 'ok' even
+            # when job creation failed. Capture and re-raise so Phase 6 caller
+            # can degrade orchestrator status to 'partial' + alert.
             _LOG.warning(
                 "ensure_jobs for newly-added report types failed: %s "
                 "(types remain registered in schema_drift_log for next-run retry)",
                 exc,
             )
+            ensure_jobs_failed = exc
 
     deprecated = sorted(active - api_ids)
     for rt in deprecated:
@@ -953,6 +1028,8 @@ def _sync_schema_drift(
             conn=conn,
         )
 
+    if ensure_jobs_failed is not None:
+        raise ensure_jobs_failed
     return added, deprecated
 
 
@@ -1072,6 +1149,13 @@ def run_nightly(
                     return result
                 _abort(conn, orchestrator, result, status="api_failure", error=exc)
                 return result
+            except Exception as exc:  # noqa: BLE001
+                # Codex r1 v2 MED: channel-level non-HTTP failure (e.g.
+                # transient network mis-classified, fake-client bug surfaced
+                # in tests, etc.) maps to api_failure terminal — not db_failure,
+                # because the orchestrator state is consistent.
+                _abort(conn, orchestrator, result, status="api_failure", error=exc)
+                return result
 
             # ------------------------------------------------------------ Phase 4
             try:
@@ -1138,6 +1222,13 @@ def run_nightly(
                     )
                 except Exception:  # noqa: BLE001
                     pass
+            # Codex r1 v2 MED: spec status table mandates red 🔴 alert on
+            # db_failure. Best-effort, never raises.
+            _send_telegram_alert(
+                f"{STATUS_EMOJI['db_failure']} KPI nightly crashed: "
+                f"target_date={target_str} "
+                f"exc={type(exc).__name__}: {str(exc)[:200]}"
+            )
             raise
         finally:
             if own_conn:
@@ -1224,8 +1315,12 @@ def _channel_pulls(
             result.sub_runs.append(sub)
             raise
         except Exception as exc:  # noqa: BLE001
+            # Codex r1 v2 MED: channel-level non-Schema/non-Quota failures must
+            # produce api_failure (terminal), not partial — spec restricts
+            # 'partial' to per-video failures with channel-level success.
             _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
-            result.failures.append(f"channel:{label}:{type(exc).__name__}")
+            result.sub_runs.append(sub)
+            raise
         result.sub_runs.append(sub)
 
     # Demographics
@@ -1251,8 +1346,10 @@ def _channel_pulls(
         _close_run(conn, sub, status="schema_drift", error_text=str(exc)[:500])
         result.failures.append("channel:demographics:schema_drift")
     except Exception as exc:  # noqa: BLE001
+        # Codex r1 v2 MED: channel-level non-Schema failure → api_failure terminal.
         _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
-        result.failures.append(f"channel:demographics:{type(exc).__name__}")
+        result.sub_runs.append(sub)
+        raise
     result.sub_runs.append(sub)
 
     # Live (best-effort; empty rows ≠ failure)
@@ -1344,7 +1441,13 @@ def _per_video_pulls(
             conn, source="analytics_api", source_detail=f"video:{video_id}:retention"
         )
         try:
-            week_start = (target_date - timedelta(days=7)).isoformat()
+            # Codex r1 v2 LOW: spec asks for "last full week start", not a rolling
+            # 7-day window. Use ISO Monday-anchored week boundary.
+            # Monday-of-the-week-containing(target_date - 7d) collapses to
+            # "the Monday of the previous full ISO week".
+            iso_year, iso_week, _ = (target_date - timedelta(days=7)).isocalendar()
+            # Use date.fromisocalendar with day=1 (Monday). Available since 3.8.
+            week_start = date.fromisocalendar(iso_year, iso_week, 1).isoformat()
             res = client.analytics_video_retention(
                 video_id, week_start, target_str, conn=conn
             )

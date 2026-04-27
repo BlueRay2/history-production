@@ -153,6 +153,10 @@ class FakeFullClient:
     def list_report_types(self, *, conn=None):
         return [{"id": rt} for rt in self.report_types_ids]
 
+    def ensure_jobs(self, report_type_ids, *, name_prefix="kpi-vault", conn=None):
+        # Default no-op fake — overridden in tests that need to assert calls.
+        return {rt: f"job-{rt}" for rt in report_type_ids}
+
     def list_jobs(self, *, conn=None):
         return [{"reportTypeId": rt, "id": jid} for rt, jid in self.existing_jobs.items()]
 
@@ -601,6 +605,185 @@ def test_pk_collision_suffix_is_iso8601_valid(kpi_db, lock_path):
         "WHERE julianday(observed_on) IS NOT NULL"
     ).fetchone()["n"]
     assert n == 2  # the seeded row + the collision-resolved insertion
+
+
+def test_csv_dimension_columns_are_encoded_into_dim_key(kpi_db, lock_path, tmp_path):
+    """Codex r1 v2 HIGH: Reporting CSVs mix dimension and metric columns;
+    dimension cells must land in `dimension_key`, not metric_key with NULL."""
+    from ingest import nightly
+
+    csv_path = tmp_path / "country_report.csv"
+    csv_path.write_text(
+        "date,country,device,views,estimatedMinutesWatched\n"
+        "20260420,RU,MOBILE,100,400\n"
+        "20260420,RU,DESKTOP,50,200\n"
+        "20260420,US,MOBILE,30,90\n",
+        encoding="utf-8",
+    )
+    orch_id = "orch-csv-dim"
+    kpi_db.execute(
+        "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+        "VALUES (?, 'nightly_orchestrator', ?, 'running')",
+        (orch_id, "2026-04-22T00:00:00Z"),
+    )
+    n = nightly._parse_and_upsert_reporting_csv(
+        kpi_db, csv_path, report_type_id="country_a1",
+        orchestrator_run_id=orch_id,
+    )
+    # 3 rows × 2 metrics = 6 inserted
+    assert n == 6
+    # All inserted rows have non-empty dimension_key
+    dim_keys = sorted({
+        r["dimension_key"]
+        for r in kpi_db.execute(
+            "SELECT DISTINCT dimension_key FROM channel_snapshots WHERE source='reporting_api'"
+        ).fetchall()
+    })
+    assert dim_keys == ["country=RU|device=DESKTOP", "country=RU|device=MOBILE", "country=US|device=MOBILE"]
+
+
+def test_channel_failure_aborts_orchestrator_with_api_failure(kpi_db, lock_path, monkeypatch):
+    """Codex r1 v2 MED: channel-level non-Schema failure must bubble to api_failure."""
+    from ingest import nightly
+
+    sent: list[str] = []
+    monkeypatch.setattr(nightly, "_send_telegram_alert", lambda msg, **kw: sent.append(msg) or True)
+
+    class _Failing(FakeFullClient):
+        def analytics_channel_basic(self, *args, **kwargs):
+            raise RuntimeError("simulated channel-level api failure")
+
+    fake = _Failing(
+        upload_video_ids=[],
+        channel_basic_headers=[{"name": "views", "columnType": "METRIC"}],
+        channel_basic_rows=[[1]],
+    )
+    result = nightly.run_nightly(
+        target_date=None, dry_run=False,
+        client=fake, conn=kpi_db, lock_path=lock_path,
+    )
+    assert result is not None and result.status == "api_failure"
+    # Telegram alert fired with red emoji prefix
+    assert any("api_failure" in s for s in sent)
+
+
+def test_high_water_mark_excludes_downloaded_status(kpi_db, lock_path):
+    """Codex r1 v2 MED: high-water mark must use 'parsed' only; stuck reports retried."""
+    from ingest import nightly
+
+    # Pre-register: one parsed report (creates HWM) + one stuck downloaded report
+    kpi_db.execute(
+        "INSERT INTO reporting_jobs(job_id, report_type_id, created_at) "
+        "VALUES ('j1', 'rt1', '2026-04-01T00:00:00Z')"
+    )
+    kpi_db.execute(
+        "INSERT INTO reporting_reports(report_id, job_id, start_time, end_time, "
+        "create_time, download_url, download_status) "
+        "VALUES ('r_old', 'j1', '2026-04-20T00:00:00Z', '2026-04-21T00:00:00Z', "
+        "'2026-04-22T00:00:00Z', 'http://x/r_old', 'parsed')"
+    )
+    kpi_db.execute(
+        "INSERT INTO reporting_reports(report_id, job_id, start_time, end_time, "
+        "create_time, download_url, download_status, csv_local_path) "
+        "VALUES ('r_stuck', 'j1', '2026-04-23T00:00:00Z', '2026-04-24T00:00:00Z', "
+        "'2026-04-25T00:00:00Z', 'http://x/r_stuck', 'downloaded', '/tmp/missing.csv')"
+    )
+
+    class _RecordingClient(FakeFullClient):
+        last_since: str | None = None
+        def list_reports(self, job_id, *, since_iso=None, page_size=100, conn=None):
+            type(self).last_since = since_iso
+            return []  # No new reports from API; only stuck should be retried
+
+    fake = _RecordingClient(download_returns={"r_stuck": Path("/tmp/missing.csv")})
+    rows, failures = nightly._ingest_reporting_csv(
+        kpi_db, fake, orchestrator_run_id="orch-hwm"
+    )
+    # since_iso must be the 'parsed' report's create_time, NOT the 'downloaded' one
+    assert _RecordingClient.last_since == "2026-04-22T00:00:00Z"
+
+
+def test_db_failure_path_sends_telegram_alert(kpi_db, lock_path, monkeypatch):
+    """Codex r1 v2 MED: outer crash path must alert Yaroslav."""
+    from ingest import nightly
+
+    sent: list[str] = []
+    monkeypatch.setattr(nightly, "_send_telegram_alert", lambda msg, **kw: sent.append(msg) or True)
+
+    class _Boom(FakeFullClient):
+        def get_channel_metadata(self, *, conn=None):
+            raise sqlite3.OperationalError("disk I/O error simulated")
+
+    fake = _Boom()
+    with pytest.raises(sqlite3.OperationalError):
+        nightly.run_nightly(
+            target_date=None, dry_run=False,
+            client=fake, conn=kpi_db, lock_path=lock_path,
+        )
+    assert any("crashed" in s for s in sent)
+
+
+def test_ensure_jobs_failure_propagates_from_drift_sync(kpi_db, lock_path):
+    """Codex r1 v2 MED: ensure_jobs swallow regression — must propagate."""
+    from ingest import nightly
+
+    class _BrokenJobs(FakeFullClient):
+        def ensure_jobs(self, report_type_ids, *, name_prefix="kpi-vault", conn=None):
+            raise RuntimeError("simulated quota-budget mismatch")
+
+    fake = _BrokenJobs(report_types_ids=["new_x"])
+    with pytest.raises(RuntimeError, match="quota-budget mismatch"):
+        nightly._sync_schema_drift(kpi_db, fake)
+    # Drift entry was still recorded for next-run retry
+    n = kpi_db.execute(
+        "SELECT COUNT(*) AS n FROM schema_drift_log WHERE drift_type='report_type_added'"
+    ).fetchone()["n"]
+    assert n == 1
+
+
+def test_retention_window_uses_iso_monday_week_start(kpi_db, lock_path):
+    """Codex r1 v2 LOW: retention pull must use last full ISO week start, not -7d."""
+    from datetime import date as _date
+    from ingest import nightly
+
+    # target_date is a Wednesday → previous full ISO week's Monday is target - 9 days
+    target = _date(2026, 4, 22)  # Wednesday
+    expected_week_start = _date(2026, 4, 13).isoformat()  # Monday of previous full week
+
+    captured: dict[str, str] = {}
+
+    class _Capturing(FakeFullClient):
+        def analytics_video_retention(self, video_id, start_date, end_date, *, conn=None):
+            captured["start"] = start_date
+            captured["end"] = end_date
+            return _FakeAnalyticsResult(
+                column_headers=[
+                    {"name": "elapsedVideoTimeRatio", "columnType": "DIMENSION"},
+                    {"name": "audienceWatchRatio", "columnType": "METRIC"},
+                ],
+                rows=[],
+            )
+
+    fake = _Capturing(
+        upload_video_ids=["vid_x"],
+        video_metadata=[{
+            "id": "vid_x",
+            "snippet": {"title": "X", "publishedAt": "2026-04-15T12:00:00Z", "channelId": "UC"},
+            "contentDetails": {"duration": "PT1M"},
+            "status": {"privacyStatus": "public", "uploadStatus": "processed"},
+        }],
+        channel_basic_headers=[{"name": "views", "columnType": "METRIC"}],
+        channel_basic_rows=[[1]],
+        per_video_basic={"vid_x": [[1, 0]]},
+        per_video_traffic={"vid_x": []},
+    )
+    result = nightly.run_nightly(
+        target_date=target, dry_run=False,
+        client=fake, conn=kpi_db, lock_path=lock_path,
+    )
+    assert result is not None and result.status == "ok"
+    assert captured["start"] == expected_week_start
+    assert captured["end"] == target.isoformat()
 
 
 def test_coerce_numeric_handles_edge_cases():
