@@ -469,7 +469,55 @@ The plan must include:
    a logarithmic decay with base < 1 (steep initial drop stabilizing
    into a long tail), OR match a proven competitor pattern.
 5. CTA STRATEGY: Where and how calls-to-action will be embedded
-   without disrupting narrative flow.
+   without disrupting narrative flow. **For long-form videos** (NOT
+   shorts — Hype is ineligible for Shorts/live/private/unlisted per
+   YouTube policy 2026), the CTA strategy MUST include a dedicated
+   **Hype-CTA blueprint** for channels in the 500–500K subscriber band:
+
+   **Hype-CTA Blueprint (long-form only, eligible window: first 7 days
+   after publication):**
+   - **Hook-CTA (0:03–0:08):** voice + animated overlay pointing to the
+     Hype button. Voice: "Hit the Hype button right under this video —
+     yes, the lightning bolt. Three seconds, no cost, but huge for small
+     channels like us." Animation: arrow indicating bottom-third of
+     screen (where the Hype button lives in mobile UI). Duration ≤ 4s,
+     overlay area ≤ 25% of frame, never blocking center subject.
+   - **Mid-CTA (25–30% of duration):** voice-only, ≤ 5s, soft framing
+     ("If you're enjoying this — hit Hype real quick. It's a brand new
+     YouTube feature for small channels and it actually moves the
+     needle"). No on-screen overlay to preserve mid-roll retention.
+   - **End-screen CTA:** text overlay "Hype this video → Help us reach
+     [next milestone]" on the final-card / outro card.
+   - **Audience tone vilka** (apply per-video A/B against analytics
+     demographic split):
+     - 25–44 segment: casual / direct ("hype this drop", "smash that
+       lightning")
+     - 45–64 segment: explanatory ("press the lightning button right
+       below the video, it tells YouTube to recommend us to more
+       people like you")
+     - 65+ segment: prosocial framing ("Tapping Hype takes 3 seconds
+       and helps an independent channel survive")
+   - **Device-addressability disclaimer** for the marketer to flag in
+     RISKS: ~50% of YouTube watch-time on this channel comes from TV
+     devices, where Hype is **not available**. Therefore the addressable
+     audience for any Hype-CTA is mobile + desktop + tablet (~50% of
+     viewers). Plan accordingly: do not over-budget on Hype CTR
+     forecasts, and do not crowd out the regular subscribe / like CTA
+     for the TV audience that physically cannot Hype.
+   - **Eligibility & decay:** Hype CTA only on videos < 7 days old (per
+     YouTube Hype policy). The marketer MUST NOT recommend Hype CTAs in
+     evergreen / catalog videos and MUST NOT recommend Hype-style CTAs
+     in Shorts (those use a separate Subscribe / Like CTA pattern).
+   - **Source-of-truth note for verifiers:** Hype eligibility, channel
+     subscriber band (500–500K), 7-day window, and Shorts ineligibility
+     are documented at YouTube Help page
+     `support.google.com/youtube/answer/15509925`. As of April 2026 the
+     feature has been extended with Category Leaderboards (history-niche
+     content qualifies) and "Hype at no cost" availability across
+     additional countries. The marketer should re-verify the policy
+     URL each time CTA STRATEGY is drafted, since YouTube may change
+     eligibility thresholds without notice.
+
 6. RISKS / OPEN QUESTIONS: Assumptions about audience that need human
    validation, potential ethical concerns with persuasion techniques, etc.
 
