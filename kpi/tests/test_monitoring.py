@@ -200,3 +200,153 @@ def test_videos_page_renders_seeded_video(client):
     resp = client.get("/videos")
     assert b"vid_a" in resp.data
     assert b"Alpha Title" in resp.data
+
+
+# ---------------------------------------------------------------------------
+# Health classification — stuck `running` (>2h)
+# ---------------------------------------------------------------------------
+
+
+def test_api_health_treats_stuck_running_as_failing(client, kpi_db_path):
+    """A 'running' run that started >2h ago should flip status to degraded."""
+    conn = sqlite3.connect(kpi_db_path, isolation_level=None)
+    # Wipe all and insert fresh: orchestrator ok recent + analytics_api stuck running 4h ago
+    conn.execute("DELETE FROM ingestion_runs")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    four_h_ago = (datetime.now(timezone.utc) - timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    conn.execute(
+        "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+        "VALUES ('orch-2', 'nightly_orchestrator', ?, 'ok')",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+        "VALUES ('stuck-1', 'analytics_api', ?, 'running')",
+        (four_h_ago,),
+    )
+    conn.close()
+    resp = client.get("/api/health")
+    data = resp.get_json()
+    assert data["status"] == "degraded"
+    assert "analytics_api" in data["failing_sources"]
+
+
+def test_api_health_fresh_running_not_treated_as_failing(client, kpi_db_path):
+    """A 'running' run that started seconds ago should NOT flip status."""
+    conn = sqlite3.connect(kpi_db_path, isolation_level=None)
+    conn.execute("DELETE FROM ingestion_runs")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    conn.execute(
+        "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+        "VALUES ('orch-3', 'nightly_orchestrator', ?, 'ok')",
+        (now,),
+    )
+    conn.execute(
+        "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+        "VALUES ('inflight-1', 'analytics_api', ?, 'running')",
+        (now,),
+    )
+    conn.close()
+    resp = client.get("/api/health")
+    data = resp.get_json()
+    assert data["status"] == "ok"
+    assert data["failing_sources"] == []
+
+
+# ---------------------------------------------------------------------------
+# /schema-drift/<id>/ack — repeat POST is idempotent
+# ---------------------------------------------------------------------------
+
+
+def test_schema_drift_ack_repeat_is_idempotent(client, kpi_db_path):
+    """Second POST against an already-acknowledged row must not overwrite by/at."""
+    conn = sqlite3.connect(kpi_db_path)
+    conn.row_factory = sqlite3.Row
+    drift_id = conn.execute(
+        "SELECT id FROM schema_drift_log WHERE acknowledged_at IS NULL"
+    ).fetchone()["id"]
+    conn.close()
+
+    r1 = client.post(f"/schema-drift/{drift_id}/ack", data={"by": "first"})
+    assert r1.status_code == 204
+    conn = sqlite3.connect(kpi_db_path)
+    conn.row_factory = sqlite3.Row
+    after_first = dict(conn.execute(
+        "SELECT acknowledged_at, acknowledged_by FROM schema_drift_log WHERE id=?",
+        (drift_id,)
+    ).fetchone())
+    conn.close()
+
+    r2 = client.post(f"/schema-drift/{drift_id}/ack", data={"by": "second"})
+    assert r2.status_code == 204  # still 204, not 409
+    conn = sqlite3.connect(kpi_db_path)
+    conn.row_factory = sqlite3.Row
+    after_second = dict(conn.execute(
+        "SELECT acknowledged_at, acknowledged_by FROM schema_drift_log WHERE id=?",
+        (drift_id,)
+    ).fetchone())
+    conn.close()
+
+    # 'first' must be preserved — not overwritten by 'second'
+    assert after_second["acknowledged_by"] == "first"
+    assert after_second["acknowledged_at"] == after_first["acknowledged_at"]
+
+
+# ---------------------------------------------------------------------------
+# Read-only DB enforcement
+# ---------------------------------------------------------------------------
+
+
+def test_db_helper_opens_read_only_handle(client, kpi_db_path):
+    """The Flask test_client uses the same DB; verify a request-scoped _db()
+    handle rejects writes."""
+    from app.monitoring.routes import _db
+    from app.monitoring import create_app
+    app = create_app()
+    app.config["KPI_DB"] = kpi_db_path
+    with app.app_context():
+        conn = _db()
+        with pytest.raises(sqlite3.OperationalError):
+            conn.execute(
+                "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+                "VALUES ('rogue', 'attacker', ?, 'ok')",
+                (datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),),
+            )
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# /freshness — status (stale-threshold) filter + last_obs column
+# ---------------------------------------------------------------------------
+
+
+def test_freshness_stale_filter(client, kpi_db_path):
+    """`stale=3` should hide metrics whose days_since_last_obs < 3."""
+    conn = sqlite3.connect(kpi_db_path, isolation_level=None)
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    conn.execute(
+        "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+        "VALUES ('r-stale', 'analytics_api', ?, 'ok')",
+        (now_iso,),
+    )
+    # Fresh metric (observed today) + stale metric (observed 10d ago)
+    today = datetime.now(timezone.utc).date().isoformat()
+    ten_days_ago_dt = datetime.now(timezone.utc) - timedelta(days=10)
+    ten_days_ago_iso = ten_days_ago_dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    ten_days_ago_d = ten_days_ago_dt.date().isoformat()
+    conn.execute(
+        "INSERT INTO channel_snapshots(metric_key, dimension_key, grain, "
+        "window_start, window_end, observed_on, value_num, run_id, source) "
+        "VALUES ('fresh_metric', '', 'day', ?, ?, ?, 1.0, 'r-stale', 'analytics_api')",
+        (today, today, now_iso),
+    )
+    conn.execute(
+        "INSERT INTO channel_snapshots(metric_key, dimension_key, grain, "
+        "window_start, window_end, observed_on, value_num, run_id, source) "
+        "VALUES ('ancient_metric', '', 'day', ?, ?, ?, 1.0, 'r-stale', 'analytics_api')",
+        (ten_days_ago_d, ten_days_ago_d, ten_days_ago_iso),
+    )
+    conn.close()
+    resp = client.get("/freshness?stale=3")
+    assert b"ancient_metric" in resp.data
+    assert b"fresh_metric" not in resp.data

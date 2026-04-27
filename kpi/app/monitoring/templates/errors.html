@@ -13,20 +13,25 @@
   <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Filter</button>
 </form>
 
+<p class="text-xs text-gray-500 mb-2">Click any row to expand the full error.</p>
+
 <table class="min-w-full bg-white rounded shadow-sm border border-gray-200 text-sm">
   <thead class="bg-gray-50 text-left">
     <tr>
       <th class="px-3 py-2">Started</th>
+      <th class="px-3 py-2">Run ID</th>
       <th class="px-3 py-2">Source</th>
       <th class="px-3 py-2">Detail</th>
       <th class="px-3 py-2">Status</th>
-      <th class="px-3 py-2">Error (200ch)</th>
+      <th class="px-3 py-2">Error (truncated 200ch)</th>
     </tr>
   </thead>
   <tbody>
     {% for r in rows %}
-    <tr class="border-t border-gray-100">
+    <tr class="border-t border-gray-100 cursor-pointer hover:bg-gray-50"
+        onclick="this.nextElementSibling.classList.toggle('hidden')">
       <td class="px-3 py-2 text-xs">{{ r.started_at[:19].replace('T', ' ') }}</td>
+      <td class="px-3 py-2 font-mono text-xs">{{ r.run_id }}</td>
       <td class="px-3 py-2 font-mono text-xs">{{ r.source }}</td>
       <td class="px-3 py-2 font-mono text-xs">{{ r.source_detail }}</td>
       <td class="px-3 py-2">
@@ -34,9 +39,15 @@
       </td>
       <td class="px-3 py-2 text-xs text-gray-700 break-all">{{ r.error_text }}</td>
     </tr>
+    <tr class="hidden bg-gray-100 border-t border-gray-200">
+      <td colspan="6" class="px-3 py-3 text-xs text-gray-700">
+        <div class="font-semibold mb-1">Full error (run_id <span class="font-mono">{{ r.run_id }}</span>):</div>
+        <pre class="whitespace-pre-wrap break-all">{{ r.error_text_full }}</pre>
+      </td>
+    </tr>
     {% endfor %}
     {% if not rows %}
-    <tr><td colspan="5" class="px-3 py-6 text-center text-gray-500">No failed runs in record. ✨</td></tr>
+    <tr><td colspan="6" class="px-3 py-6 text-center text-gray-500">No failed runs in record. ✨</td></tr>
     {% endif %}
   </tbody>
 </table>

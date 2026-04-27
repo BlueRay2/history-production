@@ -1,5 +1,22 @@
 <div class="bg-gray-50 border border-gray-200 rounded p-3 mt-1">
-  <div class="text-xs font-semibold text-gray-700 mb-2">Top-30 stalest dimensions for <span class="font-mono">{{ metric_key }}</span></div>
+  <div class="flex items-center justify-between mb-2">
+    <div class="text-xs font-semibold text-gray-700">
+      {% if show_all %}All{% else %}Top-30{% endif %} stalest dimensions for
+      <span class="font-mono">{{ metric_key }}</span>
+    </div>
+    <form method="get" hx-get="/freshness/{{ metric_key }}"
+          hx-target="closest div" hx-swap="outerHTML"
+          class="flex gap-1 items-center text-xs">
+      <input type="text" name="dim" value="{{ dim_prefix }}"
+             placeholder="dimension prefix"
+             class="px-2 py-1 border border-gray-300 rounded text-xs w-40">
+      <label class="flex items-center gap-1">
+        <input type="checkbox" name="all" value="1" {% if show_all %}checked{% endif %}>
+        all
+      </label>
+      <button class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">filter</button>
+    </form>
+  </div>
   {% if dims %}
   <table class="min-w-full text-xs">
     <thead class="text-left text-gray-600">

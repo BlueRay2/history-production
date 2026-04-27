@@ -29,7 +29,7 @@
 </div>
 
 <script>
-  const seriesData = {{ series_json|safe }};
+  const seriesData = {{ series|tojson }};
   const labels = [...new Set(Object.values(seriesData).flat().map(p => p.date))].sort();
   const datasets = Object.keys(seriesData).map((api, i) => ({
     label: api,

@@ -10,7 +10,6 @@ WAL = each request opens its own short-lived connection).
 
 from __future__ import annotations
 
-import json
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -27,16 +26,24 @@ bp = Blueprint("monitoring", __name__)
 
 
 def _db() -> sqlite3.Connection:
-    """Open a per-request SQLite connection in read-only mode where possible."""
+    """Open a per-request SQLite connection in strict read-only mode."""
     path = current_app.config["KPI_DB"]
+    if not Path(path).exists():
+        # Fail loud — don't silently let SQLite create a writable empty DB.
+        abort(503, description=f"KPI_DB not found at {path}")
     conn = sqlite3.connect(
-        f"file:{path}?mode=ro" if Path(path).exists() else path,
+        f"file:{path}?mode=ro",
         uri=True,
         timeout=5.0,
         isolation_level=None,
     )
     conn.row_factory = sqlite3.Row
     return conn
+
+
+# A 'running' ingestion run that started >2h ago is treated as stuck/failed
+# for health classification (avoids stuck poller hiding as in-progress).
+STUCK_RUNNING_HOURS = 2.0
 
 
 def _now_utc() -> datetime:
@@ -112,7 +119,7 @@ def index() -> str:
         ).fetchone()
         hours_since = _hours_since(last_orch["last_run"] if last_orch else None)
         any_recent_non_ok = any(
-            r["last_status"] not in ("ok", None, "running") and
+            _is_failing(r["last_status"], r["last_started_at"]) and
             _hours_since(r["last_started_at"]) is not None and
             _hours_since(r["last_started_at"]) <= 24
             for r in rows
@@ -161,6 +168,19 @@ def _hours_since(iso_ts: str | None) -> float | None:
     return (_now_utc() - dt).total_seconds() / 3600.0
 
 
+def _is_failing(status: str | None, started_at: str | None) -> bool:
+    """A run counts as failing if status is non-ok, OR if it's been
+    'running' longer than STUCK_RUNNING_HOURS (poller stuck / crashed)."""
+    if status is None:
+        return False
+    if status == "ok":
+        return False
+    if status == "running":
+        h = _hours_since(started_at)
+        return h is not None and h > STUCK_RUNNING_HOURS
+    return True
+
+
 def _humanize_isots(iso_ts: str | None) -> str:
     if not iso_ts:
         return "—"
@@ -189,9 +209,16 @@ def freshness() -> str:
     conn = _db()
     try:
         prefix = (request.args.get("q") or "").strip()
+        stale_min_str = (request.args.get("stale") or "").strip()
+        try:
+            stale_min = float(stale_min_str) if stale_min_str else None
+        except ValueError:
+            stale_min = None
+        show_all = (request.args.get("all") or "") == "1"
+
         # Top tier: dimension_key='' only, sorted by stalest first
         sql = (
-            "SELECT metric_key, days_since_last_obs, observation_count "
+            "SELECT metric_key, days_since_last_obs, observation_count, last_obs_jd "
             "FROM v_metric_freshness "
             "WHERE dimension_key = '' "
         )
@@ -199,7 +226,12 @@ def freshness() -> str:
         if prefix:
             sql += "AND metric_key LIKE ? "
             params.append(prefix + "%")
-        sql += "ORDER BY days_since_last_obs DESC LIMIT 200"
+        if stale_min is not None:
+            sql += "AND days_since_last_obs >= ? "
+            params.append(stale_min)
+        sql += "ORDER BY days_since_last_obs DESC"
+        if not show_all:
+            sql += " LIMIT 200"
         rows = conn.execute(sql, params).fetchall()
 
         rendered = []
@@ -216,8 +248,15 @@ def freshness() -> str:
                 "days": round(d, 2) if d is not None else None,
                 "obs_count": r["observation_count"],
                 "badge": badge,
+                "last_obs_relative": _humanize(r["last_obs_jd"]),
             })
-        return render_template("freshness.html", metrics=rendered, query=prefix)
+        return render_template(
+            "freshness.html",
+            metrics=rendered,
+            query=prefix,
+            stale=stale_min_str,
+            show_all=show_all,
+        )
     finally:
         conn.close()
 
@@ -227,17 +266,21 @@ def freshness_drilldown(metric_key: str) -> str:
     """HTMX-loaded second tier: per-dimension freshness for a metric_key."""
     conn = _db()
     try:
-        rows = conn.execute(
-            """
-            SELECT dimension_key, days_since_last_obs, observation_count
-              FROM v_metric_freshness
-             WHERE metric_key = ?
-               AND dimension_key != ''
-             ORDER BY days_since_last_obs DESC
-             LIMIT 30
-            """,
-            (metric_key,),
-        ).fetchall()
+        dim_prefix = (request.args.get("dim") or "").strip()
+        show_all = (request.args.get("all") or "") == "1"
+        sql = (
+            "SELECT dimension_key, days_since_last_obs, observation_count "
+            "FROM v_metric_freshness "
+            "WHERE metric_key = ? AND dimension_key != '' "
+        )
+        params: list[Any] = [metric_key]
+        if dim_prefix:
+            sql += "AND dimension_key LIKE ? "
+            params.append(dim_prefix + "%")
+        sql += "ORDER BY days_since_last_obs DESC"
+        if not show_all:
+            sql += " LIMIT 30"
+        rows = conn.execute(sql, params).fetchall()
         return render_template(
             "_freshness_drilldown.html",
             dims=[
@@ -249,6 +292,8 @@ def freshness_drilldown(metric_key: str) -> str:
                 for r in rows
             ],
             metric_key=metric_key,
+            dim_prefix=dim_prefix,
+            show_all=show_all,
         )
     finally:
         conn.close()
@@ -290,7 +335,7 @@ def quota() -> str:
                 }
                 for r in today_rows
             ],
-            series_json=json.dumps(series),
+            series=series,
         )
     finally:
         conn.close()
@@ -344,11 +389,14 @@ def schema_drift_ack(drift_id: int) -> Any:
         ).fetchone()
         if not existing:
             abort(404)
-        ack_by = request.form.get("by") or request.json.get("by") if request.is_json else (request.form.get("by") or "ui")  # type: ignore[union-attr]
+        ack_by = request.form.get("by") or (request.json.get("by") if request.is_json else None) or "ui"
+        # Idempotent: only stamp the FIRST acknowledgement; subsequent POSTs
+        # against an already-acknowledged row no-op but still return 204.
         conn.execute(
-            "UPDATE schema_drift_log SET acknowledged_at=?, acknowledged_by=? WHERE id=?",
+            "UPDATE schema_drift_log SET acknowledged_at=?, acknowledged_by=? "
+            "WHERE id=? AND acknowledged_at IS NULL",
             (datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-             ack_by or "ui", drift_id),
+             ack_by, drift_id),
         )
         return ("", 204)
     finally:
@@ -431,6 +479,7 @@ def errors() -> str:
                     "source_detail": r["source_detail"] or "—",
                     "status": r["status"],
                     "status_class": _status_class(r["status"]),
+                    "error_text_full": r["error_text"] or "",
                     "error_text": (r["error_text"] or "")[:200],
                 }
                 for r in rows
@@ -457,16 +506,27 @@ def api_health():
         last = last_orch["t"] if last_orch else None
         hours = _hours_since(last)
 
-        # Failing sources: any source whose latest run is non-ok
-        failing = conn.execute(
+        # Failing sources: any source whose latest run is non-ok, OR a
+        # 'running' run that's been stuck >STUCK_RUNNING_HOURS.
+        latest = conn.execute(
             """
-            SELECT source FROM (
-              SELECT source, status,
+            SELECT source, status, started_at FROM (
+              SELECT source, status, started_at,
                      ROW_NUMBER() OVER (PARTITION BY source ORDER BY started_at DESC) AS rn
                 FROM ingestion_runs
-            ) WHERE rn=1 AND status NOT IN ('ok','running')
+            ) WHERE rn=1
             """
         ).fetchall()
+        failing = [
+            r for r in latest
+            if _is_failing(r["status"], r["started_at"])
+            and (
+                # /api/health and / agree on the 24h freshness window:
+                # ancient failures aren't 'currently' degraded.
+                _hours_since(r["started_at"]) is None
+                or _hours_since(r["started_at"]) <= 24
+            )
+        ]
 
         # Today's quota
         today_rows = conn.execute(
@@ -489,7 +549,7 @@ def api_health():
             "status": status,
             "last_orchestrator_run": last,
             "hours_since_last_run": round(hours, 1) if hours is not None else None,
-            "failing_sources": [r["source"] for r in failing],
+            "failing_sources": sorted({r["source"] for r in failing}),
             "quota_used_today": quota_today,
             "schema_drift_unacknowledged": unack["n"] if unack else 0,
         })

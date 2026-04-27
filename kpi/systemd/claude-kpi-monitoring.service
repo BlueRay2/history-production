@@ -2,8 +2,16 @@
 Description=KPI metrics-vault monitoring web UI
 After=network.target
 
+# Installed as a systemd --user unit at ~/.config/systemd/user/.
+# When that path is used, systemd executes as the invoking session user
+# (aiagent) and `User=` is implicit. If you ever move this to a system
+# unit at /etc/systemd/system/, uncomment User=aiagent below — leaving it
+# unset there would run the service as root, which violates least-privilege
+# and would break the read-only KPI_DB sqlite handle owner check.
+
 [Service]
 Type=simple
+# User=aiagent  # required only when installed as a system unit
 WorkingDirectory=/home/aiagent/assistant/git/history-production/kpi
 Environment=KPI_MONITORING_HOST=127.0.0.1
 Environment=KPI_MONITORING_PORT=8787
