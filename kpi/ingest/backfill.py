@@ -236,6 +236,7 @@ def _ingest_one_day(
     candidate_video_ids: list[str],
     *,
     pause_sec: float = INTER_CALL_PAUSE_SEC,
+    quota_threshold: int = QUOTA_PAUSE_THRESHOLD,
 ) -> tuple[int, list[SubRun]]:
     """Pull all channel-level + per-video Analytics for one historical day.
 
@@ -246,6 +247,16 @@ def _ingest_one_day(
     target_str = target_date.isoformat()
     rows_written = 0
     sub_runs: list[SubRun] = []
+
+    def _check_quota_post_call() -> None:
+        """Codex r1 HIGH: enforce quota threshold AFTER each Analytics call,
+        not just before each day. Raises QuotaExhaustedError so the outer
+        loop can persist cursor + alert. Returns silently if under threshold."""
+        used = _today_total_units(conn, _today_utc_iso())
+        if used >= quota_threshold:
+            raise QuotaExhaustedError(
+                f"per-call quota gate tripped at {used} (threshold {quota_threshold})"
+            )
 
     # Channel-level pulls (mirrors task-04 _channel_pulls but per fixed day)
     for label, dim, metrics in CHANNEL_DIM_PULLS:
@@ -285,6 +296,7 @@ def _ingest_one_day(
             raise
         sub_runs.append(sub)
         time.sleep(pause_sec)
+        _check_quota_post_call()
 
     # Demographics
     sub = _open_run(
@@ -309,10 +321,54 @@ def _ingest_one_day(
         raise
     except SchemaDriftError as exc:
         _close_run(conn, sub, status="schema_drift", error_text=str(exc)[:500])
+    except HttpError as exc:
+        # Codex r1 MED: channel-level non-schema HttpError must propagate to
+        # terminal status, not be swallowed as sub-run failure.
+        _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
+        sub_runs.append(sub)
+        raise
     except Exception as exc:  # noqa: BLE001
         _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
+        sub_runs.append(sub)
+        raise
     sub_runs.append(sub)
     time.sleep(pause_sec)
+    _check_quota_post_call()
+
+    # Codex r1 MED: live channel pull (parity with task-04 nightly Phase 3).
+    # Live data is sparse historically — empty rows are fine, but errors at
+    # channel level still abort the day so behavior matches nightly.
+    sub = _open_run(
+        conn, source="analytics_api",
+        source_detail=f"backfill:channel:live:{target_str}",
+        scheduled_for=target_str,
+    )
+    try:
+        res = client.analytics_live(target_str, target_str, conn=conn)
+        with _batched_writes(conn):
+            written = _persist_analytics_result(
+                conn, res,
+                run_id=sub.run_id, source="analytics_api",
+                grain="day", window_start=target_str, window_end=target_str,
+            )
+        sub.rows_written = written
+        rows_written += written
+        _close_run(conn, sub, status="ok")
+    except QuotaExhaustedError:
+        _close_run(conn, sub, status="quota_exhausted")
+        sub_runs.append(sub)
+        raise
+    except HttpError as exc:
+        _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
+        sub_runs.append(sub)
+        raise
+    except Exception as exc:  # noqa: BLE001
+        _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
+        sub_runs.append(sub)
+        raise
+    sub_runs.append(sub)
+    time.sleep(pause_sec)
+    _check_quota_post_call()
 
     # Per-video pulls — only for videos that existed on this historical date
     cutoff = target_date - timedelta(days=PER_VIDEO_FRESHNESS_DAYS)
@@ -357,6 +413,7 @@ def _ingest_one_day(
             _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
         sub_runs.append(sub)
         time.sleep(pause_sec)
+        _check_quota_post_call()
 
         # retention — uses ISO Monday week start (same as nightly)
         sub = _open_run(
@@ -386,6 +443,7 @@ def _ingest_one_day(
             _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
         sub_runs.append(sub)
         time.sleep(pause_sec)
+        _check_quota_post_call()
 
         # traffic
         sub = _open_run(
@@ -414,6 +472,7 @@ def _ingest_one_day(
             _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
         sub_runs.append(sub)
         time.sleep(pause_sec)
+        _check_quota_post_call()
 
     return rows_written, sub_runs
 
@@ -477,8 +536,16 @@ def run_backfill(
     end_date = today - timedelta(days=2)  # Same lag as nightly
     start_date = end_date - timedelta(days=days - 1)
 
-    # Resume from cursor if present
+    # Codex r1 HIGH: Resume from cursor — when a quota pause persisted a
+    # cursor and tomorrow we restart, today's `end_date` has advanced by
+    # 1+ day(s), so naive equality (stored_end == end_date) silently
+    # invalidates the cursor and we start a brand-new window. Fix: when
+    # cursor exists AND not --force, FREEZE the window to the cursor's
+    # original (start_date..end_date) regardless of today's recompute.
+    # Only `--force` or explicit cursor deletion abandons the prior run.
     resume_cursor = _load_cursor(cursor_path)
+    resumed_rows = 0
+    resumed_quota = 0
     if resume_cursor and not force:
         try:
             last_done = date.fromisoformat(resume_cursor.last_completed_date)
@@ -486,9 +553,15 @@ def run_backfill(
         except ValueError:
             last_done = None
             stored_end = None
-        if last_done and stored_end and stored_end == end_date:
-            # Resume: continue from day AFTER last_done
+        if last_done and stored_end:
+            # Trust cursor's frozen end_date; recompute start as last_done + 1
+            end_date = stored_end
             start_date = last_done + timedelta(days=1)
+            # Codex r1 LOW: seed BackfillResult counters from cursor so a
+            # subsequent pause writes a cumulative total, not just current
+            # process's contribution.
+            resumed_rows = resume_cursor.rows_written
+            resumed_quota = resume_cursor.quota_used
             if start_date > end_date:
                 # Already finished previously — write sentinel and exit
                 sentinel_path.parent.mkdir(parents=True, exist_ok=True)
@@ -496,11 +569,16 @@ def run_backfill(
                 _clear_cursor(cursor_path)
                 return BackfillResult(
                     status="already_done",
-                    days_processed=0, rows_written=0, quota_used=0,
+                    days_processed=0,
+                    rows_written=resumed_rows, quota_used=resumed_quota,
                     cursor_left=False,
                     error_text="cursor showed completion; sentinel re-touched",
                 )
-            _LOG.info("resuming backfill from cursor: start=%s", start_date)
+            _LOG.info(
+                "resuming backfill from cursor: start=%s end=%s (frozen by cursor) "
+                "prior_rows=%d prior_quota=%d",
+                start_date, end_date, resumed_rows, resumed_quota,
+            )
 
     with _backfill_flock(lock_path, wait_seconds=flock_wait) as acquired:
         if not acquired:
@@ -520,7 +598,10 @@ def run_backfill(
         orchestrator: SubRun | None = None
         result = BackfillResult(
             status="running",
-            days_processed=0, rows_written=0, quota_used=0, cursor_left=False,
+            days_processed=0,
+            rows_written=resumed_rows,
+            quota_used=resumed_quota,
+            cursor_left=False,
         )
 
         try:
@@ -558,7 +639,11 @@ def run_backfill(
                        status="api_failure", error=exc)
                 return result
 
-            # Step 2: register all Reporting API jobs (idempotent, non-blocking)
+            # Step 2: register all Reporting API jobs (idempotent).
+            # Codex r1 HIGH: failure here is now TERMINAL — spec acceptance
+            # criterion mandates "all 14 active jobs registered". Sentinel
+            # must NOT be written if registration fails. Convert to
+            # api_failure abort with Telegram alert.
             try:
                 jobs_count = _register_all_reporting_jobs(conn, client)
                 _LOG.info("registered/verified %d reporting jobs", jobs_count)
@@ -568,8 +653,9 @@ def run_backfill(
                        error=QuotaExhaustedError("reporting jobs registration"))
                 return result
             except Exception as exc:  # noqa: BLE001
-                # Reporting failures are non-fatal — log and continue
-                _LOG.warning("reporting job registration failed: %s", exc)
+                _abort(conn, orchestrator, _RAdapter(result, end_date),
+                       status="api_failure", error=exc)
+                return result
 
             # Step 3: Per-day backfill loop
             current = start_date
@@ -613,6 +699,8 @@ def run_backfill(
                     days_done += 1
                     result.days_processed = days_done
                 except QuotaExhaustedError:
+                    # Codex r1 HIGH: mid-day quota exhaust path was missing
+                    # Telegram alert. Reuse the same alert as pre-day branch.
                     last_done = (current - timedelta(days=1)).isoformat() if days_done > 0 else None
                     if last_done:
                         cursor = Cursor(
@@ -625,9 +713,15 @@ def run_backfill(
                         _save_cursor(cursor_path, cursor)
                         result.cursor_left = True
                     result.status = "quota_exhausted"
+                    result.quota_used = _today_total_units(conn, _today_utc_iso())
                     _close_run(
                         conn, orchestrator, status="quota_exhausted",
                         error_text="quota exhausted mid-day",
+                    )
+                    _send_telegram_alert(
+                        f"{STATUS_EMOJI['quota_exhausted']} kpi backfill paused mid-day "
+                        f"(quota={result.quota_used}); cursor saved at last_done={last_done or 'none'}, "
+                        f"resume tomorrow"
                     )
                     return result
                 except HttpError as exc:

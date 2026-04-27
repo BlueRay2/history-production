@@ -84,6 +84,10 @@ class FakeBackfillClient:
         self._bump()
         return _FakeAnalyticsResult(column_headers=[], rows=[])
 
+    def analytics_live(self, start_date, end_date, *, conn=None):
+        self._bump()
+        return _FakeAnalyticsResult(column_headers=[], rows=[])
+
     def analytics_video_basic(self, video_id, start_date, end_date, *,
                               metrics=None, conn=None):
         self._bump()
@@ -340,6 +344,96 @@ def test_force_bypasses_sentinel(
     )
     assert result.status == "ok"
     assert result.days_processed == 2
+
+
+def test_reporting_registration_failure_is_terminal(
+    kpi_db, lock_path, sentinel_path, cursor_path, silent_telegram, monkeypatch
+):
+    """Codex r1 HIGH: ensure_jobs/list_report_types failure must abort backfill
+    with api_failure, NOT silently fall through to write sentinel."""
+    from ingest import backfill
+
+    monkeypatch.setattr(backfill, "INTER_CALL_PAUSE_SEC", 0)
+
+    class _BrokenReporting(FakeBackfillClient):
+        def list_report_types(self, *, conn=None):
+            self._bump()
+            raise RuntimeError("simulated reporting outage")
+
+    fake = _BrokenReporting(report_types=[])
+    result = backfill.run_backfill(
+        days=2, force=False, dry_run=False,
+        client=fake, conn=kpi_db, lock_path=lock_path,
+        sentinel_path=sentinel_path, cursor_path=cursor_path,
+        flock_wait=5,
+    )
+    assert result.status == "api_failure"
+    assert not sentinel_path.exists()  # CRITICAL — no sentinel on failure
+    assert any("backfill aborted" in s.lower() or "api_failure" in s for s in silent_telegram)
+
+
+def test_cursor_resume_freezes_end_date_across_day_change(
+    kpi_db, lock_path, sentinel_path, cursor_path, silent_telegram, monkeypatch
+):
+    """Codex r1 HIGH: cursor's end_date must be authoritative, even after
+    `today_utc` advances. Otherwise resume silently starts a fresh window."""
+    from ingest import backfill
+
+    monkeypatch.setattr(backfill, "INTER_CALL_PAUSE_SEC", 0)
+
+    # Cursor saved yesterday: window was Apr-23..Apr-25 (3 days), 1 day done.
+    # If today is Apr-28 and we naively recompute end_date = Apr-26, the cursor
+    # would be ignored. The fix forces end_date = stored_end (Apr-25).
+    stale_end = (datetime.now(timezone.utc).date() - timedelta(days=5))
+    last_done = stale_end - timedelta(days=2)  # 2 days remaining
+    cursor_path.parent.mkdir(parents=True, exist_ok=True)
+    cursor_path.write_text(json.dumps({
+        "started_at": "2026-04-23T00:00:00Z",
+        "last_completed_date": last_done.isoformat(),
+        "end_date": stale_end.isoformat(),
+        "rows_written": 75,
+        "quota_used": 3000,
+    }), encoding="utf-8")
+
+    fake = FakeBackfillClient(report_types=[])
+    result = backfill.run_backfill(
+        days=10, force=False, dry_run=False,  # days=10 attempt would normally widen window
+        client=fake, conn=kpi_db, lock_path=lock_path,
+        sentinel_path=sentinel_path, cursor_path=cursor_path,
+        flock_wait=5,
+    )
+    assert result.status == "ok"
+    # Must process exactly the 2 remaining days from the FROZEN cursor window,
+    # NOT the 10 days that would have been used if cursor was ignored.
+    assert result.days_processed == 2
+    # Cumulative: rows from cursor + new rows. Should be > 75.
+    assert result.rows_written >= 75
+
+
+def test_mid_day_quota_exhaust_sends_telegram_alert(
+    kpi_db, lock_path, sentinel_path, cursor_path, silent_telegram, monkeypatch
+):
+    """Codex r1 HIGH: mid-day QuotaExhaustedError path must send Telegram alert."""
+    from ingest import backfill
+
+    monkeypatch.setattr(backfill, "INTER_CALL_PAUSE_SEC", 0)
+
+    fake = FakeBackfillClient(
+        upload_video_ids=[],
+        report_types=[],
+        # Trigger QuotaExhaustedError after a few channel calls (mid-day)
+        raise_quota_after_calls=4,
+    )
+    result = backfill.run_backfill(
+        days=2, force=False, dry_run=False,
+        client=fake, conn=kpi_db, lock_path=lock_path,
+        sentinel_path=sentinel_path, cursor_path=cursor_path,
+        flock_wait=5,
+    )
+    assert result.status == "quota_exhausted"
+    assert not sentinel_path.exists()
+    # Must have a backfill-specific quota alert in Telegram queue
+    assert any("backfill" in s and "quota" in s.lower() for s in silent_telegram)
 
 
 def test_lock_timeout_returns_lock_timeout_status(
