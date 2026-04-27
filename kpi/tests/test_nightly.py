@@ -466,6 +466,143 @@ def test_iso8601_duration_parser():
     assert _iso8601_duration_seconds("") is None
 
 
+def test_preflight_quota_skips_orchestrator_open(kpi_db, lock_path, monkeypatch):
+    """When daily budget is already met, no orchestrator row is opened."""
+    from ingest import nightly
+    from ingest import youtube_full
+
+    monkeypatch.setattr(youtube_full, "DAILY_QUOTA_BUDGET_DEFAULT", 50)
+    monkeypatch.setattr(nightly, "DAILY_QUOTA_BUDGET_DEFAULT", 50)
+    today = youtube_full._today_utc_iso()
+    kpi_db.execute(
+        "INSERT INTO quota_usage(api_name, date_utc, units_used, request_count, last_updated) "
+        "VALUES ('data_api_v3', ?, 50, 1, ?)",
+        (today, youtube_full._now_iso_micro()),
+    )
+
+    sent: list[str] = []
+    monkeypatch.setattr(nightly, "_send_telegram_alert", lambda msg, **kw: sent.append(msg) or True)
+
+    result = nightly.run_nightly(
+        target_date=None, dry_run=False,
+        client=FakeFullClient(enforce_quota=True),
+        conn=kpi_db, lock_path=lock_path,
+    )
+    assert result is not None
+    assert result.status == "quota_exhausted"
+    assert result.orchestrator_run_id == "preflight"
+    # No orchestrator row created
+    n = kpi_db.execute(
+        "SELECT COUNT(*) AS n FROM ingestion_runs WHERE source='nightly_orchestrator'"
+    ).fetchone()["n"]
+    assert n == 0
+    # Alert fired
+    assert any("quota cap already reached" in s for s in sent)
+
+
+def test_telegram_alert_invoked_on_partial_status(kpi_db, lock_path, monkeypatch):
+    """Per-video failure should produce a 'partial' alert via Telegram."""
+    from ingest import nightly
+
+    sent: list[str] = []
+    monkeypatch.setattr(nightly, "_send_telegram_alert", lambda msg, **kw: sent.append(msg) or True)
+
+    fake = FakeFullClient(
+        upload_video_ids=["vid_gamma"],
+        video_metadata=[{
+            "id": "vid_gamma",
+            "snippet": {"title": "G", "publishedAt": "2026-04-20T12:00:00Z", "channelId": "UC"},
+            "contentDetails": {"duration": "PT1M"},
+            "status": {"privacyStatus": "public", "uploadStatus": "processed"},
+        }],
+        channel_basic_headers=[{"name": "views", "columnType": "METRIC"}],
+        channel_basic_rows=[[5]],
+        per_video_basic={"vid_gamma": [[1]]},
+        raise_for_video={"vid_gamma"},
+    )
+    result = nightly.run_nightly(
+        target_date=None, dry_run=False,
+        client=fake, conn=kpi_db, lock_path=lock_path,
+    )
+    assert result is not None and result.status == "partial"
+    assert any("status=partial" in s for s in sent)
+
+
+def test_schema_drift_auto_creates_jobs_for_added_types(kpi_db, lock_path):
+    """Phase 6 must call ensure_jobs for newly-detected report types."""
+    from ingest import nightly
+
+    calls: list[list[str]] = []
+
+    class _Recorder(FakeFullClient):
+        def ensure_jobs(self, report_type_ids, *, name_prefix="kpi-vault", conn=None):
+            ids = list(report_type_ids)
+            calls.append(ids)
+            for rt in ids:
+                conn.execute(
+                    "INSERT OR IGNORE INTO reporting_jobs(job_id, report_type_id, created_at) "
+                    "VALUES (?, ?, ?)",
+                    (f"job-{rt}", rt, "2026-04-27T00:00:00Z"),
+                )
+            return {rt: f"job-{rt}" for rt in ids}
+
+    fake = _Recorder(report_types_ids=["new_a", "new_b"])
+    added, deprecated = nightly._sync_schema_drift(kpi_db, fake)
+    assert added == ["new_a", "new_b"]
+    assert deprecated == []
+    assert calls == [["new_a", "new_b"]]
+
+
+def test_pk_collision_suffix_is_iso8601_valid(kpi_db, lock_path):
+    """The microsecond suffix appended on PK collision must keep observed_on
+    parseable by SQLite's julianday() — Gemini r1 HIGH finding."""
+    from ingest import nightly
+
+    # Trigger a collision: same metric + same dim + same window + same observed_on
+    sub_id = "sub-test"
+    kpi_db.execute(
+        "INSERT INTO ingestion_runs(run_id, source, started_at, status) "
+        "VALUES (?, 'analytics_api', '2026-04-27T00:00:00Z', 'running')",
+        (sub_id,),
+    )
+    fixed_ts = "2026-04-27T07:30:00.123456Z"
+    kpi_db.execute(
+        "INSERT INTO channel_snapshots("
+        "metric_key, dimension_key, grain, window_start, window_end, "
+        "observed_on, value_num, run_id, source) "
+        "VALUES ('views', '', 'day', '2026-04-25', '2026-04-25', ?, 100.0, ?, 'analytics_api')",
+        (fixed_ts, sub_id),
+    )
+
+    res = nightly._FakeAnalyticsResult_proxy = type(
+        "Res", (), {"column_headers": [{"name": "views", "columnType": "METRIC"}],
+                    "rows": [[200]],
+                    "raw": {}}
+    )()
+    # Force collision by patching _now_iso_micro to return the same fixed_ts
+    import ingest.nightly as nm
+    orig = nm._now_iso_micro
+    nm._now_iso_micro = lambda: fixed_ts
+    try:
+        with nightly._batched_writes(kpi_db):
+            written = nightly._persist_analytics_result(
+                kpi_db, res,
+                run_id=sub_id, source="analytics_api",
+                grain="day", window_start="2026-04-25", window_end="2026-04-25",
+            )
+    finally:
+        nm._now_iso_micro = orig
+
+    assert written == 1
+    # Verify both rows are queryable via julianday() — would fail if observed_on
+    # ended in 'Z<int>' (broken format) instead of '<int>Z' (valid).
+    n = kpi_db.execute(
+        "SELECT COUNT(*) AS n FROM channel_snapshots "
+        "WHERE julianday(observed_on) IS NOT NULL"
+    ).fetchone()["n"]
+    assert n == 2  # the seeded row + the collision-resolved insertion
+
+
 def test_coerce_numeric_handles_edge_cases():
     from ingest.nightly import _coerce_numeric
 

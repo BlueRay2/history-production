@@ -48,6 +48,7 @@ from googleapiclient.errors import HttpError
 
 from ingest.youtube_full import (  # type: ignore[import-not-found]
     AnalyticsResult,
+    DAILY_QUOTA_BUDGET_DEFAULT,
     QuotaExhaustedError,
     SchemaDriftError,
     YouTubeFullClient,
@@ -55,6 +56,8 @@ from ingest.youtube_full import (  # type: ignore[import-not-found]
     _is_auth_error,
     _log_schema_drift,
     _now_iso_micro,
+    _today_total_units,
+    _today_utc_iso,
     get_default_client,
 )
 
@@ -77,6 +80,27 @@ PER_VIDEO_FRESHNESS_DAYS = 90
 
 ORCHESTRATOR_SOURCE = "nightly_orchestrator"
 
+TELEGRAM_BOT_ENV = Path(
+    os.environ.get(
+        "KPI_TELEGRAM_ENV",
+        "/home/aiagent/.claude/channels/telegram/.env",
+    )
+)
+"""Source of BOT_TOKEN for direct Bot API alerts (no MCP — survives Claude downtime)."""
+
+YAROSLAV_CHAT_ID = os.environ.get("KPI_TELEGRAM_CHAT_ID", "208368262")
+"""Default alert recipient — configurable for tests."""
+
+# Status → severity emoji prefix per task spec table.
+STATUS_EMOJI: dict[str, str] = {
+    "partial": "⚠️",
+    "api_failure": "🔴",
+    "db_failure": "🔴",
+    "quota_exhausted": "🟠",
+    "auth_failed": "🔴",
+    "schema_drift": "🟡",
+}
+
 # Channel-level Analytics calls expressed as (label, dimension_or_None, metrics).
 # `metrics=None` lets the YouTubeFullClient default kick in; otherwise we pin.
 CHANNEL_DIM_PULLS: tuple[tuple[str, str | None, str | None], ...] = (
@@ -95,6 +119,68 @@ Source: task-04 spec Phase 3 — seven dimensional pulls plus demographics + liv
 
 # Per-video pulls (label → method-name on YouTubeFullClient + dimension_key fallback)
 PER_VIDEO_PULL_LABELS: tuple[str, ...] = ("basic", "retention", "traffic_sources")
+
+
+# ---------------------------------------------------------------------------
+# Telegram alert (direct Bot API curl, not MCP)
+# ---------------------------------------------------------------------------
+
+
+def _load_bot_token() -> str | None:
+    """Parse BOT_TOKEN from the Telegram channel env file. Returns None on miss.
+
+    Strips outer quotes + trailing inline comments + UTF-8 BOM. Same parser
+    discipline as task-08's runbook to avoid silent token drift.
+    """
+    if not TELEGRAM_BOT_ENV.exists():
+        return None
+    try:
+        text = TELEGRAM_BOT_ENV.read_text(encoding="utf-8-sig")
+    except OSError:
+        return None
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        if key.strip() != "BOT_TOKEN":
+            continue
+        value = value.partition("#")[0].strip().strip('"').strip("'")
+        return value or None
+    return None
+
+
+def _send_telegram_alert(message: str, *, chat_id: str = YAROSLAV_CHAT_ID) -> bool:
+    """Best-effort Bot API alert. Returns True on HTTP 200, False otherwise.
+
+    Failures are NEVER raised — alerts must not crash the orchestrator. Any
+    network/auth error is logged and swallowed; the orchestrator status row
+    in `ingestion_runs` remains the durable failure record.
+    """
+    token = _load_bot_token()
+    if not token:
+        _LOG.warning("telegram alert skipped: no BOT_TOKEN at %s", TELEGRAM_BOT_ENV)
+        return False
+    try:
+        import requests
+
+        resp = requests.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={"chat_id": chat_id, "text": message[:4000]},
+            timeout=10,
+        )
+        if resp.status_code == 200:
+            return True
+        _LOG.warning(
+            "telegram alert non-200: status=%d body=%s",
+            resp.status_code, resp.text[:200],
+        )
+        return False
+    except Exception as exc:  # noqa: BLE001
+        _LOG.warning("telegram alert failed: %s", exc)
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -173,6 +259,31 @@ def _close_run(
 # ---------------------------------------------------------------------------
 # Flock guard
 # ---------------------------------------------------------------------------
+
+
+@contextmanager
+def _batched_writes(conn: sqlite3.Connection) -> Iterator[None]:
+    """Wrap a series of inserts in BEGIN IMMEDIATE / COMMIT.
+
+    Gemini r1 MED: with isolation_level=None (autocommit) on the kpi
+    connection, naked INSERTs each spawn their own transaction — for a full
+    nightly cycle (channel × dims × per-video × metrics) that's thousands of
+    fsyncs and easily breaks the 5-minute SLA. Wrapping each persist call
+    in BEGIN IMMEDIATE / COMMIT collapses them into one transaction.
+
+    On exception, ROLLBACK is attempted; the exception propagates so the
+    caller can map it to sub-run status.
+    """
+    conn.execute("BEGIN IMMEDIATE")
+    try:
+        yield
+        conn.execute("COMMIT")
+    except Exception:
+        try:
+            conn.execute("ROLLBACK")
+        except sqlite3.OperationalError:
+            pass
+        raise
 
 
 @contextmanager
@@ -330,7 +441,7 @@ def _persist_analytics_result(
                         grain,
                         window_start,
                         window_end,
-                        _now_iso_micro() + str(col_idx),  # forced uniqueness suffix
+                        _now_iso_micro()[:-1] + f"{col_idx:03d}Z",  # forced uniqueness suffix
                         value_num,
                         run_id,
                         source,
@@ -606,12 +717,13 @@ def _ingest_reporting_csv(
 
             # Parse + write rows
             try:
-                row_count = _parse_and_upsert_reporting_csv(
-                    conn,
-                    local_path,
-                    report_type_id=rt,
-                    orchestrator_run_id=orchestrator_run_id,
-                )
+                with _batched_writes(conn):
+                    row_count = _parse_and_upsert_reporting_csv(
+                        conn,
+                        local_path,
+                        report_type_id=rt,
+                        orchestrator_run_id=orchestrator_run_id,
+                    )
             except Exception as exc:  # noqa: BLE001
                 _LOG.warning("parse failed for report %s: %s", report_id, exc)
                 conn.execute(
@@ -748,7 +860,7 @@ def _parse_and_upsert_reporting_csv(
                         metric_key,
                         d_iso,
                         d_iso,
-                        _now_iso_micro() + str(col_idx),
+                        _now_iso_micro()[:-1] + f"{col_idx:03d}Z",
                         value_num,
                         orchestrator_run_id,
                     ),
@@ -766,7 +878,7 @@ def _parse_and_upsert_reporting_csv(
                         metric_key,
                         d_iso,
                         d_iso,
-                        _now_iso_micro() + str(col_idx),
+                        _now_iso_micro()[:-1] + f"{col_idx:03d}Z",
                         value_num,
                         orchestrator_run_id,
                     ),
@@ -812,6 +924,20 @@ def _sync_schema_drift(
             notes="visible in list_report_types but no job registered",
             conn=conn,
         )
+    # Gemini r1 HIGH: spec Phase 6 mandates auto-creation of jobs for added types.
+    # ensure_jobs is idempotent + persists into reporting_jobs (50 quota units each).
+    if added:
+        try:
+            client.ensure_jobs(added, conn=conn)
+        except QuotaExhaustedError:
+            # Quota gate is the gating boundary, propagate to orchestrator.
+            raise
+        except Exception as exc:  # noqa: BLE001
+            _LOG.warning(
+                "ensure_jobs for newly-added report types failed: %s "
+                "(types remain registered in schema_drift_log for next-run retry)",
+                exc,
+            )
 
     deprecated = sorted(active - api_ids)
     for rt in deprecated:
@@ -876,6 +1002,31 @@ def run_nightly(
         conn = conn or _connect_kpi_db()
         orchestrator: SubRun | None = None
         try:
+            # Gemini r1 MED: Phase-1 pre-flight quota check. If today's API budget
+            # is already at the cap before the orchestrator opens its run row,
+            # bail with a quota_exhausted result + Telegram alert without
+            # creating an in-flight ingestion_runs entry that we'd just close
+            # immediately. Read-only check (does NOT reserve units).
+            today = _today_utc_iso()
+            already_used = _today_total_units(conn, today)
+            if already_used >= DAILY_QUOTA_BUDGET_DEFAULT:
+                preflight_result = NightlyResult(
+                    orchestrator_run_id="preflight",
+                    target_date=target_str,
+                    status="quota_exhausted",
+                    error_text=(
+                        f"daily quota cap {DAILY_QUOTA_BUDGET_DEFAULT} already "
+                        f"reached before orchestrator open (used={already_used})"
+                    ),
+                )
+                _send_telegram_alert(
+                    f"{STATUS_EMOJI['quota_exhausted']} KPI nightly preflight: "
+                    f"quota cap already reached today ({already_used}/"
+                    f"{DAILY_QUOTA_BUDGET_DEFAULT}); skipping run for "
+                    f"target_date={target_str}"
+                )
+                return preflight_result
+
             orchestrator = _open_run(
                 conn,
                 source=ORCHESTRATOR_SOURCE,
@@ -964,6 +1115,15 @@ def run_nightly(
                 status=final_status,
                 error_text="; ".join(result.failures)[:500] or None,
             )
+            # Gemini r1 MED: Telegram alert on non-ok orchestrator status.
+            if final_status != "ok":
+                _send_telegram_alert(
+                    f"{STATUS_EMOJI.get(final_status, '⚠️')} KPI nightly "
+                    f"target_date={target_str} status={final_status} "
+                    f"failures={len(result.failures)} "
+                    f"rows={result.rows_written} "
+                    f"first={result.failures[0] if result.failures else 'n/a'}"
+                )
             return result
 
         except Exception as exc:  # noqa: BLE001
@@ -1006,7 +1166,8 @@ def _refresh_videos(
             result.sub_runs.append(sub)
             return []
         metas = client.get_videos_metadata(ids, conn=conn)
-        sub.rows_written = _upsert_videos(conn, metas)
+        with _batched_writes(conn):
+            sub.rows_written = _upsert_videos(conn, metas)
         _close_run(conn, sub, status="ok")
         result.sub_runs.append(sub)
         result.rows_written += sub.rows_written
@@ -1035,14 +1196,15 @@ def _channel_pulls(
             if metrics is not None:
                 kwargs["metrics"] = metrics
             res = client.analytics_channel_basic(**kwargs, conn=conn)
-            written = _persist_analytics_result(
-                conn, res,
-                run_id=sub.run_id,
-                source="analytics_api",
-                grain="day",
-                window_start=target_str,
-                window_end=target_str,
-            )
+            with _batched_writes(conn):
+                written = _persist_analytics_result(
+                    conn, res,
+                    run_id=sub.run_id,
+                    source="analytics_api",
+                    grain="day",
+                    window_start=target_str,
+                    window_end=target_str,
+                )
             sub.rows_written = written
             _close_run(conn, sub, status="ok")
             result.rows_written += written
@@ -1156,15 +1318,16 @@ def _per_video_pulls(
         )
         try:
             res = client.analytics_video_basic(video_id, target_str, target_str, conn=conn)
-            sub.rows_written = _persist_analytics_result(
-                conn, res,
-                run_id=sub.run_id,
-                source="analytics_api",
-                grain="day",
-                window_start=target_str,
-                window_end=target_str,
-                video_id=video_id,
-            )
+            with _batched_writes(conn):
+                sub.rows_written = _persist_analytics_result(
+                    conn, res,
+                    run_id=sub.run_id,
+                    source="analytics_api",
+                    grain="day",
+                    window_start=target_str,
+                    window_end=target_str,
+                    video_id=video_id,
+                )
             _close_run(conn, sub, status="ok")
             result.rows_written += sub.rows_written
         except QuotaExhaustedError:
@@ -1185,13 +1348,14 @@ def _per_video_pulls(
             res = client.analytics_video_retention(
                 video_id, week_start, target_str, conn=conn
             )
-            sub.rows_written = _persist_retention_points(
-                conn, res,
-                run_id=sub.run_id,
-                video_id=video_id,
-                window_start=week_start,
-                window_end=target_str,
-            )
+            with _batched_writes(conn):
+                sub.rows_written = _persist_retention_points(
+                    conn, res,
+                    run_id=sub.run_id,
+                    video_id=video_id,
+                    window_start=week_start,
+                    window_end=target_str,
+                )
             _close_run(conn, sub, status="ok")
             result.rows_written += sub.rows_written
         except QuotaExhaustedError:
@@ -1211,15 +1375,16 @@ def _per_video_pulls(
             res = client.analytics_video_traffic_sources(
                 video_id, target_str, target_str, conn=conn
             )
-            sub.rows_written = _persist_analytics_result(
-                conn, res,
-                run_id=sub.run_id,
-                source="analytics_api",
-                grain="day",
-                window_start=target_str,
-                window_end=target_str,
-                video_id=video_id,
-            )
+            with _batched_writes(conn):
+                sub.rows_written = _persist_analytics_result(
+                    conn, res,
+                    run_id=sub.run_id,
+                    source="analytics_api",
+                    grain="day",
+                    window_start=target_str,
+                    window_end=target_str,
+                    video_id=video_id,
+                )
             _close_run(conn, sub, status="ok")
             result.rows_written += sub.rows_written
         except QuotaExhaustedError:
@@ -1243,6 +1408,12 @@ def _abort(
     result.status = status
     result.error_text = str(error)[:500]
     _close_run(conn, orchestrator, status=status, error_text=result.error_text)
+    # Gemini r1 MED: Telegram alert on every abort path (quota/auth/api/db).
+    _send_telegram_alert(
+        f"{STATUS_EMOJI.get(status, '🔴')} KPI nightly aborted: "
+        f"target_date={result.target_date} status={status} "
+        f"error={result.error_text[:200]}"
+    )
 
 
 # ---------------------------------------------------------------------------
