@@ -1372,8 +1372,11 @@ def _channel_pulls(
         result.sub_runs.append(sub)
         raise
     except Exception as exc:  # noqa: BLE001
+        # Codex r2 MED: live is part of channel-level Phase 3 — generic failure
+        # must propagate to api_failure terminal, not partial.
         _close_run(conn, sub, status="api_failure", error_text=str(exc)[:500])
-        result.failures.append(f"channel:live:{type(exc).__name__}")
+        result.sub_runs.append(sub)
+        raise
     result.sub_runs.append(sub)
 
 
