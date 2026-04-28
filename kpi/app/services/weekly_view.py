@@ -1,3 +1,6 @@
+# DEPRECATED 2026-04-26: legacy /weekly route, replaced by app.monitoring
+# (task-07 of kpi-vault TZ). Kept in-tree for rollback only; scheduled
+# for removal +7 days post-task-02 merge.
 """Data assembly for /weekly route.
 
 Pulls the latest ISO-week window from `channel_metric_snapshots`, the

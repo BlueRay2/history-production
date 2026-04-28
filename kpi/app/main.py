@@ -1,3 +1,8 @@
+# DEPRECATED 2026-04-26: replaced by app.monitoring (task-07 of kpi-vault TZ).
+# This module is the legacy dashboard surface. After task-02 decommission,
+# the systemd unit `claude-kpi-dashboard.service` no longer runs this app.
+# The file remains in-tree for one rollback cycle; full removal is scheduled
+# +7 days post-task-02 merge.
 """Flask app factory for the KPI dashboard.
 
 Binds to 127.0.0.1:$DASHBOARD_KPI_PORT (default 8787). MVP localhost-only,
