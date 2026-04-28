@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Hourly heartbeat: query monitoring views, write a row to monitoring_pings,
 # emit Telegram alert on first transition into degraded/down.
-# Exit code 0 always (heartbeat must never block timer); errors logged.
+# Exit 0 on success ("ok"/"degraded"/"down" all written cleanly).
+# Exit 4 on heartbeat write failure (DB unwritable, schema missing, etc.) —
+# this surfaces real monitoring-side breakage to the systemd journal /
+# CronCreate consumer instead of swallowing it.
 set -u
 
 KPI_ROOT="/home/aiagent/assistant/git/history-production/kpi"
@@ -10,26 +13,35 @@ DB="${KPI_DB:-/home/aiagent/assistant/state/kpi.sqlite}"
 FIRST_HB_FLAG="/home/aiagent/assistant/state/kpi-vault-first-heartbeat.flag"
 LOG_DIR="${KPI_LOG_DIR:-/home/aiagent/assistant/state/kpi-logs}"
 LOG_FILE="${LOG_DIR}/heartbeat-$(date -u +%Y-%m-%dT%H%M%SZ).log"
+RESULT_FILE="$(mktemp -t kpi-heartbeat-result.XXXXXX)"
+trap 'rm -f "$RESULT_FILE"' EXIT
 
 mkdir -p "$LOG_DIR"
 
 # shellcheck disable=SC1091
 source "$(dirname "$(readlink -f "$0")")/lib/telegram-alert.sh"
 
-cd "$KPI_ROOT" || exit 0
+cd "$KPI_ROOT" || { send_telegram_alert "❌ kpi heartbeat: cwd $KPI_ROOT missing" || true; exit 4; }
 
-# heartbeat.py is a small embedded Python helper that:
-#   1. opens DB read-write
-#   2. checks v_last_run_per_source for max age (>26h → degraded; >50h → down)
-#   3. INSERT into monitoring_pings (ping_at, status, details_json, alert_sent=0)
-#   4. emits status to stdout
-status="$("$PYTHON" - <<'PYEOF' 2>&1 | tee -a "$LOG_FILE"
+# Embedded Python emits one of: "ok|degraded|down|error:<reason>" to RESULT_FILE.
+# Schema-missing OR write-failure → "error:..." → wrapper exits 4.
+KPI_DB="$DB" "$PYTHON" - "$RESULT_FILE" <<'PYEOF' >>"$LOG_FILE" 2>&1
 import json, os, sqlite3, sys
 from datetime import datetime, timezone
 
+result_file = sys.argv[1]
 db = os.environ.get("KPI_DB", "/home/aiagent/assistant/state/kpi.sqlite")
-con = sqlite3.connect(db)
-con.row_factory = sqlite3.Row
+
+def emit(token):
+    open(result_file, "w").write(token)
+
+try:
+    con = sqlite3.connect(db)
+    con.row_factory = sqlite3.Row
+except Exception as e:
+    emit(f"error:db_connect:{type(e).__name__}")
+    sys.exit(0)
+
 try:
     rows = con.execute("""
         SELECT source, source_detail, last_status, last_started_jd,
@@ -37,8 +49,7 @@ try:
           FROM v_last_run_per_source
     """).fetchall()
 except sqlite3.OperationalError as e:
-    # Schema not migrated yet — treat as degraded.
-    print("schema_missing")
+    emit(f"error:schema:{e}")
     sys.exit(0)
 
 if not rows:
@@ -60,23 +71,41 @@ else:
     }
 
 now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-con.execute(
-    "INSERT INTO monitoring_pings (ping_at, status, details_json, alert_sent) VALUES (?, ?, ?, 0)",
-    (now_iso, status, json.dumps(detail))
-)
-con.commit()
-print(status)
+try:
+    con.execute(
+        "INSERT INTO monitoring_pings (ping_at, status, details_json, alert_sent) VALUES (?, ?, ?, 0)",
+        (now_iso, status, json.dumps(detail))
+    )
+    con.commit()
+except sqlite3.OperationalError as e:
+    emit(f"error:write:{e}")
+    sys.exit(0)
+emit(status)
 PYEOF
-)"
 
-# Telegram alert: first heartbeat ever AND on degraded/down transitions.
+result="$(cat "$RESULT_FILE" 2>/dev/null)"
+
+# Heartbeat write failure → alert + exit 4
+if [[ "$result" == error:* ]]; then
+    send_telegram_alert "❌ kpi heartbeat write failure: ${result}" || true
+    echo "[heartbeat] DB error: ${result}" >> "$LOG_FILE"
+    exit 4
+fi
+
+status="$result"
+
+# First-heartbeat-ok ping (only after successful write)
 if [[ ! -f "$FIRST_HB_FLAG" && "$status" == "ok" ]]; then
-    date -u +%Y-%m-%dT%H:%M:%SZ > "$FIRST_HB_FLAG"
-    send_telegram_alert "💓 kpi vault heartbeat ok — first hourly check at $(cat "$FIRST_HB_FLAG")"
+    first_hb_iso="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    if send_telegram_alert "💓 kpi vault heartbeat ok — first hourly check at ${first_hb_iso}"; then
+        echo "$first_hb_iso" > "$FIRST_HB_FLAG"
+    else
+        echo "[heartbeat] first-hb Telegram delivery failed; will retry" >> "$LOG_FILE"
+    fi
 elif [[ "$status" == "degraded" || "$status" == "down" ]]; then
-    # Look up most recent unalerted row and dispatch (single notification per state row).
-    "$PYTHON" - "$status" <<'PYEOF' 2>&1 | tee -a "$LOG_FILE" || true
-import os, sqlite3, sys, subprocess
+    # Dispatch alert for most recent unalerted matching row, then mark alert_sent=1.
+    KPI_DB="$DB" "$PYTHON" - "$status" <<'PYEOF' >>"$LOG_FILE" 2>&1 || true
+import os, sqlite3, subprocess, sys
 status = sys.argv[1]
 db = os.environ.get("KPI_DB", "/home/aiagent/assistant/state/kpi.sqlite")
 con = sqlite3.connect(db)
@@ -86,10 +115,16 @@ row = con.execute(
     (status,)
 ).fetchone()
 if row:
-    msg = f"⚠️ kpi vault status={status} at {row[0]}\\nDetails: {row[1]}"
-    subprocess.run(["bash", "-c", f'source /home/aiagent/assistant/git/history-production/kpi/scripts/lib/telegram-alert.sh && send_telegram_alert "$0"', msg], check=False)
-    con.execute("UPDATE monitoring_pings SET alert_sent = 1 WHERE ping_at = ?", (row[0],))
-    con.commit()
+    msg = f"⚠️ kpi vault status={status} at {row[0]}\nDetails: {row[1]}"
+    rc = subprocess.run([
+        "bash", "-c",
+        'source /home/aiagent/assistant/git/history-production/kpi/scripts/lib/telegram-alert.sh && '
+        'send_telegram_alert "$1"',
+        "_", msg
+    ], check=False).returncode
+    if rc == 0:
+        con.execute("UPDATE monitoring_pings SET alert_sent = 1 WHERE ping_at = ?", (row[0],))
+        con.commit()
 PYEOF
 fi
 

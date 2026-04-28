@@ -23,12 +23,18 @@ rc=${PIPESTATUS[0]}
 
 if (( rc == 0 )); then
     if [[ ! -f "$FIRST_RUN_FLAG" ]]; then
-        date -u +%Y-%m-%dT%H:%M:%SZ > "$FIRST_RUN_FLAG"
-        send_telegram_alert "🚀 kpi vault live — first nightly success at $(cat "$FIRST_RUN_FLAG")"
+        # Only flip the first-success flag AFTER Telegram confirms delivery (rc 0 from helper).
+        # If delivery fails or skips (rc 2/3), keep the flag absent so a future run retries.
+        first_success_iso="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        if send_telegram_alert "🚀 kpi vault live — first nightly success at ${first_success_iso}"; then
+            echo "$first_success_iso" > "$FIRST_RUN_FLAG"
+        else
+            echo "[run_nightly] first-success Telegram delivery failed; flag NOT set, will retry next run" >&2
+        fi
     fi
 else
     tail_excerpt="$(tail -n 12 "$LOG_FILE" 2>/dev/null | head -c 1500)"
-    send_telegram_alert "❌ kpi nightly failed (rc=$rc) — log: ${LOG_FILE}\n${tail_excerpt}"
+    send_telegram_alert "❌ kpi nightly failed (rc=$rc) — log: ${LOG_FILE}\n${tail_excerpt}" || true
 fi
 
 exit "$rc"
