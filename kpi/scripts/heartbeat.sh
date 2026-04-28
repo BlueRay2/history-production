@@ -130,28 +130,56 @@ con = sqlite3.connect(db)
 # Codex r3 caught this: keying off last-alerted status alone missed
 # same-severity re-regression after an `ok` interval.
 
+# Per-incident dedup (Codex r5 finding):
+# An "incident" is a contiguous run of the current non-ok status, starting
+# at the most recent row whose status differs from current. We alert only
+# if no row inside this incident has been successfully alerted yet. This
+# handles all four canonical sequences correctly:
+#   (a) first transition ok→degraded: incident_start_ping_at = prev ok row;
+#       no prior alert in incident → alert
+#   (b) sustained degraded: incident_start_ping_at = same as (a); a row
+#       inside the incident has alert_sent=1 → suppress
+#   (c) ok→degraded post-recovery: previous incident ended at the recovery
+#       (an ok row), new incident starts after it; no prior alert in NEW
+#       incident → alert
+#   (d) ok→degraded retry after failed delivery: incident exists but no
+#       row in it has alert_sent=1 yet → alert (retry)
+
+# Find the most recent ping_at where status != current — this is the
+# boundary BEFORE the current incident.
+boundary = con.execute(
+    "SELECT ping_at FROM monitoring_pings WHERE status != ? "
+    "ORDER BY ping_at DESC LIMIT 1",
+    (status,)
+).fetchone()
+boundary_at = boundary[0] if boundary else None
+
+# Has any row inside the current incident been successfully alerted?
+if boundary_at is not None:
+    already_alerted = con.execute(
+        "SELECT 1 FROM monitoring_pings "
+        "WHERE alert_sent = 1 AND status = ? AND ping_at > ? "
+        "LIMIT 1",
+        (status, boundary_at)
+    ).fetchone()
+else:
+    # No boundary row exists — this is the first-ever incident of any kind.
+    already_alerted = con.execute(
+        "SELECT 1 FROM monitoring_pings "
+        "WHERE alert_sent = 1 AND status = ? "
+        "LIMIT 1",
+        (status,)
+    ).fetchone()
+
+if already_alerted is not None:
+    # Already alerted within this incident — suppress.
+    sys.exit(0)
+
+# Compute the previous-row status purely for the human-readable transition label.
 prev = con.execute(
     "SELECT status FROM monitoring_pings ORDER BY ping_at DESC LIMIT 1 OFFSET 1"
 ).fetchone()
 prev_status = prev[0] if prev else None
-
-last_alerted = con.execute(
-    "SELECT status FROM monitoring_pings WHERE alert_sent = 1 "
-    "ORDER BY ping_at DESC LIMIT 1"
-).fetchone()
-last_alerted_status = last_alerted[0] if last_alerted else None
-
-# Alert when EITHER (a) the previous-row status differs from current OR
-# (b) the last successfully-alerted status differs from current.
-# This combination (Codex r4 finding):
-#   - ok→degraded normal transition: prev=ok≠current → alert
-#   - sustained degraded after successful alert: prev=degraded AND last_alerted=degraded → suppress
-#   - ok→degraded transition where Telegram delivery FAILED: next hour prev becomes
-#     degraded (the just-inserted unalerted row), but last_alerted stays ok/null, so
-#     condition (b) still triggers → retry alert until delivery succeeds
-#   - ok→degraded post-recovery: prev=ok ≠ current → alert (fresh transition)
-if prev_status == status and last_alerted_status == status:
-    sys.exit(0)
 
 # Genuine transition. Find the just-written unalerted row + dispatch.
 row = con.execute(
