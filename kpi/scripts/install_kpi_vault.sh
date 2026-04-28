@@ -88,14 +88,16 @@ fi
 # Rationale: on a fresh install before the first nightly run, /api/health
 # legitimately returns status:down (no orchestrator rows yet). We verify the
 # endpoint is reachable + returns valid JSON; status:ok is verified post-first-ingest.
-http_code="$(curl -sS --max-time 10 -o /tmp/kpi-health-probe.json -w '%{http_code}' "http://127.0.0.1:${PORT}/api/health" 2>/dev/null || echo 000)"
+probe_file="$(mktemp -t kpi-health-probe.XXXXXX.json)"
+trap 'rm -f "$probe_file"' EXIT
+http_code="$(curl -sS --max-time 10 -o "$probe_file" -w '%{http_code}' "http://127.0.0.1:${PORT}/api/health" 2>/dev/null || echo 000)"
 if [[ "$http_code" != "200" ]]; then
     die "/api/health returned HTTP ${http_code} (expected 200)"
 fi
-if ! grep -qE '"status"\s*:\s*"(ok|degraded|down)"' /tmp/kpi-health-probe.json; then
-    die "/api/health JSON malformed — got: $(cat /tmp/kpi-health-probe.json)"
+if ! grep -qE '"status"\s*:\s*"(ok|degraded|down)"' "$probe_file"; then
+    die "/api/health JSON malformed — got: $(cat "$probe_file")"
 fi
-hstatus="$(python3 -c 'import json,sys; print(json.load(open("/tmp/kpi-health-probe.json")).get("status","?"))')"
+hstatus="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("status","?"))' "$probe_file")"
 info "health check PASS: /api/health reachable, status=${hstatus}"
 [[ "$hstatus" == "ok" ]] || info "  (status≠ok is expected pre-first-ingest; will flip ok after first nightly run)"
 

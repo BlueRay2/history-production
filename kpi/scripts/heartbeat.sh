@@ -103,19 +103,46 @@ if [[ ! -f "$FIRST_HB_FLAG" && "$status" == "ok" ]]; then
         echo "[heartbeat] first-hb Telegram delivery failed; will retry" >> "$LOG_FILE"
     fi
 elif [[ "$status" == "degraded" || "$status" == "down" ]]; then
-    # Dispatch alert for most recent unalerted matching row, then mark alert_sent=1.
+    # Transition-only alerting (Codex r2 MED finding):
+    # We alert when status DIFFERS from the most-recently-alerted status. This
+    # means:
+    #   - first transition ok→degraded: alert (no prior alert)
+    #   - sustained degraded → no spam (last alert is also degraded)
+    #   - degraded→down escalation: alert (severity rose)
+    #   - down→degraded recovery: alert (state changed; signals partial recovery)
+    #   - degraded→ok recovery: handled by the OK branch above (we don't alert
+    #     in OK branch yet beyond first-heartbeat; cycle-2 may add recovery
+    #     alerts. For now, recovery is detected by the absence of further alerts
+    #     and the operator can read /api/health.)
     KPI_DB="$DB" "$PYTHON" - "$status" <<'PYEOF' >>"$LOG_FILE" 2>&1 || true
 import os, sqlite3, subprocess, sys
 status = sys.argv[1]
 db = os.environ.get("KPI_DB", "/home/aiagent/assistant/state/kpi.sqlite")
 con = sqlite3.connect(db)
+
+# Find most-recently alerted row (any status, alert_sent=1).
+last_alerted = con.execute(
+    "SELECT status FROM monitoring_pings WHERE alert_sent = 1 "
+    "ORDER BY ping_at DESC LIMIT 1"
+).fetchone()
+last_alerted_status = last_alerted[0] if last_alerted else None
+
+if last_alerted_status == status:
+    # Sustained same-status condition; don't re-alert (caller exits cleanly).
+    sys.exit(0)
+
+# Find the latest unalerted row matching current status to send + mark.
 row = con.execute(
     "SELECT ping_at, details_json FROM monitoring_pings "
     "WHERE alert_sent = 0 AND status = ? ORDER BY ping_at DESC LIMIT 1",
     (status,)
 ).fetchone()
 if row:
-    msg = f"⚠️ kpi vault status={status} at {row[0]}\nDetails: {row[1]}"
+    transition_label = (
+        f"transition {last_alerted_status}→{status}"
+        if last_alerted_status else f"first {status} alert"
+    )
+    msg = f"⚠️ kpi vault status={status} ({transition_label}) at {row[0]}\nDetails: {row[1]}"
     rc = subprocess.run([
         "bash", "-c",
         'source /home/aiagent/assistant/git/history-production/kpi/scripts/lib/telegram-alert.sh && '
