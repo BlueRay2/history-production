@@ -1,0 +1,11 @@
+[Unit]
+Description=KPI metrics-vault — hourly heartbeat
+Documentation=file:///home/aiagent/assistant/git/history-production/kpi/docs/tz/kpi/task-08-cron-systemd-tests.md
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+Unit=kpi-heartbeat.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,16 @@
+[Unit]
+Description=KPI metrics-vault — nightly ingest oneshot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/aiagent/assistant/git/history-production/kpi
+Environment=KPI_DB=/home/aiagent/assistant/state/kpi.sqlite
+Environment=KPI_LOG_DIR=/home/aiagent/assistant/state/kpi-logs
+ExecStart=/home/aiagent/assistant/git/history-production/kpi/scripts/run_nightly.sh
+StandardOutput=append:/home/aiagent/assistant/state/kpi-logs/nightly-systemd.log
+StandardError=append:/home/aiagent/assistant/state/kpi-logs/nightly-systemd.log
+
+[Install]
+WantedBy=default.target

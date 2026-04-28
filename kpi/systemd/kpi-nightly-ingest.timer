@@ -1,0 +1,11 @@
+[Unit]
+Description=KPI metrics-vault — nightly ingest at 03:30 Europe/Minsk
+Documentation=file:///home/aiagent/assistant/git/history-production/kpi/docs/tz/kpi/task-08-cron-systemd-tests.md
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 Europe/Minsk
+Persistent=true
+Unit=kpi-nightly-ingest.service
+
+[Install]
+WantedBy=timers.target
