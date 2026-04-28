@@ -135,8 +135,22 @@ prev = con.execute(
 ).fetchone()
 prev_status = prev[0] if prev else None
 
-if prev_status == status:
-    # Sustained condition (previous heartbeat saw the same status).
+last_alerted = con.execute(
+    "SELECT status FROM monitoring_pings WHERE alert_sent = 1 "
+    "ORDER BY ping_at DESC LIMIT 1"
+).fetchone()
+last_alerted_status = last_alerted[0] if last_alerted else None
+
+# Alert when EITHER (a) the previous-row status differs from current OR
+# (b) the last successfully-alerted status differs from current.
+# This combination (Codex r4 finding):
+#   - ok→degraded normal transition: prev=ok≠current → alert
+#   - sustained degraded after successful alert: prev=degraded AND last_alerted=degraded → suppress
+#   - ok→degraded transition where Telegram delivery FAILED: next hour prev becomes
+#     degraded (the just-inserted unalerted row), but last_alerted stays ok/null, so
+#     condition (b) still triggers → retry alert until delivery succeeds
+#   - ok→degraded post-recovery: prev=ok ≠ current → alert (fresh transition)
+if prev_status == status and last_alerted_status == status:
     sys.exit(0)
 
 # Genuine transition. Find the just-written unalerted row + dispatch.

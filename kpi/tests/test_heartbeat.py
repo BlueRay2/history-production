@@ -153,6 +153,77 @@ def test_one_failing_source_is_degraded(db):
     assert detail["failing_count"] == 1
 
 
+def test_alert_retry_after_failed_delivery(db):
+    """If the first transition's Telegram delivery fails, alert_sent stays 0
+    and the next heartbeat must still detect this as needing alert (retry),
+    not suppress because prev_row==current. Codex r4 finding."""
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    earlier_iso = (datetime.now(timezone.utc) - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    # Insert two rows: earlier ok, current degraded (delivery failed → alert_sent=0)
+    db.execute("INSERT INTO monitoring_pings VALUES (?, 'ok', '{}', 1)", (earlier_iso,))
+    db.execute("INSERT INTO monitoring_pings VALUES (?, 'degraded', '{}', 0)", (now_iso,))
+    db.commit()
+    # Replicate the alert-decision logic from heartbeat.sh embedded Python:
+    prev = db.execute(
+        "SELECT status FROM monitoring_pings ORDER BY ping_at DESC LIMIT 1 OFFSET 1"
+    ).fetchone()
+    last_alerted = db.execute(
+        "SELECT status FROM monitoring_pings WHERE alert_sent = 1 ORDER BY ping_at DESC LIMIT 1"
+    ).fetchone()
+    current = "degraded"
+    should_suppress = (prev[0] == current and last_alerted is not None and last_alerted[0] == current)
+    assert not should_suppress, "must NOT suppress when last_alerted differs from current"
+
+
+def test_post_recovery_re_regression_alerts(db):
+    """ok → degraded (alerted) → ok (recovery) → degraded again must alert."""
+    base = datetime.now(timezone.utc) - timedelta(hours=4)
+    rows = [
+        ((base + timedelta(hours=0)).strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "degraded", 1),  # alerted
+        ((base + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "ok", 0),
+        ((base + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "ok", 0),
+        ((base + timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "degraded", 0),  # NEW transition
+    ]
+    db.executemany(
+        "INSERT INTO monitoring_pings (ping_at, status, details_json, alert_sent) VALUES (?, ?, '{}', ?)",
+        rows,
+    )
+    db.commit()
+    prev = db.execute(
+        "SELECT status FROM monitoring_pings ORDER BY ping_at DESC LIMIT 1 OFFSET 1"
+    ).fetchone()
+    last_alerted = db.execute(
+        "SELECT status FROM monitoring_pings WHERE alert_sent = 1 ORDER BY ping_at DESC LIMIT 1"
+    ).fetchone()
+    current = "degraded"
+    should_suppress = (prev[0] == current and last_alerted is not None and last_alerted[0] == current)
+    assert not should_suppress, "ok→degraded post-recovery must NOT suppress alert"
+
+
+def test_sustained_degraded_after_successful_alert_suppresses(db):
+    """After a successful degraded alert, hourly degraded pings must suppress."""
+    base = datetime.now(timezone.utc) - timedelta(hours=3)
+    rows = [
+        ((base + timedelta(hours=0)).strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "ok", 1),
+        ((base + timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "degraded", 1),  # alerted
+        ((base + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%S.%fZ"), "degraded", 0),  # sustained
+    ]
+    db.executemany(
+        "INSERT INTO monitoring_pings (ping_at, status, details_json, alert_sent) VALUES (?, ?, '{}', ?)",
+        rows,
+    )
+    db.commit()
+    prev = db.execute(
+        "SELECT status FROM monitoring_pings ORDER BY ping_at DESC LIMIT 1 OFFSET 1"
+    ).fetchone()
+    last_alerted = db.execute(
+        "SELECT status FROM monitoring_pings WHERE alert_sent = 1 ORDER BY ping_at DESC LIMIT 1"
+    ).fetchone()
+    current = "degraded"
+    should_suppress = (prev[0] == current and last_alerted is not None and last_alerted[0] == current)
+    assert should_suppress, "sustained degraded after successful alert must suppress"
+
+
 def test_monitoring_pings_insert_and_dedup(db):
     """Insert a degraded ping, dispatch alert, mark alert_sent=1; subsequent
     select for unalerted rows returns nothing."""
