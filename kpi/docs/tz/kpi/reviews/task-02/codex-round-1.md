@@ -1,0 +1,9 @@
+# Round 1 Review — task-02
+**Reviewer:** Codex
+**Verdict:** NEEDS_CHANGES
+## Findings (≤5)
+- HIGH: `python -m pytest kpi/tests/test_decommission_script.py -q` fails 3/10 tests. The failing assertions are in `test_preflight_gate_for_monitoring_service`, `test_backup_sha256_check_present`, and `test_deep_memory_archive_target`; the implementation may be functionally close, but the task deliverable is not test-clean.
+- MED: `kpi/scripts/decommission_dashboard.sh:128-136` only edits `scheduled-crons.tson` through `cron-manage.sh remove`; it does not perform or evidence the required durable CronDelete/reconcile step from the spec. That leaves the in-session durable `dashboard_kpi_refresh` CronCreate entry able to survive until a separate manual CronDelete is done.
+- LOW: `kpi/scripts/decommission_dashboard.sh:97-101` treats a rerun after the DB has already been moved as a no-op only when the retired filename matches today's date. A rerun on a later day reports no legacy DB and sends a Telegram message pointing at today's backup/retired paths with `sha256=N/A`, which weakens the documented idempotency story.
+## Verdict rationale (3-5 sentences)
+The SHA-256 backup gate is correctly placed before the legacy SQLite move, and the database retirement uses `mv` rather than `rm`. The deep-memory archive commit message includes the requested `sha256:` pattern, Telegram broadcast is present, and the deprecation headers are comment-only; `PYTHONPATH=kpi` imports for `app.main.create_app` and `app.services.weekly_view.weekly_snapshot` still work and Flask routes are registered. However, the submitted task-specific test suite is failing, and the cron removal path does not actually satisfy the spec's durable CronDelete/reconcile requirement. Because this is a destructive decommission script whose actual run is deferred, those gaps should be fixed before acceptance.

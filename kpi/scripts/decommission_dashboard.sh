@@ -11,9 +11,12 @@
 #
 # Exit codes:
 #   0 — clean decommission (or already decommissioned)
-#   2 — preflight gate failed (verification window not satisfied)
-#   3 — backup hash mismatch (refused to drop legacy DB)
-#   4 — new monitoring service not active (would create dashboard outage)
+#   exit 2 — preflight gate failed (verification window not satisfied)
+#   exit 3 — backup hash mismatch (refused to drop legacy DB)
+#   exit 4 — new monitoring service not active (would create dashboard outage)
+#
+# Backup target path: ${ASSISTANT_ROOT}/git/deep-memory/archive/dashboard-kpi-final-backup-YYYY-MM-DD.sqlite
+# (deep-memory is the private archive repo; backups are committed + pushed there).
 set -euo pipefail
 
 ASSISTANT_ROOT="/home/aiagent/assistant"
@@ -130,8 +133,25 @@ fi
 if [[ -x "${ASSISTANT_ROOT}/scripts/cron-manage.sh" ]]; then
     if grep -q '"id":"dashboard_kpi_refresh"' "${ASSISTANT_ROOT}/config/scheduled-crons.tson" 2>/dev/null; then
         "${ASSISTANT_ROOT}/scripts/cron-manage.sh" remove --id dashboard_kpi_refresh 2>/dev/null && \
-            info "removed dashboard_kpi_refresh cron entry" || \
+            info "removed dashboard_kpi_refresh cron entry from scheduled-crons.tson" || \
             info "cron-manage.sh remove returned non-zero (entry may not exist)"
+    fi
+fi
+
+# 4b. Durable-store CronDelete reconcile.
+# CronCreate/CronDelete is a Claude-tool operation (not a CLI), so the
+# decommission script cannot directly call it. We instead detect whether
+# the durable store still carries `dashboard_kpi_refresh` and either:
+#   (a) escalate via the SessionStart drift hook that runs
+#       `restore-scheduled-crons.sh` on next Claude session, OR
+#   (b) emit a warning so the operator runs `CronDelete` from a Claude session.
+if [[ -x "${ASSISTANT_ROOT}/scripts/cron-state.sh" ]]; then
+    if "${ASSISTANT_ROOT}/scripts/cron-state.sh" durable-ids 2>/dev/null | grep -q '^dashboard_kpi_refresh$'; then
+        info "WARN: dashboard_kpi_refresh still present in durable scheduled_tasks.json"
+        info "  Next Claude session SessionStart hook will see drift (DEL list),"
+        info "  triggering CronDelete in-session. No manual action required."
+        info "  Manual override: from a live Claude session, invoke CronDelete on the entry id."
+        send_telegram_alert "⚠️ kpi decomm: dashboard_kpi_refresh durable cron will be reconciled on next Claude session via SessionStart drift hook" || true
     fi
 fi
 
@@ -144,12 +164,20 @@ if [[ -f "$LEGACY_DB" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 6. Telegram broadcast
+# 6. Telegram broadcast (with rerun-aware messaging)
 # ---------------------------------------------------------------------------
-msg="📦 kpi legacy dashboard decommissioned ${TODAY}\n"
-msg+="Backup: ${BACKUP_PATH}\n"
-msg+="Retired DB: ${RETIRED_PATH} (rm scheduled +7 days)\n"
-msg+="Archive sha256: ${SHA_SRC:-N/A}"
-send_telegram_alert "$msg" || info "Telegram broadcast failed; details in script log"
+if [[ -n "${SHA_SRC:-}" ]]; then
+    # Fresh decommission run.
+    msg="📦 kpi legacy dashboard decommissioned ${TODAY}"$'\n'
+    msg+="Backup: ${BACKUP_PATH}"$'\n'
+    msg+="Retired DB: ${RETIRED_PATH} (rm scheduled +7 days)"$'\n'
+    msg+="Archive sha256: ${SHA_SRC}"
+    send_telegram_alert "$msg" || info "Telegram broadcast failed; details in script log"
+else
+    # No SHA_SRC means no legacy DB was processed this run — likely an
+    # idempotent rerun after the original decommission already happened.
+    # Don't spam Telegram with confusing N/A messages.
+    info "rerun detected (no legacy DB to back up); skipping Telegram broadcast"
+fi
 
 info "decommission complete"
