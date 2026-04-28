@@ -120,18 +120,26 @@ status = sys.argv[1]
 db = os.environ.get("KPI_DB", "/home/aiagent/assistant/state/kpi.sqlite")
 con = sqlite3.connect(db)
 
-# Find most-recently alerted row (any status, alert_sent=1).
-last_alerted = con.execute(
-    "SELECT status FROM monitoring_pings WHERE alert_sent = 1 "
-    "ORDER BY ping_at DESC LIMIT 1"
-).fetchone()
-last_alerted_status = last_alerted[0] if last_alerted else None
+# Compare against the IMMEDIATELY-PREVIOUS heartbeat row's status (the row
+# right before the one we just inserted). This correctly detects:
+#   ok → degraded     : transition, alert
+#   degraded → degraded: sustained, suppress
+#   degraded → ok     : recovery, handled in OK branch (no alert today)
+#   ok → degraded again after a recovery: the previous row is `ok`,
+#                       current row is `degraded` → fresh transition, alert
+# Codex r3 caught this: keying off last-alerted status alone missed
+# same-severity re-regression after an `ok` interval.
 
-if last_alerted_status == status:
-    # Sustained same-status condition; don't re-alert (caller exits cleanly).
+prev = con.execute(
+    "SELECT status FROM monitoring_pings ORDER BY ping_at DESC LIMIT 1 OFFSET 1"
+).fetchone()
+prev_status = prev[0] if prev else None
+
+if prev_status == status:
+    # Sustained condition (previous heartbeat saw the same status).
     sys.exit(0)
 
-# Find the latest unalerted row matching current status to send + mark.
+# Genuine transition. Find the just-written unalerted row + dispatch.
 row = con.execute(
     "SELECT ping_at, details_json FROM monitoring_pings "
     "WHERE alert_sent = 0 AND status = ? ORDER BY ping_at DESC LIMIT 1",
@@ -139,8 +147,8 @@ row = con.execute(
 ).fetchone()
 if row:
     transition_label = (
-        f"transition {last_alerted_status}→{status}"
-        if last_alerted_status else f"first {status} alert"
+        f"transition {prev_status}→{status}"
+        if prev_status else f"first {status} alert"
     )
     msg = f"⚠️ kpi vault status={status} ({transition_label}) at {row[0]}\nDetails: {row[1]}"
     rc = subprocess.run([
