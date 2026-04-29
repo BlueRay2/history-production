@@ -4,8 +4,8 @@
 **Episode codename:** `paris-eiffel`
 **Duration:** ~6:35 (≈1010 words narration)
 **Voice:** TBD (recommendation: same Patrick International setup as Istanbul, en-US config)
-**Visual style direction:** _(deferred per Dima — visual prompts NOT generated in this iteration)_
-**Status:** Research → Script complete (EN translation pass + shortened CTA). Visual layer + cost estimate deferred.
+**Visual style direction:** Patrick International cinematic grade, 9:16 vertical, 60fps. Cold Hook visual prompts inline in Scene 01 (Sora 2 Pro / Kling / Flow Veo 3.1).
+**Status:** Research → Script complete → Cold Hook v2 (Numbers shock — Hook B per Dima 2026-04-29). Scene 06/07 closure of original 1909/1940 thread to be reframed in next iteration.
 
 ---
 
@@ -13,7 +13,7 @@
 
 | Time | Scene | Purpose |
 |---|---|---|
-| 0:00–0:15 | 01 — Cold Hook | Drama angle: 1909 demolition + 1940 Hitler lift |
+| 0:00–0:15 | 01 — Cold Hook | Numbers shock: 18,038 iron pieces, 137 years, meant for 20 (Hook B) |
 | 0:15–0:25 | 02 — Short CTA | Like + Subscribe + Hype, no explanation |
 | 0:25–1:25 | 03 — Why Paris needed a tower in 1889 | Context: 100-year revolution anniversary, Expo |
 | 1:25–3:05 | 04 — Construction: numbers, speed, safety | Engineering wonder |
@@ -24,23 +24,42 @@
 
 ---
 
-## Scene 01 — Cold Hook (0:00–0:15)
+## Scene 01 — Cold Hook (0:00–0:15) — v2 (Numbers shock)
 
-**Duration:** 15s | **Words:** ~40 | **Retention:** Double Hook + In Medias Res + Curiosity Gap
+**Duration:** 15s | **Words:** ~38 | **Retention:** Numbers shock + Subverted expectation + Curiosity Gap
 
 ### Narration
 [cinematic, slightly hushed]
-The Eiffel Tower was supposed to be torn down in 1909. [pause] One hundred and thirty-seven years have passed, and it's still standing. [pause] And in 1940, when Hitler arrived in occupied Paris, the French cut the elevator cables, so the Führer would have to climb to the top on foot. [pause] He didn't.
+Eighteen thousand thirty-eight iron pieces. Two and a half million rivets. Three hundred workers. Zero deaths during construction. [pause] The Eiffel Tower is one hundred thirty-seven years old — and still the most visited paid monument in the world. [pause] But it was meant to stand for only twenty.
 
 ### Audio Layer
-**Music:** A low strung note enters on "supposed to be torn down" and swells to a full tone on "he didn't." No percussion.
-**SFX:** Distant clang of metal on "torn down," soft wind at the tower's summit running through the whole scene.
-**Transition:** The low note carries into Scene 02 (J-cut).
+**Music:** A low strung note enters on "iron pieces" and swells through "rivets" and "workers". Peaks on "still the most visited paid monument in the world." Drops on "but it was meant to stand for only twenty." No percussion.
+**SFX:** Faint metallic hammer on "rivets" (subliminal). Crowd ambience low under the modern shot. Soft paper rustle on the final blueprint shot.
+**Transition:** The low note carries into Scene 02 (J-cut on "twenty").
 
 ### Retention Layer
-- **Double Hook:** the demolition fact (shock) + Hitler with the elevators (drama). Two distinct hooks in fifteen seconds.
-- **In Medias Res:** we drop the viewer into 1940 with no preamble like "hi everyone, today we'll talk about the tower."
-- **Curiosity Gap:** four open loops — why was it going to be torn down? why is it still standing? why cut the cables? why didn't he go up?
+- **Numbers Shock:** stacking concrete numbers (18,038 / 2.5M / 300 / 0) in 5 seconds primes the brain to keep watching for more facts.
+- **Subverted Expectation:** "the most visited paid monument" is positive — then "but it was meant to stand for only twenty" flips the frame entirely.
+- **Curiosity Gap:** three open loops — how did 300 workers achieve zero deaths? what kept it standing past 20? why was it temporary?
+
+### Visual prompts (Sora 2 Pro / Kling / Flow Veo 3.1)
+4 shots, ~3.5s each, 9:16 vertical (1080×1920), 60fps. Patrick International cinematic grade.
+
+**Shot 1 (0:00–0:04) — Iron pieces.** Sora 2 Pro recommended.
+> Cinematic close-up, 9:16 vertical, 4K, slow tracking shot through a forest of wrought iron lattice beams of the Eiffel Tower at dawn. Each iron piece sharply lit against soft orange Paris sky behind. Numbers "18,038" appear in elegant white sans-serif overlay, fading in/out over the iron texture. Dust particles in air. No people. Dramatic low-angle. Patrick International cinematic grade, slightly hushed mood. 60fps. No sound effects.
+
+**Shot 2 (0:04–0:08) — Rivets + workers.** Sora 2 Pro recommended (human subjects, period detail).
+> Cinematic medium shot, 9:16 vertical, 4K, sepia-toned 1888 archival aesthetic. Three Parisian construction workers in caps and waistcoats hammering glowing-hot rivets into iron lattice high above the Champ de Mars. Sparks fly. Sweat on faces. Camera slowly orbits around them at the level of the second platform. Numbers "2,500,000 rivets" then "300 workers" overlay one after another, white sans-serif, slight motion. Patrick cinematic grade. 60fps.
+
+**Shot 3 (0:08–0:12) — Modern tower at night with crowd.** Flow Veo 3.1 recommended (atmospheric establishing).
+> Cinematic wide shot, 9:16 vertical, 4K, present-day Eiffel Tower at golden hour transitioning to night, fully lit with iconic golden lights and sparkling beacon. Massive crowd at the base, tourists looking up, phones lifted. Camera tilts up from crowd to the very top of the tower. Subtle text overlay "137 years" in elegant white sans-serif, fades out before the cut. Slight Paris haze. Patrick cinematic grade. 60fps.
+
+**Shot 4 (0:12–0:15) — Antique blueprint.** Kling recommended (stylized macro detail).
+> Cinematic extreme close-up, 9:16 vertical, 4K, antique 1885 architectural blueprint of the Eiffel Tower with handwritten notes in French. Camera slowly pushes in on a single line of text where "TEMPORAIRE — 20 ANS" (TEMPORARY — 20 YEARS) is stamped in faded red ink. Paper texture, slight dust. Soft warm light from the side, like an oil lamp. Patrick cinematic grade. 60fps. End on the red stamp dominating the frame.
+
+### Notes
+- Hook v1 (1909 demolition + 1940 Hitler) is preserved in git history at `2a9d965` for reference.
+- Scene 06 (How science saved the tower) and Scene 07 closure of the 1909/1940 thread should be reframed in the next iteration to align with the new numbers-shock hook (e.g. Scene 06 lead with the 20-year temporary stamp + radio antenna saving it, Scene 07 closes "still here" climax).
 
 ---
 

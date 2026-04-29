@@ -4,8 +4,8 @@
 **Episode codename:** `paris-eiffel`
 **Duration:** ~7 min (1100 words narration)
 **Voice:** TBD (recommendation: same Patrick International setup as Istanbul, ru-language config)
-**Visual style direction:** _(deferred per Dima — visual prompts NOT generated in this iteration)_
-**Status:** Research → Script complete. Visual layer + cost estimate deferred.
+**Visual style direction:** Patrick International cinematic grade, 9:16 вертикаль, 60fps. Visual prompts для Cold Hook v2 — в Scene 01 и в SCRIPT_EN.md.
+**Status:** Research → Script complete → Cold Hook v2 (Numbers shock — Hook B по запросу Димы 2026-04-29). Замыкание линии 1909/1940 в Scene 06/07 будет переоформлено в следующей итерации.
 
 ---
 
@@ -13,7 +13,7 @@
 
 | Time | Scene | Purpose |
 |---|---|---|
-| 0:00–0:15 | 01 — Cold Hook | Drama angle: 1909 demolition + 1940 Hitler lift |
+| 0:00–0:15 | 01 — Cold Hook | Numbers shock: 18 038 деталей, 137 лет, изначально на 20 (Hook B) |
 | 0:15–0:50 | 02 — CTA + Hype explanation | Like + Subscribe + Hype button onboarding |
 | 0:50–1:50 | 03 — Why Paris needed a tower in 1889 | Context: 100-year revolution anniversary, Expo |
 | 1:50–3:30 | 04 — Construction: numbers, speed, safety | Engineering wonder |
@@ -24,23 +24,30 @@
 
 ---
 
-## Scene 01 — Cold Hook (0:00–0:15)
+## Scene 01 — Cold Hook (0:00–0:15) — v2 (Numbers shock)
 
-**Duration:** 15s | **Words:** ~40 | **Retention:** Double Hook + In Medias Res + Curiosity Gap
+**Duration:** 15s | **Words:** ~38 | **Retention:** Numbers shock + Subverted expectation + Curiosity Gap
 
 ### Narration
 [cinematic, slightly hushed]
-Эйфелеву башню должны были снести в 1909 году. [pause] Прошло 137 лет — она всё ещё стоит. [pause] А в 1940-м, когда Гитлер приехал в оккупированный Париж, французы перерезали в ней кабели лифта — чтобы фюрер карабкался наверх пешком. [pause] Он не пошёл.
+Восемнадцать тысяч тридцать восемь железных деталей. Два с половиной миллиона заклёпок. Триста рабочих. Ноль смертей при строительстве. [pause] Эйфелевой башне сто тридцать семь лет — и она всё ещё самое посещаемое платное сооружение в мире. [pause] А должна была простоять только двадцать.
 
 ### Audio Layer
-**Music:** Низкая струнная нота входит на «должны были снести», нарастает до полного тона на «он не пошёл». Без перкуссии.
-**SFX:** Дальний лязг металла на «снести», тихий ветер на верхушке башни всю сцену.
-**Transition:** Низкая нота продолжается в Сцену 02 (J-cut).
+**Music:** Низкая струнная нота входит на «железных деталей», нарастает на «заклёпок» и «рабочих». Пик на «самое посещаемое платное сооружение в мире». Падает на «а должна была простоять только двадцать». Без перкуссии.
+**SFX:** Тихий металлический удар на «заклёпок» (subliminal). Гул толпы низко под современным шотом. Тихий шорох бумаги на финальном чертеже.
+**Transition:** Низкая нота продолжается в Сцену 02 (J-cut на «двадцать»).
 
 ### Retention Layer
-- **Double Hook:** факт сноса (шок) + Гитлер с лифтами (драма). Два разных типа интриги в 15 секундах.
-- **In Medias Res:** входим в момент 1940 года, без предисловий типа «привет, сегодня поговорим о башне».
-- **Curiosity Gap:** четыре открытые петли — почему хотели снести? почему стоит? зачем перерезали кабели? почему не пошёл?
+- **Numbers Shock:** стэкование конкретных цифр (18 038 / 2,5 млн / 300 / 0) за 5 секунд готовит мозг ждать ещё фактов.
+- **Subverted Expectation:** «самое посещаемое платное сооружение» — позитив, потом «должна была простоять только двадцать» переворачивает фрейм.
+- **Curiosity Gap:** три открытые петли — как 300 рабочих обошлись без жертв? что её удержало после 20 лет? почему она была временной?
+
+### Visual prompts
+Полные визуальные prompts (Sora 2 Pro / Kling / Flow Veo 3.1) — см. английскую версию `SCRIPT_EN.md`, секция «Visual prompts». 4 шота × ~3.5с, 9:16, 60fps, Patrick International cinematic grade.
+
+### Notes
+- Hook v1 (1909 снос + 1940 Гитлер) сохранён в git-истории на коммите `2a9d965`.
+- Сцены 06 (как радио спасло башню) и 07 (закрытие линии 1909/1940) надо переоформить в следующей итерации — они ссылаются на старый хук.
 
 ---
 
