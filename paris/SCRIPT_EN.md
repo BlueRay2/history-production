@@ -1,0 +1,248 @@
+# SCRIPT — Paris: How They Built the Eiffel Tower (and Almost Tore It Down)
+
+**Channel:** Cities Evolution
+**Episode codename:** `paris-eiffel`
+**Duration:** ~6:35 (≈1010 words narration)
+**Voice:** TBD (recommendation: same Patrick International setup as Istanbul, en-US config)
+**Visual style direction:** _(deferred per Dima — visual prompts NOT generated in this iteration)_
+**Status:** Research → Script complete (EN translation pass + shortened CTA). Visual layer + cost estimate deferred.
+
+---
+
+## Cold open structure
+
+| Time | Scene | Purpose |
+|---|---|---|
+| 0:00–0:15 | 01 — Cold Hook | Drama angle: 1909 demolition + 1940 Hitler lift |
+| 0:15–0:25 | 02 — Short CTA | Like + Subscribe + Hype, no explanation |
+| 0:25–1:25 | 03 — Why Paris needed a tower in 1889 | Context: 100-year revolution anniversary, Expo |
+| 1:25–3:05 | 04 — Construction: numbers, speed, safety | Engineering wonder |
+| 3:05–4:15 | 05 — The hatred | "Manifesto of the 300", Maupassant, "shame of Paris" |
+| 4:15–5:25 | 06 — How science saved the tower | Radio antenna, military function, 1909 decision |
+| 5:25–6:25 | 07 — The tower today + closing | 7M visitors, Olympic restoration, cultural symbol |
+| 6:25–6:35 | 08 — Outro CTA | Final reminder + episode hook for next |
+
+---
+
+## Scene 01 — Cold Hook (0:00–0:15)
+
+**Duration:** 15s | **Words:** ~40 | **Retention:** Double Hook + In Medias Res + Curiosity Gap
+
+### Narration
+[cinematic, slightly hushed]
+The Eiffel Tower was supposed to be torn down in 1909. [pause] One hundred and thirty-seven years have passed, and it's still standing. [pause] And in 1940, when Hitler arrived in occupied Paris, the French cut the elevator cables, so the Führer would have to climb to the top on foot. [pause] He didn't.
+
+### Audio Layer
+**Music:** A low strung note enters on "supposed to be torn down" and swells to a full tone on "he didn't." No percussion.
+**SFX:** Distant clang of metal on "torn down," soft wind at the tower's summit running through the whole scene.
+**Transition:** The low note carries into Scene 02 (J-cut).
+
+### Retention Layer
+- **Double Hook:** the demolition fact (shock) + Hitler with the elevators (drama). Two distinct hooks in fifteen seconds.
+- **In Medias Res:** we drop the viewer into 1940 with no preamble like "hi everyone, today we'll talk about the tower."
+- **Curiosity Gap:** four open loops — why was it going to be torn down? why is it still standing? why cut the cables? why didn't he go up?
+
+---
+
+## Scene 02 — Short CTA (0:15–0:25)
+
+**Duration:** 10s | **Words:** ~22 | **Retention:** Minimal CTA, no value-drop
+
+### Narration
+[friendly, fast]
+Quick favor: hit Like, Subscribe, and tap **Hype** — it pushes our channel up. Takes a second. Thanks. Let's go.
+
+### Audio Layer
+**Music:** A light piano figure laid over the strings continuing from Scene 01. Warm, no pressure.
+**SFX:** A faint UI-style click on each of the words "Like," "Subscribe," "Hype." Barely audible, almost subliminal.
+**Transition:** A hard cut into Scene 03 on "let's go," with the music dropping on the downbeat.
+
+### Retention Layer
+- An early CTA (under 0:30) gives the algorithm an "active viewers" signal. Keeping it to 10 seconds and stripping the explanation minimizes drop-off risk.
+- "Let's go" works as a pattern interrupt and a permission-to-continue, easing any promo fatigue.
+- Hype mechanics (3-per-week, 7,500 points, 7-day window) are intentionally moved out of the cold open and reserved for the outro CTA.
+
+---
+
+## Scene 03 — Why Paris Needed a Tower in 1889 (0:25–1:25)
+
+**Duration:** 60s | **Words:** ~155 | **Retention:** Narrative Transportation + Open Loop L1
+
+### Narration
+[narrative, measured]
+1889. France is turning one hundred — a century earlier the Revolution had cut off the head of Louis the Sixteenth, and the country is preparing to mark the anniversary in style. Paris is hosting the **World's Fair** — think of it as a 19th-century version of Expo, in an era with no internet and no instant news. Nations show up to flex their technology, their culture, and their engineering. [pause]
+
+The French government wants a symbol. Something the entire world will see. Something nobody has ever built. So they open a contest for the centerpiece — a giant structure right in the heart of Paris, next to the **Champ de Mars**. [pause]
+
+One hundred and seven proposals come in. Most are stone towers, monumental arches, neo-Gothic cathedrals. The winner is the one that looked insane: a three-hundred-meter iron lattice that resembled the unfinished skeleton of a skyscraper. [pause]
+
+The architect: **Gustave Eiffel**. Already a respected engineer — bridges, viaducts, and (pay attention to this one) the inner iron framework of the Statue of Liberty, which had just been delivered to New York in 1886. So the man knew metal and scale. [pause] But the idea of a giant iron tower as the symbol of France — to Parisians of the 1880s, that landed about as well as proposing today to swap out Big Ben for a laser pyramid in the middle of London.
+
+### Audio Layer
+**Music:** Chamber orchestral — a string quartet in belle époque style. The theme enters on "1889" and develops across the scene.
+**SFX:** Quill on paper on "one hundred and seven proposals come in" (a soft L-cut running under the next line).
+**Transition:** A hint of laughter inside the music on "laser pyramid," then jump cut into Scene 04.
+
+### Retention Layer
+- **Narrative transportation:** a specific year, a specific place, a specific contest gives the brain something concrete to "step into."
+- **Open loop L1:** "the unfinished skeleton of a skyscraper" plants an image we'll resolve in Scene 04.
+- **Hyper-specificity:** 107 proposals, the Champ de Mars, the Statue of Liberty — concrete details, not vague phrases.
+- **The "laser pyramid" analogy:** a pattern interrupt that makes 19th-century context legible to a modern viewer.
+
+---
+
+## Scene 04 — Construction: Numbers, Speed, Safety (1:25–3:05)
+
+**Duration:** 100s | **Words:** ~270 | **Retention:** Hyper-specificity + Pattern Interrupt + Open Loop L2
+
+### Narration
+[steady, building tension]
+Construction begins on **January 28, 1887**. While it's still going up, the world is taking bets on whether the tower will collapse before the Fair even opens. [pause]
+
+The numbers still impress engineers today. **Eighteen thousand and thirty-eight** iron parts — every one of them forged and machined separately at Eiffel's factory just outside Paris. **Two and a half million** rivets — the connecting "nails" that stitch the whole structure together. The fit tolerance: tenths of a millimeter. If even a single piece had been a hair too long or too short, the section would have skewed and the tower simply wouldn't have come together. [pause]
+
+Three hundred workers. They labor through every kind of weather, in the wind, at altitude. And the most unbelievable fact about the entire build: in over two years, **only one person dies** — and even that wasn't during the main assembly, but later, during elevator installation, when a worker fell because he ignored the safety procedure. [pause] For the late 19th century — no helmets, no harnesses, no modern lifts — that's a number engineers refused to believe for a long time. [pause]
+
+The cost: **seven million eight hundred thousand francs**. And here's a detail tourist audio guides usually skip: the government covered only a third of it. Eiffel put up the rest **out of his own pocket**. [pause] In exchange, he got a twenty-year right to collect ticket revenue from visitors. So, take this in: the eventual symbol of Paris was originally a **private investment**. Eiffel built the tower as a business venture and bet his own capital on it. [pause]
+
+**March 31, 1889**: opening day. Three hundred meters. The tallest structure in the world. That record will hold for exactly forty-one years — until the Chrysler Building goes up in New York in 1930.
+
+### Audio Layer
+**Music:** A rhythmic theme builds — piano and timpani come in, mimicking hammer strikes. Tempo around 110 BPM.
+**SFX:** Hammer-on-iron on each headline number ("18,038," "2,500,000," "300"). A pneumatic press hit on "only one person dies" — short and heavy.
+**Transition:** On "forty-one years until the Chrysler Building," the music drops out. One second of silence. Smash cut into Scene 05.
+
+### Retention Layer
+- **Hyper-specificity:** numbers given to the digit — "eighteen thousand and thirty-eight," not "around eighteen thousand." Signals "the writer actually knows."
+- **Pattern Interrupt:** the "business venture" framing flips the register from engineering to finance.
+- **Open Loop L2:** "twenty-year right to collect revenue" plants 1909 as a deadline — to be resolved in Scene 06.
+- **Emotional peak:** "only one death across the whole build" lands as a wave of contrast against "no helmets, no harnesses."
+
+---
+
+## Scene 05 — The Hatred (3:05–4:15)
+
+**Duration:** 70s | **Words:** ~200 | **Retention:** Conflict + Emotional Contagion + Pattern Interrupt
+
+### Narration
+[ironic, slightly amused]
+And here we get to the most awkward part of the story. The Parisian elite — writers, painters, composers — went **ballistic**. [pause]
+
+While the tower was still going up, in February 1887, the newspaper Le Temps published an open letter. It was signed by **three hundred people** — what we now call the "**Manifesto of the 300**." [pause] Among the signatories:
+— **Charles Gounod**, composer of the opera "Faust."
+— **Alexandre Dumas the younger**, author of "The Lady of the Camellias."
+— The poet **Sully Prudhomme**, who a few years later would become the first person ever to win the Nobel Prize in Literature.
+— **Charles Garnier**, architect of the Paris Opera. [pause]
+
+They called the tower — and I'm quoting — "dizzyingly absurd," "a giant black factory chimney," and "the **shame of Paris**." [pause]
+
+One of the most venomous critics was **Guy de Maupassant**, author of "Bel-Ami." Legend has it he ate lunch every day at the restaurant inside the tower. When asked: you hate this thing, why do you keep coming here? Maupassant answered: [pause] "It's the only place in Paris where I don't have to look at it." [pause]
+
+Parisians nicknamed it the "**tragic streetlamp**," the "tower of shame," the "smokestack." The papers ran caricatures. The authorities promised: this is a temporary structure. It was written into the contract — in twenty years, in **1909**, the tower was to be dismantled and sold for scrap.
+
+### Audio Layer
+**Music:** A hard tonal shift — a diminished chord, a cello theme in minor. Anxious color.
+**SFX:** Newspaper rustle on "open letter," wine glasses clinking on the Maupassant anecdote.
+**Transition:** On "sold for scrap," an abrupt pause — the music cuts out. 0.7 seconds of silence into Scene 06.
+
+### Retention Layer
+- **Conflict (the engine of narrative):** hero (Eiffel) vs. antagonists (300 celebrities). No conflict, no story.
+- **Emotional Contagion:** an ironic, amused tone the viewer "catches" — the sense of "look how wrong they were."
+- **Pattern Interrupt:** the Maupassant anecdote — a personal moment breaks the lecture rhythm.
+- **Open Loop L2 resolved + L3 planted:** the 1909 deadline is now explicit — but what actually happened in 1909?
+
+---
+
+## Scene 06 — How Science Saved the Tower (4:15–5:25)
+
+**Duration:** 70s | **Words:** ~200 | **Retention:** Resolve Open Loop + Insight Reveal + Plant L4
+
+### Narration
+[building, revelatory tone]
+And here comes the part that wasn't in anyone's plan — not Eiffel's, not the French government's. [pause]
+
+In the early 20th century, humanity is starting to take radio communication seriously. Wireless transmission across tens of kilometers is cutting-edge military and scientific tech. And the physicists say: long-range radio antennas need **a tall mast**. The taller — the farther the signal travels. [pause]
+
+In Paris at that moment, the **highest point** is the Eiffel Tower. And Eiffel — fully aware that 1909 is approaching and the tower could be torn down — has been quietly funding radio experiments at its summit since the late 1890s. He's preemptively giving his tower a **practical function** the state won't be able to walk away from. [pause]
+
+It worked. From 1903 onward, the tower is the **main radio station of the French army**. During World War One, it's used to intercept German communications — historians estimate that at the Battle of the Marne in 1914 alone, that interception saved thousands of lives. [pause]
+
+By 1909, when the contract expires, nobody is asking the question anymore. The tower stays. Not as a beauty, not as a symbol — as a **strategic military asset**. [pause] Eiffel — like a real engineer — saved his creation through the very science that the project was never originally justified by.
+
+### Audio Layer
+**Music:** The theme opens up — brass enters, modulating to major. A "heroic" arrangement.
+**SFX:** Radio static on "wireless transmission," a faint Morse SOS under "main radio station of the army."
+**Transition:** On "saved it through science," a heroic chord, then an L-cut into Scene 07 (the Scene 06 audio bleeds in for one more second).
+
+### Retention Layer
+- **Open Loop L2 resolved:** the 1909 deadline is closed.
+- **Insight Reveal:** Eiffel deliberately built the radio function before the deadline — not luck, strategy. This is the "aha" moment.
+- **Plant L4:** "strategic military asset" sets up Scene 07 (1940 Hitler) without resolving it yet.
+- **Emotional zenith of the arc:** the hero outplays the critics through rationality.
+
+---
+
+## Scene 07 — The Tower Today + Closing (5:25–6:25)
+
+**Duration:** 60s | **Words:** ~140 | **Retention:** Closure + Final Reveal + Future Hook
+
+### Narration
+[reflective, warm]
+Today the Eiffel Tower is the most-visited paid monument in the world. **Seven million** visitors a year. **Three hundred and twenty-four meters** tall — taller than the original three hundred, thanks to the antennas. **Sixty tons** of paint every seven years — because raw iron rusts. For the 2024 Olympics, almost the entire structure was restored at a cost of around **sixty million euros**. [pause]
+
+And one last detail that closes the loop on this video's first scene. [pause]
+
+In June 1940, when Hitler first walked into occupied Paris, he wanted to go up the tower. **The French elevator operators had cut the cables in advance.** When Hitler arrived, the elevators were dead. [pause] The Führer wasn't going to climb three hundred meters of stairs. [pause] There's a famous photograph: Hitler standing at the foot of the tower — but never on top of it. [pause]
+
+The Eiffel Tower — alone in all of Paris — did **not** let Hitler in.
+
+### Audio Layer
+**Music:** The main theme from Scene 03 returns, now in an epic, full arrangement. A final upward modulation on "did not let him in."
+**SFX:** A faint summit wind, a distant Paris cityscape behind the music.
+**Transition:** The music "closes" on the final line with reverb. Into Scene 08.
+
+### Retention Layer
+- **Closure of the Cold Hook:** we return to 1940 and finish off the cliffhanger from Scene 01.
+- **Final Reveal:** "alone in all of Paris" — the emotional peak. This is the climax.
+- **All open loops closed:** 1909 was resolved in Scene 06; 1940 lands here. Mirror composition.
+
+---
+
+## Scene 08 — Outro CTA (6:25–6:35)
+
+**Duration:** 10s | **Words:** ~30 | **Retention:** Loyalty Loop
+
+### Narration
+[warm, intimate]
+Thanks for sticking around. [pause] If you got something out of it — Like, Subscribe, and that **Hype** button before this week's runs out. [pause] Next episode: Berlin — how a single wall split a city in two for forty years, overnight. [pause] See you there.
+
+### Audio Layer
+**Music:** The theme fades out gently; the last note is held for three seconds and resolves into silence before the end card.
+**SFX:** None.
+
+### Retention Layer
+- **Loyalty Loop:** a concrete preview of the next episode creates "session continuation" on the channel — algorithmically valuable.
+- **Soft CTA reminder:** Hype is mentioned a second time — frame composition (CTA in Scene 02 and Scene 08).
+
+---
+
+## Production checklist (deferred items)
+
+The items below were **deliberately NOT done in this iteration** — Dima capped the scope at research + script:
+
+- [ ] Visual prompts (per scene → multiple clips → Sora 2 / Kling / Flow selection)
+- [ ] Cost estimate (`COST_ESTIMATE.md`)
+- [ ] Teleprompter formatting (`TELEPROMPTER.md`)
+- [ ] Music cue sheet refinement (`MUSIC_CUES.md`)
+- [ ] ElevenLabs v3 audio tag pass (the script currently uses simplified `[bracket]` markers — a full proofread against v3 syntax is pending)
+- [ ] Cross-validation of the script by Codex + Gemini (proofreader-1 / proofreader-2 per `MULTI_AGENT_PRODUCTION.md`)
+- [ ] Final retention curve audit (techniques 1–11 from `RETENTION_STRATEGY.md`)
+- [ ] Niche style guide compliance check
+
+## Notes
+
+- All facts in the script are cross-referenced against `RESEARCH.md` (see Section 8 — Sources).
+- The script was written in a single Claude lead pass and then translated to American English in a second pass; Scene 02 (Hype CTA) was shortened from 35s/95 words to 10s/22 words per Dima's note. Total runtime shifted from ~7:00 to ~6:35; total narration word count dropped from ~1100 to ~1010.
+- Hype mechanics (3-per-week, 7,500 points, 7-day window) intentionally moved out of the cold open. If we want them spelled out anywhere, the natural slot is Scene 08, but this draft keeps Scene 08 minimal too.
+- "Champ de Mars" rendered in the original French (was "Марсово поле" in the Russian draft); "Maupassant," "Gounod," "Garnier," "Sully Prudhomme," "Eiffel" kept in standard English transliteration; "Hype" kept as the YouTube product name.
+- Ready for a Codex + Gemini review pass once Dima confirms next-step scope.
