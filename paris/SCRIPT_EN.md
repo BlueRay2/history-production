@@ -2,7 +2,7 @@
 
 **Channel:** Cities Evolution
 **Episode codename:** `paris-eiffel`
-**Duration:** ~6:35 (≈1010 words narration)
+**Duration:** ~5:35 (≈860 words narration, -15% per Dima 2026-04-30 msg 9621)
 **Voice:** TBD (recommendation: same Patrick International setup as Istanbul, en-US config)
 **Visual style direction:** Patrick International cinematic grade, 9:16 vertical, 60fps. Cold Hook visual prompts inline in Scene 01 (Sora 2 Pro / Kling / Flow Veo 3.1).
 **Status:** Research → Script complete → Cold Hook v2 (Numbers shock — Hook B per Dima 2026-04-29). Scene 06/07 closure of original 1909/1940 thread to be reframed in next iteration.
@@ -13,24 +13,24 @@
 
 | Time | Scene | Purpose |
 |---|---|---|
-| 0:00–0:15 | 01 — Cold Hook | Numbers shock: 18,038 iron pieces, 137 years, meant for 20 (Hook B) |
-| 0:15–0:25 | 02 — Short CTA | Like + Subscribe + Hype, no explanation |
-| 0:25–1:25 | 03 — Why Paris needed a tower in 1889 | Context: 100-year revolution anniversary, Expo |
-| 1:25–3:05 | 04 — Construction: numbers, speed, safety | Engineering wonder |
-| 3:05–4:15 | 05 — The hatred | "Manifesto of the 300", Maupassant, "shame of Paris" |
-| 4:15–5:25 | 06 — How science saved the tower | Radio antenna, military function, 1909 decision |
-| 5:25–6:25 | 07 — The tower today + closing | 7M visitors, Olympic restoration, cultural symbol |
-| 6:25–6:35 | 08 — Outro CTA | Final reminder + episode hook for next |
+| 0:00–0:13 | 01 — Cold Hook | Numbers shock: 18,038 iron pieces, 137 years, meant for 20 (Hook B) |
+| 0:13–0:22 | 02 — Short CTA | Like + Subscribe + Hype, no explanation |
+| 0:22–1:13 | 03 — Why Paris needed a tower in 1889 | Context: 100-year revolution anniversary, Expo |
+| 1:13–2:38 | 04 — Construction: numbers, speed, safety | Engineering wonder |
+| 2:38–3:38 | 05 — The hatred | "Manifesto of the 300", Maupassant, "shame of Paris" |
+| 3:38–4:38 | 06 — How science saved the tower | Radio antenna, military function, 1909 decision |
+| 4:38–5:29 | 07 — The tower today + closing | 7M visitors, Olympic restoration, cultural symbol |
+| 5:29–5:35 | 08 — Outro CTA | Final reminder + episode hook for next |
 
 ---
 
-## Scene 01 — Cold Hook (0:00–0:15) — v2 (Numbers shock)
+## Scene 01 — Cold Hook (0:00–0:13) — v2 (Numbers shock)
 
-**Duration:** 15s | **Words:** ~38 | **Retention:** Numbers shock + Subverted expectation + Curiosity Gap
+**Duration:** 13s | **Words:** ~32 | **Retention:** Numbers shock + Subverted expectation + Curiosity Gap
 
 ### Narration
 [cinematic, slightly hushed]
-Eighteen thousand thirty-eight iron pieces. Two and a half million rivets. Three hundred workers. Zero deaths during construction. [pause] The Eiffel Tower is one hundred thirty-seven years old — and still the most visited paid monument in the world. [pause] But it was meant to stand for only twenty.
+Eighteen thousand thirty-eight iron pieces. Two and a half million rivets. Three hundred workers. Zero deaths during construction. [pause] One hundred thirty-seven years old — still the most visited paid monument in the world. [pause] Meant to stand for twenty.
 
 ### Audio Layer
 **Music:** A low strung note enters on "iron pieces" and swells through "rivets" and "workers". Peaks on "still the most visited paid monument in the world." Drops on "but it was meant to stand for only twenty." No percussion.
@@ -63,13 +63,13 @@ Eighteen thousand thirty-eight iron pieces. Two and a half million rivets. Three
 
 ---
 
-## Scene 02 — Short CTA (0:15–0:25)
+## Scene 02 — Short CTA (0:13–0:22)
 
-**Duration:** 10s | **Words:** ~22 | **Retention:** Minimal CTA, no value-drop
+**Duration:** 9s | **Words:** ~19 | **Retention:** Minimal CTA, no value-drop
 
 ### Narration
 [friendly, fast]
-Quick favor: hit Like, Subscribe, and tap **Hype** — it pushes our channel up. Takes a second. Thanks. Let's go.
+Quick favor: hit Like, Subscribe, and tap **Hype** — it pushes the channel up. Takes a second. Let's go.
 
 ### Audio Layer
 **Music:** A light piano figure laid over the strings continuing from Scene 01. Warm, no pressure.
@@ -83,19 +83,19 @@ Quick favor: hit Like, Subscribe, and tap **Hype** — it pushes our channel up.
 
 ---
 
-## Scene 03 — Why Paris Needed a Tower in 1889 (0:25–1:25)
+## Scene 03 — Why Paris Needed a Tower in 1889 (0:22–1:13)
 
-**Duration:** 60s | **Words:** ~155 | **Retention:** Narrative Transportation + Open Loop L1
+**Duration:** 51s | **Words:** ~132 | **Retention:** Narrative Transportation + Open Loop L1
 
 ### Narration
 [narrative, measured]
-1889. France is turning one hundred — a century earlier the Revolution had cut off the head of Louis the Sixteenth, and the country is preparing to mark the anniversary in style. Paris is hosting the **World's Fair** — think of it as a 19th-century version of Expo, in an era with no internet and no instant news. Nations show up to flex their technology, their culture, and their engineering. [pause]
+1889. France is turning one hundred — a century earlier the Revolution had cut off the head of Louis the Sixteenth, and the country wants to mark the anniversary in style. Paris is hosting the **World's Fair** — a 19th-century Expo. Nations flex their technology, culture, and engineering. [pause]
 
-The French government wants a symbol. Something the entire world will see. Something nobody has ever built. So they open a contest for the centerpiece — a giant structure right in the heart of Paris, next to the **Champ de Mars**. [pause]
+The French government wants a symbol nobody has ever built. They open a contest for the centerpiece — a giant structure in the heart of Paris, next to the **Champ de Mars**. [pause]
 
-One hundred and seven proposals come in. Most are stone towers, monumental arches, neo-Gothic cathedrals. The winner is the one that looked insane: a three-hundred-meter iron lattice that resembled the unfinished skeleton of a skyscraper. [pause]
+One hundred and seven proposals come in. Most are stone towers, monumental arches, neo-Gothic cathedrals. The winner looked insane: a three-hundred-meter iron lattice resembling the unfinished skeleton of a skyscraper. [pause]
 
-The architect: **Gustave Eiffel**. Already a respected engineer — bridges, viaducts, and (pay attention to this one) the inner iron framework of the Statue of Liberty, which had just been delivered to New York in 1886. So the man knew metal and scale. [pause] But the idea of a giant iron tower as the symbol of France — to Parisians of the 1880s, that landed about as well as proposing today to swap out Big Ben for a laser pyramid in the middle of London.
+The architect: **Gustave Eiffel** — respected for bridges, viaducts, and the inner iron framework of the Statue of Liberty, delivered to New York in 1886. The man knew metal and scale. [pause] But to Parisians of the 1880s, a giant iron tower as the symbol of France landed about as well as proposing today to swap Big Ben for a laser pyramid in the middle of London.
 
 ### Audio Layer
 **Music:** Chamber orchestral — a string quartet in belle époque style. The theme enters on "1889" and develops across the scene.
@@ -110,21 +110,21 @@ The architect: **Gustave Eiffel**. Already a respected engineer — bridges, via
 
 ---
 
-## Scene 04 — Construction: Numbers, Speed, Safety (1:25–3:05)
+## Scene 04 — Construction: Numbers, Speed, Safety (1:13–2:38)
 
-**Duration:** 100s | **Words:** ~270 | **Retention:** Hyper-specificity + Pattern Interrupt + Open Loop L2
+**Duration:** 85s | **Words:** ~230 | **Retention:** Hyper-specificity + Pattern Interrupt + Open Loop L2
 
 ### Narration
 [steady, building tension]
-Construction begins on **January 28, 1887**. While it's still going up, the world is taking bets on whether the tower will collapse before the Fair even opens. [pause]
+Construction begins on **January 28, 1887**. While it's still going up, the world is betting on whether the tower will collapse before the Fair opens. [pause]
 
-The numbers still impress engineers today. **Eighteen thousand and thirty-eight** iron parts — every one of them forged and machined separately at Eiffel's factory just outside Paris. **Two and a half million** rivets — the connecting "nails" that stitch the whole structure together. The fit tolerance: tenths of a millimeter. If even a single piece had been a hair too long or too short, the section would have skewed and the tower simply wouldn't have come together. [pause]
+The numbers still impress engineers today. **Eighteen thousand and thirty-eight** iron parts — each forged and machined separately at Eiffel's factory outside Paris. **Two and a half million** rivets — the connecting "nails" that stitch the structure together. Fit tolerance: tenths of a millimeter. One piece a hair too long or short, and the section would skew. The tower simply wouldn't come together. [pause]
 
-Three hundred workers. They labor through every kind of weather, in the wind, at altitude. And the most unbelievable fact about the entire build: in over two years, **only one person dies** — and even that wasn't during the main assembly, but later, during elevator installation, when a worker fell because he ignored the safety procedure. [pause] For the late 19th century — no helmets, no harnesses, no modern lifts — that's a number engineers refused to believe for a long time. [pause]
+Three hundred workers, every kind of weather, at altitude. And the most unbelievable fact: in over two years, **only one person dies** — and even that wasn't during main assembly, but later during elevator installation, when a worker ignored the safety procedure. [pause] For the late 19th century — no helmets, no harnesses, no modern lifts — that's a number engineers refused to believe for a long time. [pause]
 
-The cost: **seven million eight hundred thousand francs**. And here's a detail tourist audio guides usually skip: the government covered only a third of it. Eiffel put up the rest **out of his own pocket**. [pause] In exchange, he got a twenty-year right to collect ticket revenue from visitors. So, take this in: the eventual symbol of Paris was originally a **private investment**. Eiffel built the tower as a business venture and bet his own capital on it. [pause]
+The cost: **seven million eight hundred thousand francs**. Detail tourist audio guides skip: the government covered only a third. Eiffel put up the rest **out of his own pocket**. [pause] In exchange, he got a twenty-year right to ticket revenue. The eventual symbol of Paris was originally a **private investment** — Eiffel bet his own capital on it. [pause]
 
-**March 31, 1889**: opening day. Three hundred meters. The tallest structure in the world. That record will hold for exactly forty-one years — until the Chrysler Building goes up in New York in 1930.
+**March 31, 1889**: opening day. Three hundred meters. The tallest structure in the world. The record holds forty-one years — until the Chrysler Building goes up in New York in 1930.
 
 ### Audio Layer
 **Music:** A rhythmic theme builds — piano and timpani come in, mimicking hammer strikes. Tempo around 110 BPM.
@@ -139,25 +139,25 @@ The cost: **seven million eight hundred thousand francs**. And here's a detail t
 
 ---
 
-## Scene 05 — The Hatred (3:05–4:15)
+## Scene 05 — The Hatred (2:38–3:38)
 
-**Duration:** 70s | **Words:** ~200 | **Retention:** Conflict + Emotional Contagion + Pattern Interrupt
+**Duration:** 60s | **Words:** ~170 | **Retention:** Conflict + Emotional Contagion + Pattern Interrupt
 
 ### Narration
 [ironic, slightly amused]
-And here we get to the most awkward part of the story. The Parisian elite — writers, painters, composers — went **ballistic**. [pause]
+Here's the awkward part. The Parisian elite — writers, painters, composers — went **ballistic**. [pause]
 
-While the tower was still going up, in February 1887, the newspaper Le Temps published an open letter. It was signed by **three hundred people** — what we now call the "**Manifesto of the 300**." [pause] Among the signatories:
-— **Charles Gounod**, composer of the opera "Faust."
+While the tower was still going up, in February 1887, the newspaper Le Temps published an open letter signed by **three hundred people** — the "**Manifesto of the 300**." [pause] Among the signatories:
+— **Charles Gounod**, composer of "Faust."
 — **Alexandre Dumas the younger**, author of "The Lady of the Camellias."
-— The poet **Sully Prudhomme**, who a few years later would become the first person ever to win the Nobel Prize in Literature.
+— The poet **Sully Prudhomme**, soon the first ever winner of the Nobel Prize in Literature.
 — **Charles Garnier**, architect of the Paris Opera. [pause]
 
-They called the tower — and I'm quoting — "dizzyingly absurd," "a giant black factory chimney," and "the **shame of Paris**." [pause]
+They called the tower — quoting — "dizzyingly absurd," "a giant black factory chimney," and "the **shame of Paris**." [pause]
 
-One of the most venomous critics was **Guy de Maupassant**, author of "Bel-Ami." Legend has it he ate lunch every day at the restaurant inside the tower. When asked: you hate this thing, why do you keep coming here? Maupassant answered: [pause] "It's the only place in Paris where I don't have to look at it." [pause]
+The most venomous critic was **Guy de Maupassant**, author of "Bel-Ami." Legend has it he lunched every day at the tower's restaurant. Asked why, he answered: [pause] "It's the only place in Paris where I don't have to look at it." [pause]
 
-Parisians nicknamed it the "**tragic streetlamp**," the "tower of shame," the "smokestack." The papers ran caricatures. The authorities promised: this is a temporary structure. It was written into the contract — in twenty years, in **1909**, the tower was to be dismantled and sold for scrap.
+Parisians nicknamed it the "**tragic streetlamp**," the "tower of shame," the "smokestack." Papers ran caricatures. The authorities promised: temporary. It was in the contract — in twenty years, in **1909**, the tower was to be dismantled and sold for scrap.
 
 ### Audio Layer
 **Music:** A hard tonal shift — a diminished chord, a cello theme in minor. Anxious color.
@@ -172,21 +172,21 @@ Parisians nicknamed it the "**tragic streetlamp**," the "tower of shame," the "s
 
 ---
 
-## Scene 06 — How Science Saved the Tower (4:15–5:25)
+## Scene 06 — How Science Saved the Tower (3:38–4:38)
 
-**Duration:** 70s | **Words:** ~200 | **Retention:** Resolve Open Loop + Insight Reveal + Plant L4
+**Duration:** 60s | **Words:** ~170 | **Retention:** Resolve Open Loop + Insight Reveal + Plant L4
 
 ### Narration
 [building, revelatory tone]
-And here comes the part that wasn't in anyone's plan — not Eiffel's, not the French government's. [pause]
+Here comes the part that wasn't in anyone's plan — not Eiffel's, not the government's. [pause]
 
-In the early 20th century, humanity is starting to take radio communication seriously. Wireless transmission across tens of kilometers is cutting-edge military and scientific tech. And the physicists say: long-range radio antennas need **a tall mast**. The taller — the farther the signal travels. [pause]
+In the early 20th century, humanity starts taking radio seriously. Wireless transmission across tens of kilometers is cutting-edge military tech. Physicists say: long-range antennas need **a tall mast**. The taller — the farther the signal. [pause]
 
-In Paris at that moment, the **highest point** is the Eiffel Tower. And Eiffel — fully aware that 1909 is approaching and the tower could be torn down — has been quietly funding radio experiments at its summit since the late 1890s. He's preemptively giving his tower a **practical function** the state won't be able to walk away from. [pause]
+In Paris, the **highest point** is the Eiffel Tower. And Eiffel — fully aware that 1909 is approaching — has been quietly funding radio experiments at its summit since the late 1890s. He's giving his tower a **practical function** the state can't walk away from. [pause]
 
-It worked. From 1903 onward, the tower is the **main radio station of the French army**. During World War One, it's used to intercept German communications — historians estimate that at the Battle of the Marne in 1914 alone, that interception saved thousands of lives. [pause]
+It worked. From 1903 onward, the tower is the **main radio station of the French army**. During World War One, it's used to intercept German communications — at the Battle of the Marne in 1914 alone, that interception saved thousands of lives. [pause]
 
-By 1909, when the contract expires, nobody is asking the question anymore. The tower stays. Not as a beauty, not as a symbol — as a **strategic military asset**. [pause] Eiffel — like a real engineer — saved his creation through the very science that the project was never originally justified by.
+By 1909, when the contract expires, nobody is asking the question anymore. The tower stays. Not as a beauty, not as a symbol — as a **strategic military asset**. [pause] Eiffel saved his creation through the very science the project was never originally justified by.
 
 ### Audio Layer
 **Music:** The theme opens up — brass enters, modulating to major. A "heroic" arrangement.
@@ -201,17 +201,17 @@ By 1909, when the contract expires, nobody is asking the question anymore. The t
 
 ---
 
-## Scene 07 — The Tower Today + Closing (5:25–6:25)
+## Scene 07 — The Tower Today + Closing (4:38–5:29)
 
-**Duration:** 60s | **Words:** ~140 | **Retention:** Closure + Final Reveal + Future Hook
+**Duration:** 51s | **Words:** ~119 | **Retention:** Closure + Final Reveal + Future Hook
 
 ### Narration
 [reflective, warm]
-Today the Eiffel Tower is the most-visited paid monument in the world. **Seven million** visitors a year. **Three hundred and twenty-four meters** tall — taller than the original three hundred, thanks to the antennas. **Sixty tons** of paint every seven years — because raw iron rusts. For the 2024 Olympics, almost the entire structure was restored at a cost of around **sixty million euros**. [pause]
+Today the Eiffel Tower is the most-visited paid monument in the world. **Seven million** visitors a year. **Three hundred and twenty-four meters** tall — taller than the original three hundred, thanks to the antennas. **Sixty tons** of paint every seven years — raw iron rusts. For the 2024 Olympics, almost the entire structure was restored for around **sixty million euros**. [pause]
 
-And one last detail that closes the loop on this video's first scene. [pause]
+One last detail that closes the loop on this video's first scene. [pause]
 
-In June 1940, when Hitler first walked into occupied Paris, he wanted to go up the tower. **The French elevator operators had cut the cables in advance.** When Hitler arrived, the elevators were dead. [pause] The Führer wasn't going to climb three hundred meters of stairs. [pause] There's a famous photograph: Hitler standing at the foot of the tower — but never on top of it. [pause]
+June 1940. Hitler walks into occupied Paris and wants to go up the tower. **The French elevator operators had cut the cables in advance.** The elevators were dead. [pause] The Führer wasn't climbing three hundred meters of stairs. [pause] There's a famous photo: Hitler at the foot of the tower — never on top of it. [pause]
 
 The Eiffel Tower — alone in all of Paris — did **not** let Hitler in.
 
@@ -227,13 +227,13 @@ The Eiffel Tower — alone in all of Paris — did **not** let Hitler in.
 
 ---
 
-## Scene 08 — Outro CTA (6:25–6:35)
+## Scene 08 — Outro CTA (5:29–5:35)
 
-**Duration:** 10s | **Words:** ~30 | **Retention:** Loyalty Loop
+**Duration:** 6s | **Words:** ~26 | **Retention:** Loyalty Loop
 
 ### Narration
 [warm, intimate]
-Thanks for sticking around. [pause] If you got something out of it — Like, Subscribe, and that **Hype** button before this week's runs out. [pause] Next episode: Berlin — how a single wall split a city in two for forty years, overnight. [pause] See you there.
+Thanks for sticking around. [pause] If it landed — Like, Subscribe, and **Hype** before this week's runs out. [pause] Next episode: Berlin — one wall, two cities, forty years, overnight. [pause] See you.
 
 ### Audio Layer
 **Music:** The theme fades out gently; the last note is held for three seconds and resolves into silence before the end card.
